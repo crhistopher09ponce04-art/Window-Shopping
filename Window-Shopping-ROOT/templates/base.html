@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Window Shopping</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>🍑 Window Shopping</h1>
+        <nav>
+            {% if session.get('usuario') %}
+                <a href="{{ url_for('dashboard') }}">Panel</a> |
+                <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
+            {% else %}
+                <a href="{{ url_for('home') }}">Iniciar Sesión</a> |
+                <a href="{{ url_for('register') }}">Registrarse</a>
+            {% endif %}
+        </nav>
+    </header>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <p>© 2025 Window Shopping - Plataforma B2B</p>
+    </footer>
+</body>
+</html>
