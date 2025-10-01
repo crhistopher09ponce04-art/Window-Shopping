@@ -1,8 +1,13 @@
 {% extends "base.html" %}
 
+{% block title %}{{ t("Registro", "Register") }}{% endblock %}
+
 {% block content %}
-<div class="card">
-  <h2>📝 {{ t("Crear Cuenta", "Create Account") }}</h2>
+<div class="card" style="max-width:600px; margin:auto;">
+  <h2 style="text-align:center;">📝 {{ t("Crear Cuenta", "Create Account") }}</h2>
+  <p style="text-align:center; color:#aaa; margin-bottom:15px;">
+    {{ t("Completa tus datos para unirte a Window Shopping", "Fill in your details to join Window Shopping") }}
+  </p>
 
   {% if error %}
     <div class="flash"><p>{{ error }}</p></div>
@@ -11,11 +16,11 @@
   <form method="POST" action="{{ url_for('register') }}">
     <!-- Usuario -->
     <label for="username">{{ t("Nombre de usuario", "Username") }}</label>
-    <input type="text" id="username" name="username" required>
+    <input type="text" id="username" name="username" placeholder="ej: exportador1" required>
 
     <!-- Contraseña -->
     <label for="password">{{ t("Contraseña", "Password") }}</label>
-    <input type="password" id="password" name="password" required>
+    <input type="password" id="password" name="password" placeholder="********" required>
 
     <!-- RUT -->
     <label for="rut">{{ t("RUT (SII)", "Tax ID (RUT)") }}</label>
@@ -23,7 +28,7 @@
 
     <!-- Email -->
     <label for="email">{{ t("Correo electrónico", "Email") }}</label>
-    <input type="email" id="email" name="email" required>
+    <input type="email" id="email" name="email" placeholder="ejemplo@correo.com" required>
 
     <!-- Dirección -->
     <label for="address">{{ t("Dirección", "Address") }}</label>
@@ -31,11 +36,12 @@
 
     <!-- Teléfono -->
     <label for="phone">{{ t("Teléfono", "Phone") }}</label>
-    <input type="text" id="phone" name="phone">
+    <input type="text" id="phone" name="phone" placeholder="+56 9 1234 5678">
 
     <!-- Rol -->
     <label for="rol">{{ t("Selecciona tu Rol", "Select your Role") }}</label>
     <select id="rol" name="rol" required>
+      <option value="">{{ t("Selecciona una opción", "Select an option") }}</option>
       <option value="Productor">{{ t("Productor", "Producer") }}</option>
       <option value="Planta">{{ t("Planta", "Plant") }}</option>
       <option value="Packing">{{ t("Packing", "Packing") }}</option>
@@ -48,10 +54,10 @@
     </select>
 
     <!-- Botón -->
-    <input type="submit" value="{{ t('Crear Cuenta', 'Create Account') }}">
+    <input type="submit" class="btn" value="{{ t('Crear Cuenta', 'Create Account') }}">
   </form>
 
-  <p class="mt-3">
+  <p style="text-align:center; margin-top:15px;">
     {{ t("¿Ya tienes cuenta?", "Already have an account?") }}
     <a href="{{ url_for('login') }}">🔑 {{ t("Inicia sesión", "Log in") }}</a>
   </p>
