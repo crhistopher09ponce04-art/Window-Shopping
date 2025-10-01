@@ -1,74 +1,40 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="container">
-    <h2 class="text-center mt-4">
-        {% if tipo == 'ventas' %} 💰 {{ _('Mis Ventas') }} {% else %} 🛒 {{ _('Mis Compras') }} {% endif %}
-    </h2>
+<div class="container mt-4">
+  <h2>{{ t("Accesos de", "Access for") }} {{ tipo|capitalize }}</h2>
 
-    <!-- Filtros -->
-    <form method="get" class="card p-3 mb-4">
-        <div class="row g-2">
-            <div class="col-md-3">
-                <input type="text" name="q" class="form-control" placeholder="{{ _('Buscar') }}..." value="{{ values.q }}">
-            </div>
-            <div class="col-md-2">
-                <input type="text" name="country" class="form-control" placeholder="{{ _('País') }}" value="{{ values.country }}">
-            </div>
-            <div class="col-md-2">
-                <input type="text" name="city" class="form-control" placeholder="{{ _('Ciudad') }}" value="{{ values.city }}">
-            </div>
-            <div class="col-md-2">
-                <select name="role" class="form-select">
-                    <option value="">{{ _('Rol') }}</option>
-                    {% for r in roles_opts %}
-                        <option value="{{ r }}" {% if values.role == r %}selected{% endif %}>{{ r }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="col-md-3 d-grid">
-                <button type="submit" class="btn btn-outline-primary">{{ _('Filtrar') }}</button>
-            </div>
-        </div>
-    </form>
-
-    <!-- Tabla -->
-    {% if empresas %}
-    <div class="table-responsive">
-        <table class="table table-hover align-middle">
-            <thead class="table-dark">
-                <tr>
-                    <th>{{ _('Nombre') }}</th>
-                    <th>{{ _('Rol') }}</th>
-                    <th>{{ _('Ciudad') }}</th>
-                    <th>{{ _('País') }}</th>
-                    <th>{{ _('Producto / Servicio') }}</th>
-                    <th>{{ _('Variedad') }}</th>
-                    <th>{{ _('Volumen') }}</th>
-                    <th>{{ _('Precio') }}</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-            {% for c in empresas %}
-                <tr>
-                    <td>{{ c.name }}</td>
-                    <td>{{ c.role }}</td>
-                    <td>{{ c.city }}</td>
-                    <td>{{ c.country }}</td>
-                    <td>{{ c.fruit or c.service or c.product_requested }}</td>
-                    <td>{{ c.variety or c.variety_requested }}</td>
-                    <td>{{ c.volume_tons or c.volume_requested_tons or "—" }}</td>
-                    <td>{{ c.price_box or c.price_kg or "—" }}</td>
-                    <td>
-                        <a href="{{ url_for('detalle', company_id=c.id) }}" class="btn btn-sm btn-success">🔍 {{ _('Ver Detalle') }}</a>
-                    </td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+  <form class="row g-2 mb-4">
+    <div class="col-md-3"><input class="form-control" type="text" name="q" placeholder="{{ t('Buscar...', 'Search...') }}" value="{{ values.q }}"></div>
+    <div class="col-md-2"><input class="form-control" type="text" name="country" placeholder="{{ t('País', 'Country') }}" value="{{ values.country }}"></div>
+    <div class="col-md-2"><input class="form-control" type="text" name="city" placeholder="{{ t('Ciudad', 'City') }}" value="{{ values.city }}"></div>
+    <div class="col-md-2">
+      <select class="form-select" name="role">
+        <option value="">{{ t("Rol", "Role") }}</option>
+        {% for r in roles_opts %}
+          <option value="{{r}}" {% if values.role == r %}selected{% endif %}>{{r}}</option>
+        {% endfor %}
+      </select>
     </div>
-    {% else %}
-        <p class="text-center text-muted mt-4">{{ _('No hay resultados disponibles') }}</p>
-    {% endif %}
+    <div class="col-md-2"><button class="btn btn-primary w-100">🔎 {{ t("Filtrar", "Filter") }}</button></div>
+  </form>
+
+  <div class="row">
+    {% for c in empresas %}
+    <div class="col-md-4 mb-4">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">{{ c.name }}</h5>
+          <p class="card-text">
+            <strong>{{ c.role }}</strong><br>
+            📍 {{ c.city }}, {{ c.country }}<br>
+            {% if c.fruit %} 🍑 {{ c.fruit }} ({{ c.variety }}) {% endif %}
+            {% if c.service %} 🛠️ {{ c.service }} {% endif %}
+          </p>
+          <a href="{{ url_for('detalle', company_id=c.id) }}" class="btn btn-outline-success">{{ t("Ver Detalle", "See Detail") }}</a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
 </div>
 {% endblock %}
