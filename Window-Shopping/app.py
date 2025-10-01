@@ -1,1 +1,0 @@
-# (contenido app.py ya entregado por el usuario, no se repite aquí por extensión)
