@@ -1,16 +1,8 @@
 {% extends "base.html" %}
-
 {% block content %}
-<div class="text-center">
-    <h2>👋 Hola, {{ usuario }}</h2>
-    <p class="lead">Estás conectado como <b>{{ tipo }}</b>.</p>
-
-    {% if tipo == "exportador" %}
-        <p>Aquí podrás agregar y gestionar tus productos para la venta.</p>
-    {% elif tipo == "comprador" %}
-        <p>Busca exportadores y ofertas que se adapten a tu necesidad.</p>
-    {% elif tipo == "servicio" %}
-        <p>Publica tus servicios y conecta con exportadores y compradores.</p>
-    {% endif %}
+<div class="p-5 bg-white shadow rounded">
+    <h2>👋 Bienvenido, {{ user }}</h2>
+    <p>Este es tu panel de control. Desde aquí podrás gestionar productos, servicios y compras.</p>
+    <a href="{{ url_for('logout') }}" class="btn btn-danger">Cerrar Sesión</a>
 </div>
 {% endblock %}
