@@ -1,109 +1,41 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>{{ _("my_profile") }}</h2>
+<h2>Mi Perfil</h2>
 
-<form method="post" class="card">
-  <input type="hidden" name="form_action" value="save_company">
-  <div class="row" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:10px;">
-    <div><label>{{ _("name") }} empresa</label><input type="text" name="name" value="{{ company.name }}" required></div>
-    <div><label>{{ _("city") }}</label><input type="text" name="city" value="{{ company.city }}"></div>
-    <div><label>{{ _("country") }}</label><input type="text" name="country" value="{{ company.country }}"></div>
-    <div><label>Teléfono</label><input type="text" name="phone" value="{{ company.phone }}"></div>
-    <div><label>{{ _("email") }}</label><input type="email" name="email" value="{{ company.email }}"></div>
-  </div>
-  <div style="text-align:right; margin-top:10px;">
-    <button type="submit" class="btn">{{ _("changes_saved") }}</button>
-  </div>
+<form method="POST">
+    <label>Nombre:</label>
+    <input type="text" name="name" value="{{ company['name'] }}">
+    <label>Ciudad:</label>
+    <input type="text" name="city" value="{{ company['city'] }}">
+    <label>País:</label>
+    <input type="text" name="country" value="{{ company['country'] }}">
+    <label>Teléfono:</label>
+    <input type="text" name="phone" value="{{ company['phone'] }}">
+    <label>Email:</label>
+    <input type="text" name="email" value="{{ company['email'] }}">
+    <button type="submit">Actualizar Perfil</button>
 </form>
 
-<div class="card">
-  <h3>{{ _("my_items") }}</h3>
-  {% if company.items %}
-    <table class="table">
-      <thead>
-        <tr>
-          <th>#</th><th>{{ _("rubro") }}</th><th>{{ _("type") }}</th>
-          <th>{{ _("product") }}</th><th>{{ _("variety") }}</th>
-          <th>{{ _("quantity") }}</th><th>{{ _("price") }}</th><th>{{ _("notes") }}</th><th>{{ _("actions") }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for it in company.items %}
-        <tr>
-          <td>{{ loop.index }}</td>
-          <td>{{ it.rubro }}</td>
-          <td>{{ it.type }}</td>
-          <td>{{ it.product }}</td>
-          <td>{{ it.variety }}</td>
-          <td>{{ it.quantity }} {{ _("units."+it.unit) }}</td>
-          <td>{{ it.price or '-' }}</td>
-          <td>{{ it.details }}</td>
-          <td>
-            <form method="post" style="display:inline">
-              <input type="hidden" name="form_action" value="delete_item:{{ loop.index0 }}">
-              <button class="btn ghost" type="submit">Eliminar</button>
-            </form>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  {% else %}
-    <p>{{ _("empty_list") }}</p>
-  {% endif %}
-</div>
-
-<div class="card">
-  <h3>Agregar ítem</h3>
-  <form method="post" class="add-to-cart" style="grid-template-columns: repeat(6, 1fr); gap:10px;">
-    <input type="hidden" name="form_action" value="add_item">
-    <div>
-      <label>{{ _("type") }}</label>
-      <select name="type">
-        <option value="venta">{{ _("sale") }}</option>
-        <option value="compra">{{ _("buying") }}</option>
-      </select>
-    </div>
-    <div>
-      <label>{{ _("rubro") }}</label>
-      <select name="rubro">
-        <option value="fruta">{{ _("fruit") }}</option>
-        <option value="servicio">{{ _("service") }}</option>
-      </select>
-    </div>
-    <div>
-      <label>{{ _("product") }}</label>
-      <input type="text" name="product" placeholder="Ciruela / Transporte marítimo" required>
-    </div>
-    <div>
-      <label>{{ _("variety") }}</label>
-      <input type="text" name="variety" placeholder="Angeleno / Black Diamond (opcional)">
-    </div>
-    <div>
-      <label>{{ _("quantity") }}</label>
-      <input type="number" name="quantity" min="0" step="0.01" placeholder="0">
-    </div>
-    <div>
-      <label>{{ _("unit") }}</label>
-      <select name="unit">
-        {% for u in UNITS %}
-          <option value="{{ u }}">{{ _("units."+u) }}</option>
-        {% endfor %}
-      </select>
-    </div>
-    <div style="grid-column: span 2;">
-      <label>{{ _("price") }}</label>
-      <input type="text" name="price" placeholder="ej: 17500/caja, 1.4 USD/kg, etc.">
-    </div>
-    <div style="grid-column: span 3;">
-      <label>{{ _("notes") }}</label>
-      <input type="text" name="details" placeholder="Fechas, calibres, condiciones, disponibilidad...">
-    </div>
-    <div style="align-self:end;">
-      <button type="submit" class="btn">Agregar</button>
-    </div>
-  </form>
-</div>
-
-<p><a href="{{ url_for('dashboard') }}">⬅ {{ _("back") }}</a></p>
+<hr>
+<h3>Agregar nuevo ítem</h3>
+<form method="POST" action="{{ url_for('add_item') }}">
+    <label>Producto/Servicio:</label>
+    <input type="text" name="name" required>
+    <label>Variedad (si aplica):</label>
+    <input type="text" name="variety">
+    <label>Unidad de medida:</label>
+    <select name="measure">
+        <option value="kg">Kg</option>
+        <option value="tons">Toneladas</option>
+        <option value="boxes">Cajas</option>
+        <option value="units">Unidades</option>
+    </select>
+    <label>Cantidad:</label>
+    <input type="number" step="0.01" name="quantity">
+    <label>Precio (CLP):</label>
+    <input type="number" step="0.01" name="price">
+    <label>Notas:</label>
+    <input type="text" name="notes">
+    <button type="submit">Agregar ítem</button>
+</form>
 {% endblock %}
