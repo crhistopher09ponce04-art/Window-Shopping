@@ -1,37 +1,23 @@
 {% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
 {% block content %}
-<div class="panel">
-  <h3 style="margin:0 0 8px 0;">{{ t("Panel principal","Main dashboard","主面板") }}</h3>
-  <p class="meta">{{ t("Conectado como","Signed in as","当前用户") }}: <strong>{{ usuario }}</strong> — {{ rol }}</p>
-
-  {% set cart = session.get('cart',{}) %}
-  {% set total = (cart['ventas']|length) + (cart['compras']|length) + (cart['servicios']|length) %}
-  <div class="mt-2">
-    <span class="badge">🛒 {{ t("Carrito","Cart","购物车") }}: {{ total }}</span>
-  </div>
-
-  <div class="grid grid-3 mt-3">
-    <a href="{{ url_for('accesos', tipo='ventas') }}" class="tile">
-      <div class="badge">🟢 {{ t("Ventas","Sales","销售") }}</div>
-      <h4 style="margin:10px 0 4px 0;">{{ t("Ofertas disponibles","Available offers","可用报价") }}</h4>
-      <div class="meta">{{ t("Explora fruta disponible para exportación.","Explore fruit available for export.","浏览可用于出口的水果。") }}</div>
-    </a>
-
-    <a href="{{ url_for('accesos', tipo='compras') }}" class="tile">
-      <div class="badge">🔵 {{ t("Compras","Purchases","采购") }}</div>
-      <h4 style="margin:10px 0 4px 0;">{{ t("Demandas activas","Active demands","有效需求") }}</h4>
-      <div class="meta">{{ t("Empresas buscando producto.","Companies looking for product.","正在寻找产品的公司。") }}</div>
-    </a>
-
-    <a href="{{ url_for('accesos', tipo='servicios') }}" class="tile">
-      <div class="badge">🟣 {{ t("Servicios","Services","服务") }}</div>
-      <h4 style="margin:10px 0 4px 0;">{{ t("Operaciones y logística","Operations & logistics","运营与物流") }}</h4>
-      <div class="meta">{{ t("Packing, frigorífico, transporte, aduanas.","Packing, cold storage, transport, customs.","包装、冷藏、运输、报关。") }}</div>
-    </a>
-  </div>
-
-  <div class="mt-3">
-    <a href="{{ url_for('perfil') }}" class="btn">👤 {{ t("Ir a mi perfil","Go to my profile","前往我的资料") }}</a>
-  </div>
+<div class="card">
+  <h2>{{ t("Bienvenido","Welcome","歡迎") }} {{ usuario }}</h2>
+  <p>{{ t("Rol","Role","角色") }}: {{ rol }} | {{ t("Perfil","Profile","配置檔") }}: {{ perfil_tipo }}</p>
 </div>
+<div class="grid-3">
+  <a class="tile" href="{{ url_for('accesos', tipo='ventas') }}">{{ t("Ventas/Ofertas","Sales/Offers","銷售/供應") }}</a>
+  <a class="tile" href="{{ url_for('accesos', tipo='compras') }}">{{ t("Compras/Demanda","Purchases/Demand","購買/需求") }}</a>
+  <a class="tile" href="{{ url_for('accesos', tipo='servicios') }}">{{ t("Servicios","Services","服務") }}</a>
+</div>
+{% if cart %}
+<div class="card mt-3">
+  <h3>🛒 {{ t("Carrito","Cart","購物車") }}</h3>
+  <ul>
+    {% for i in cart %}
+      <li>{{ i }}</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}
 {% endblock %}
