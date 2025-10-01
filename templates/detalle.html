@@ -1,15 +1,20 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>{{ company.name }}</h2>
-<p>{{ company.role }} — {{ company.city }}, {{ company.country }}</p>
-<h3>{{ t("Ítems disponibles", "Available items") }}</h3>
-<ul>
-{% for item in company.items %}
-  <li>{{ item.get("fruit") or item.get("service") }} — {{ item.get("variety") or item.get("availability") }} — {{ item.get("volume") or "" }} {{ item.get("price") or "" }}</li>
-{% endfor %}
-</ul>
-<form method="post">
-    <input type="number" name="quantity" placeholder="Cantidad" min="1" value="1">
-    <button type="submit" class="btn">{{ t("Agregar al carrito", "Add to cart") }}</button>
-</form>
+<div class="container mt-5">
+  <div class="card shadow-lg p-4">
+    <h2>{{ company.name }} ({{ company.role }})</h2>
+    <p>📍 {{ company.city }}, {{ company.country }}</p>
+    {% if company.fruit %}<p>🍑 {{ company.fruit }} – {{ company.variety }}</p>{% endif %}
+    {% if company.service %}<p>🛠️ {{ company.service }}</p>{% endif %}
+    <p>📞 {{ company.phone }} | ✉️ {{ company.email }}</p>
+
+    <form method="post" class="mt-3">
+      <div class="row g-2">
+        <div class="col-md-3"><input type="number" class="form-control" name="quantity" placeholder="Cantidad"></div>
+        <div class="col-md-6"><input type="text" class="form-control" name="notes" placeholder="Notas"></div>
+        <div class="col-md-3"><button class="btn btn-success w-100">➕ {{ t("Agregar al carrito", "Add to cart") }}</button></div>
+      </div>
+    </form>
+  </div>
+</div>
 {% endblock %}
