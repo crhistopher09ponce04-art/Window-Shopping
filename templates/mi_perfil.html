@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Mi Perfil{% endblock %}
+{% block content %}
+<h2>Editar mi perfil</h2>
+<form method="post" class="card form-wide">
+  <div class="row" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:10px;">
+    <div><label>Nombre empresa</label><input type="text" name="name" value="{{ company.name }}" required></div>
+    <div><label>Ciudad</label><input type="text" name="city" value="{{ company.city }}"></div>
+    <div><label>País</label><input type="text" name="country" value="{{ company.country }}"></div>
+    <div><label>Teléfono</label><input type="text" name="phone" value="{{ company.phone }}"></div>
+    <div><label>Email</label><input type="email" name="email" value="{{ company.email }}"></div>
+  </div>
+
+  {% if company.role == "Cliente extranjero" %}
+    <h3>Preferencias de compra</h3>
+    <div class="row" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:10px;">
+      <div><label>Producto solicitado</label><input type="text" name="product_requested" value="{{ company.product_requested }}"></div>
+      <div><label>Variedad solicitada</label><input type="text" name="variety_requested" value="{{ company.variety_requested }}"></div>
+      <div><label>Volumen solicitado (tons)</label><input type="number" step="0.1" name="volume_requested_tons" value="{{ company.volume_requested_tons }}"></div>
+    </div>
+  {% elif company.role in ["Transporte","Agencia de aduana","Extraportuario"] %}
+    <h3>Detalle de servicio</h3>
+    <div class="row">
+      <div class="full"><label>Servicio</label><input type="text" name="service" value="{{ company.service }}"></div>
+    </div>
+  {% else %}
+    <h3>Oferta de fruta</h3>
+    <div class="row" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:10px;">
+      <div><label>Fruta</label><input type="text" name="fruit" value="{{ company.fruit }}"></div>
+      <div><label>Variedad</label><input type="text" name="variety" value="{{ company.variety }}"></div>
+      <div><label>Volumen (tons)</label><input type="number" step="0.1" name="volume_tons" value="{{ company.volume_tons }}"></div>
+      <div><label>Precio por caja</label><input type="number" step="1" name="price_box" value="{{ company.price_box }}"></div>
+      <div><label>Precio por kilo</label><input type="number" step="1" name="price_kg" value="{{ company.price_kg }}"></div>
+    </div>
+  {% endif %}
+
+  <div style="text-align:right; margin-top:10px;">
+    <button type="submit" class="btn">Guardar cambios</button>
+  </div>
+</form>
+<p><a href="{{ url_for('dashboard') }}">⬅ Volver</a></p>
+{% endblock %}
