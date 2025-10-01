@@ -1,11 +1,12 @@
 from flask import Flask, render_template, request, redirect, url_for, session
+from functools import wraps
 
 app = Flask(__name__)
-app.secret_key = "clave_secreta"
+app.secret_key = "clave_secreta_demo"
 
-# ==========================
+# ---------------------------
 # Usuarios de prueba
-# ==========================
+# ---------------------------
 usuarios = {
     "productor1": {"password": "1234", "rol": "Productor"},
     "planta1": {"password": "1234", "rol": "Planta"},
@@ -15,89 +16,136 @@ usuarios = {
     "cliente1": {"password": "1234", "rol": "Cliente extranjero"},
     "transporte1": {"password": "1234", "rol": "Transporte"},
     "aduana1": {"password": "1234", "rol": "Agencia de aduana"},
-    "extraportuario1": {"password": "1234", "rol": "Extraportuario"}
+    "extraportuario1": {"password": "1234", "rol": "Extraportuario"},
 }
 
-# ==========================
-# Función traducción simple
-# ==========================
-def t(text_es, text_en):
+# ---------------------------
+# Traducción rápida
+# ---------------------------
+def t(es, en):
     lang = session.get("lang", "es")
-    return text_es if lang == "es" else text_en
+    return es if lang == "es" else en
 
-app.jinja_env.globals.update(t=t)
+@app.route("/set_lang/<code>")
+def set_lang(code):
+    session["lang"] = code
+    return redirect(request.referrer or url_for("home"))
 
-# ==========================
-# Rutas principales
-# ==========================
+# ---------------------------
+# Decorador para login requerido
+# ---------------------------
+def login_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if "usuario" not in session:
+            return redirect(url_for("login"))
+        return f(*args, **kwargs)
+    return decorated
+
+# ---------------------------
+# HOME / LANDING
+# ---------------------------
 @app.route("/")
 def home():
-    if "usuario" in session:
-        return redirect(url_for("dashboard"))
-    return render_template("landing.html")
+    return render_template("landing.html", t=t)
 
+# ---------------------------
+# LOGIN
+# ---------------------------
 @app.route("/login", methods=["GET", "POST"])
 def login():
     error = None
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
-        user = usuarios.get(username)
 
+        user = usuarios.get(username)
         if user and user["password"] == password:
             session["usuario"] = username
             return redirect(url_for("dashboard"))
         else:
-            error = t("Usuario o contraseña incorrectos", "Incorrect username or password")
-    return render_template("login.html", error=error)
+            error = "Usuario o contraseña incorrectos"
+    return render_template("login.html", error=error, t=t)
 
+# ---------------------------
+# LOGOUT
+# ---------------------------
 @app.route("/logout")
 def logout():
-    session.clear()
+    session.pop("usuario", None)
     return redirect(url_for("home"))
 
+# ---------------------------
+# REGISTRO
+# ---------------------------
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+        rut = request.form["rut"]
+        email = request.form["email"]
+        address = request.form["address"]
+        phone = request.form["phone"]
+        rol = request.form["rol"]
+
+        if username in usuarios:
+            return render_template("register.html", error="El usuario ya existe.", t=t)
+
+        usuarios[username] = {
+            "password": password,
+            "rol": rol,
+            "rut": rut,
+            "email": email,
+            "address": address,
+            "phone": phone
+        }
+
+        session["usuario"] = username
+        return redirect(url_for("dashboard"))
+
+    return render_template("register.html", t=t)
+
+# ---------------------------
+# DASHBOARD
+# ---------------------------
 @app.route("/dashboard")
+@login_required
 def dashboard():
-    if "usuario" not in session:
-        return redirect(url_for("login"))
-    user = usuarios[session["usuario"]]
-    return render_template("dashboard.html", usuario=session["usuario"], rol=user["rol"])
+    username = session["usuario"]
+    user = usuarios.get(username)
+    return render_template("dashboard.html", usuario=username, rol=user["rol"], t=t)
 
-# ==========================
-# Ruta accesos
-# ==========================
+# ---------------------------
+# ACCESOS POR TIPO
+# ---------------------------
 @app.route("/accesos/<tipo>")
+@login_required
 def accesos(tipo):
-    if "usuario" not in session:
-        return redirect(url_for("login"))
+    data = []
 
-    demo_data = {
-        "ventas": ["Orden #123 - Cliente X", "Orden #124 - Cliente Y"],
-        "servicios": ["Transporte contratado", "Aduana pendiente"],
-        "compras": ["Compra #456 - Productor Z", "Compra #457 - Planta W"]
-    }
+    if tipo == "ventas":
+        data = ["Orden #123 - Cliente extranjero", "Orden #124 - Exportador"]
+    elif tipo == "compras":
+        data = ["Compra de insumos - Packing", "Contrato de transporte"]
+    elif tipo == "servicios":
+        data = ["Servicio de Agencia de Aduana", "Frigorífico contratado"]
 
-    data = demo_data.get(tipo, [])
-    return render_template("accesos.html", tipo=tipo, data=data)
+    return render_template("accesos.html", tipo=tipo, data=data, t=t)
 
-# ==========================
-# Cambio de idioma
-# ==========================
-@app.route("/set_lang/<lang>")
-def set_lang(lang):
-    session["lang"] = lang
-    return redirect(request.referrer or url_for("home"))
-
-# ==========================
-# Error handlers
-# ==========================
+# ---------------------------
+# ERROR HANDLER
+# ---------------------------
 @app.errorhandler(404)
 def not_found(e):
-    return render_template("error.html", msg="404 - Página no encontrada"), 404
+    return render_template("error.html", code=404, message=t("Página no encontrada", "Page not found"), t=t), 404
 
 @app.errorhandler(500)
-def internal_error(e):
-    return render_template("error.html", msg="500 - Error interno"), 500
+def server_error(e):
+    return render_template("error.html", code=500, message=t("Error interno", "Internal server error"), t=t), 500
 
+# ---------------------------
+# MAIN
+# ---------------------------
 if __name__ == "__main__":
     app.run(debug=True)
