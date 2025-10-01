@@ -1,39 +1,77 @@
 {% extends "base.html" %}
-{% block title %}Registro{% endblock %}
 {% block content %}
 <div class="card">
-  <h2>{{ t("Crear cuenta","Create account","建立帳號") }}</h2>
-  {% if error %}<p style="color:red">{{ error }}</p>{% endif %}
-  <form method="post">
-    <label>{{ t("Usuario","Username","用戶") }}</label>
-    <input type="text" name="username" required>
-    <label>{{ t("Clave","Password","密碼") }}</label>
-    <input type="password" name="password" required>
-    <label>Email</label>
+  <h2>📝 {{ t("Crear Cuenta", "Create Account","建立帳號") }}</h2>
+
+  {% if error %}
+    <div class="flash"><p>{{ error }}</p></div>
+  {% endif %}
+
+  <form method="POST" action="{{ url_for('register') }}">
+    <div class="grid-3">
+      <div>
+        <label>{{ t("Nacionalidad", "Nationality","國籍") }}</label>
+        <select name="nacionalidad" required>
+          <option value="nacional" {% if nacionalidad=='nacional' %}selected{% endif %}>{{ t("Nacional", "National","本國") }}</option>
+          <option value="extranjero" {% if nacionalidad=='extranjero' %}selected{% endif %}>{{ t("Extranjero", "Foreign","外國") }}</option>
+        </select>
+      </div>
+      <div>
+        <label>{{ t("Tipo de perfil", "Profile type","檔案類型") }}</label>
+        <select name="perfil_tipo" required>
+          <option value="compra_venta" {% if perfil_tipo=='compra_venta' %}selected{% endif %}>{{ t("Compra/Venta", "Buy/Sell","買/賣") }}</option>
+          <option value="servicios" {% if perfil_tipo=='servicios' %}selected{% endif %}>{{ t("Servicios", "Services","服務") }}</option>
+        </select>
+      </div>
+      <div>
+        <label>{{ t("Rol", "Role","角色") }}</label>
+        <select name="rol" required id="rolSelect">
+          {% if perfil_tipo=='servicios' %}
+            {% for r in roles_srv %}<option value="{{ r }}">{{ r }}</option>{% endfor %}
+          {% else %}
+            {% for r in roles_cv %}<option value="{{ r }}">{{ r }}</option>{% endfor %}
+          {% endif %}
+        </select>
+      </div>
+    </div>
+
+    <div class="grid-3">
+      <div>
+        <label>{{ t("Usuario", "Username","使用者") }}</label>
+        <input type="text" name="username" required>
+      </div>
+      <div>
+        <label>{{ t("Contraseña", "Password","密碼") }}</label>
+        <input type="password" name="password" required>
+      </div>
+      <div>
+        <label>{{ t("País (código ISO)", "Country (ISO code)","國家（ISO）") }}</label>
+        <input type="text" name="pais" placeholder="CL">
+      </div>
+    </div>
+
+    <label>{{ t("Correo electrónico", "Email","電子郵件") }}</label>
     <input type="email" name="email">
-    <label>{{ t("Teléfono","Phone","電話") }}</label>
-    <input type="text" name="phone">
-    <label>{{ t("Dirección","Address","地址") }}</label>
-    <input type="text" name="address">
-    <label>RUT</label>
-    <input type="text" name="rut">
-    <label>{{ t("País","Country","國家") }}</label>
-    <input type="text" name="pais">
-    <label>{{ t("Tipo de perfil","Profile type","配置檔類型") }}</label>
-    <select name="perfil_tipo">
-      <option value="compra_venta">{{ t("Compra/Venta","Trading","買賣") }}</option>
-      <option value="servicios">{{ t("Servicios","Services","服務") }}</option>
-    </select>
-    <label>{{ t("Rol","Role","角色") }}</label>
-    <select name="rol">
-      {% for r in roles_cv %}
-      <option>{{ r }}</option>
-      {% endfor %}
-      {% for r in roles_srv %}
-      <option>{{ r }}</option>
-      {% endfor %}
-    </select>
-    <input type="submit" value="{{ t('Registrarse','Register','註冊') }}" class="btn">
+
+    <div class="grid-3">
+      <div>
+        <label>{{ t("Teléfono", "Phone","電話") }}</label>
+        <input type="text" name="phone">
+      </div>
+      <div class="grid-3" style="grid-template-columns:1fr 2fr 1fr; gap:12px;">
+        <div style="grid-column: span 3;">
+          <label>{{ t("Dirección", "Address","地址") }}</label>
+          <input type="text" name="address" placeholder="Calle, número, ciudad">
+        </div>
+      </div>
+    </div>
+
+    <input type="submit" value="{{ t('Crear Cuenta', 'Create Account','建立帳號') }}">
   </form>
+
+  <p class="mt-3">
+    {{ t("¿Ya tienes cuenta?", "Already have an account?","已有帳號？") }}
+    <a href="{{ url_for('login') }}">🔑 {{ t("Inicia sesión", "Log in","登入") }}</a>
+  </p>
 </div>
 {% endblock %}
