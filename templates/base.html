@@ -1,47 +1,33 @@
 <!DOCTYPE html>
-<html lang="{{ cur_lang }}">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <title>Window Shopping</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <header>
-        <h1>🌍 Window Shopping</h1>
+        <h1>🍑 Window Shopping</h1>
         <nav>
-            {% if 'usuario' in session %}
-                <a href="{{ url_for('dashboard') }}">🏠 Dashboard</a>
-                <a href="{{ url_for('mi_perfil') }}">👤 {{ t('profile') }}</a>
-                <a href="{{ url_for('cart') }}">🛒 {{ t('cart') }}</a>
-                <a href="{{ url_for('help_center') }}">❓ Centro de Ayuda</a>
-                <a href="{{ url_for('logout') }}">🚪 {{ t('logout') }}</a>
+            {% if session.get('usuario') %}
+                <a href="{{ url_for('dashboard') }}">🏠 Panel</a> |
+                <a href="{{ url_for('mi_perfil') }}">👤 Mi Perfil</a> |
+                <a href="{{ url_for('cart') }}">🛒 Carrito</a> |
+                <a href="{{ url_for('help_center') }}">❓ Ayuda</a> |
+                <a href="{{ url_for('logout') }}">🚪 Cerrar Sesión</a>
             {% else %}
-                <a href="{{ url_for('login') }}">🔑 {{ t('login') }}</a>
-                <a href="{{ url_for('register_router') }}">📝 Registro</a>
-                <a href="{{ url_for('help_center') }}">❓ Centro de Ayuda</a>
+                <a href="{{ url_for('home') }}">🔑 Iniciar Sesión</a> |
+                <a href="{{ url_for('register') }}">📝 Registro</a>
             {% endif %}
-            <!-- idioma -->
-            <span style="margin-left:20px;">
-                {% for code, label in LANGS.items() %}
-                    <a href="{{ url_for('set_lang', code=code, next=request.path) }}">{{ label }}</a>
-                {% endfor %}
-            </span>
         </nav>
     </header>
+
     <main>
-        {% with messages = get_flashed_messages() %}
-          {% if messages %}
-            <ul class="flash">
-              {% for m in messages %}
-                <li>{{ m }}</li>
-              {% endfor %}
-            </ul>
-          {% endif %}
-        {% endwith %}
         {% block content %}{% endblock %}
     </main>
+
     <footer>
-        <p>&copy; 2025 Window Shopping - Plataforma Global de Exportación</p>
+        <p>© 2025 Window Shopping - Plataforma B2B</p>
     </footer>
 </body>
 </html>
