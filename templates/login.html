@@ -1,18 +1,15 @@
 {% extends "base.html" %}
-{% block title %}Login{% endblock %}
 {% block content %}
-<div class="card">
     <h2>Iniciar Sesión</h2>
     {% if error %}<p class="error">{{ error }}</p>{% endif %}
     <form method="POST" action="{{ url_for('login') }}">
         <label>Usuario:</label>
-        <input type="text" name="username" placeholder="Ej: productor1" required>
+        <input type="text" name="username" required>
         <label>Contraseña:</label>
-        <input type="password" name="password" placeholder="1234" required>
+        <input type="password" name="password" required>
         <button type="submit">Ingresar</button>
     </form>
-    <p style="margin-top:15px;">
+    <p style="text-align:center;">
         ¿No tienes cuenta? <a href="{{ url_for('register') }}">Regístrate aquí</a>
     </p>
-</div>
 {% endblock %}
