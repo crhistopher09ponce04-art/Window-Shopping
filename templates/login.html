@@ -1,18 +1,15 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="card">
-  <h2>{{ _("login") }}</h2>
-  {% if error %}<p class="error">{{ error }}</p>{% endif %}
-  <form method="POST" action="{{ url_for('login') }}">
-    <label>Usuario</label>
-    <input type="text" name="username" placeholder="ej: exportador1" required/>
-    <label>Contraseña</label>
-    <input type="password" name="password" placeholder="1234" required/>
-    <button type="submit" class="btn">{{ _("login") }}</button>
-  </form>
-  <div class="inline-links">
-    <a href="{{ url_for('help_center') }}">{{ _("help") }}</a>
-    <a href="{{ url_for('register') }}">{{ _("register") }}</a>
-  </div>
-</div>
+<h2>Iniciar Sesión</h2>
+{% if error %}<p class="error">{{ error }}</p>{% endif %}
+<form method="POST">
+    <label>Usuario:</label>
+    <input type="text" name="username" required>
+    <label>Contraseña:</label>
+    <input type="password" name="password" required>
+    <button type="submit">Ingresar</button>
+</form>
+<p style="text-align:center;">
+    ¿No tienes cuenta? <a href="{{ url_for('register_router') }}">Regístrate aquí</a>
+</p>
 {% endblock %}
