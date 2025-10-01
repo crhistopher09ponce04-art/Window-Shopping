@@ -1,12 +1,36 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2>❓ Centro de Ayuda</h2>
-<p>Bienvenido al centro de ayuda de Window Shopping. Aquí encontrarás respuestas a las preguntas frecuentes.</p>
+<div class="container mt-5">
+    <h2 class="mb-4">❓ Centro de Ayuda</h2>
+    <p>Bienvenido al centro de ayuda de <strong>Window Shopping</strong>. Aquí encontrarás respuestas rápidas y soporte.</p>
 
-<ul>
-    <li>¿Cómo registro una cuenta? → Dirígete a la sección de Registro en el menú.</li>
-    <li>¿Cómo publico productos o servicios? → Una vez dentro del Dashboard según tu perfil.</li>
-    <li>¿Cómo contacto a un proveedor? → Usa la sección de búsqueda dentro de tu panel.</li>
-</ul>
+    <div class="accordion" id="faqAccordion">
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="faq1">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1">
+                    ¿Cómo me registro en la plataforma?
+                </button>
+            </h2>
+            <div id="collapse1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                <div class="accordion-body">
+                    Ve al menú <strong>Registro</strong>, completa tus datos y selecciona tu tipo de usuario (Nacional o Extranjero).
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="faq2">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2">
+                    Olvidé mi contraseña
+                </button>
+            </h2>
+            <div id="collapse2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                <div class="accordion-body">
+                    Haz clic en <strong>Iniciar Sesión</strong> y luego en <em>¿Olvidaste tu contraseña?</em> para recuperarla.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
