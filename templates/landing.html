@@ -1,27 +1,11 @@
 {% extends "base.html" %}
 {% block content %}
-<section class="card center">
-  <h1>🍇 {{ t("Plataforma Window Shopping", "Window Shopping Platform") }}</h1>
-  <p class="mt-2">{{ t("Conecta productores, servicios y exportadores en un solo lugar.",
-                       "Connect growers, service providers and exporters in one place.") }}</p>
-  <div class="mt-3">
-    <a href="{{ url_for('login') }}" class="btn">🔑 {{ t("Ingresar", "Login") }}</a>
-    <a href="{{ url_for('register_router') }}" class="btn btn-secondary">📝 {{ t("Registrarse", "Register") }}</a>
+  <div class="panel">
+    <h2 style="margin:0 0 8px 0;">{{ t("Bienvenido a Window Shopping","Welcome to Window Shopping","欢迎来到 Window Shopping") }}</h2>
+    <p class="mt-1" style="color:#cfe6ff">{{ t("Explora ventas, compras y servicios del sector frutícola con un flujo simple y transparente.","Explore fresh produce sales, purchases and services with a simple, transparent flow.","以简洁透明的流程探索生鲜水果的销售、采购与服务。") }}</p>
+    <div class="mt-3">
+      <a href="{{ url_for('login') }}" class="btn me-2">🔑 {{ t("Iniciar sesión","Log in","登录") }}</a>
+      <a href="{{ url_for('register_router') }}" class="btn btn-outline">📝 {{ t("Registrarse","Register","注册") }}</a>
+    </div>
   </div>
-</section>
-
-<section class="grid mt-3">
-  <div class="card">
-    <h3>{{ t("Compra / Venta", "Buy / Sell") }}</h3>
-    <p class="mt-1">{{ t("Publica ofertas y demandas de fruta.", "Post offers and demands for fruit.") }}</p>
-  </div>
-  <div class="card">
-    <h3>{{ t("Servicios", "Services") }}</h3>
-    <p class="mt-1">{{ t("Packing, Frigorífico, Transporte, Agencia de Aduanas, Extraportuario.", "Packing, Cold storage, Transportation, Customs Agency, Extraport services.") }}</p>
-  </div>
-  <div class="card">
-    <h3>{{ t("Perfiles públicos", "Public profiles") }}</h3>
-    <p class="mt-1">{{ t("Consulta el perfil y agrega al carrito para contacto.", "Open profiles and add to cart for contact.") }}</p>
-  </div>
-</section>
 {% endblock %}
