@@ -3,65 +3,54 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>{% block title %}Window Shopping{% endblock %}</title>
+  <title>{{ t('title') }}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+<header class="topbar">
+  <div class="brand">🟩🟨 {{ t('title') }}</div>
+  <nav>
+    <a href="{{ url_for('home') }}">🏠</a>
+    {% if 'usuario' in session %}
+      <a href="{{ url_for('dashboard') }}">📊 {{ t('dashboard') }}</a>
+      <a href="{{ url_for('logout') }}">🚪 {{ t('logout') }}</a>
+    {% else %}
+      <a href="{{ url_for('login') }}">🔐 {{ t('login') }}</a>
+      <a href="{{ url_for('register_choice') }}">📝 {{ t('register') }}</a>
+    {% endif %}
+    <span class="lang">
+      <a href="{{ url_for('set_lang', code='es') }}" class="{% if session.get('lang','es')=='es' %}active{% endif %}">ES</a>
+      <span>·</span>
+      <a href="{{ url_for('set_lang', code='en') }}" class="{% if session.get('lang','es')=='en' %}active{% endif %}">EN</a>
+      <span>·</span>
+      <a href="{{ url_for('set_lang', code='zh') }}" class="{% if session.get('lang','es')=='zh' %}active{% endif %}">中文</a>
+    </span>
+  </nav>
+</header>
 
-  <!-- Topbar -->
-  <header class="topbar">
-    <div class="container">
-      <div class="brand">
-        <a href="{{ url_for('home') }}">🛒 Window Shopping</a>
+<main class="container">
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <div class="flash">
+        {% for m in messages %}<p>{{ m }}</p>{% endfor %}
       </div>
+    {% endif %}
+  {% endwith %}
 
-      <nav class="nav">
-        <ul>
-          {% if session.get('usuario') %}
-            <li><a href="{{ url_for('dashboard') }}">📊 {{ t("Panel", "Dashboard") }}</a></li>
-            <li><a href="{{ url_for('logout') }}">🚪 {{ t("Salir", "Logout") }}</a></li>
-          {% else %}
-            <li><a href="{{ url_for('login') }}">🔑 {{ t("Ingresar", "Login") }}</a></li>
-            <li><a href="{{ url_for('register') }}">📝 {{ t("Registrarse", "Register") }}</a></li>
-          {% endif %}
-        </ul>
-      </nav>
+  {% block content %}{% endblock %}
+</main>
 
-      <!-- Language switch -->
-      <div class="lang-switch">
-        {% set current = session.get('lang','es') %}
-        {% if current == 'es' %}
-          <span class="active">ES</span> |
-          <a href="{{ url_for('set_lang', code='en') }}">EN</a>
-        {% else %}
-          <a href="{{ url_for('set_lang', code='es') }}">ES</a> |
-          <span class="active">EN</span>
-        {% endif %}
-      </div>
-    </div>
-  </header>
+<footer class="footer">
+  <div>© {{ t('title') }} · {{ datetime.utcnow().year if datetime else '' }}</div>
+  <div><a href="{{ url_for('contact') }}">📧 {{ t('contact') }}</a></div>
+</footer>
 
-  <!-- Main -->
-  <main class="container">
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <div class="flash">
-          {% for m in messages %}
-            <p>{{ m }}</p>
-          {% endfor %}
-        </div>
-      {% endif %}
-    {% endwith %}
-
-    {% block content %}{% endblock %}
-  </main>
-
-  <!-- Footer -->
-  <footer class="footer">
-    <div class="container">
-      <p>© {{ t("Todos los derechos reservados", "All rights reserved") }} · Window Shopping</p>
-    </div>
-  </footer>
-
+<script>
+  // micro-interacciones
+  document.addEventListener('mousemove', (e)=>{
+    document.body.style.setProperty('--mx', e.clientX + 'px');
+    document.body.style.setProperty('--my', e.clientY + 'px');
+  });
+</script>
 </body>
 </html>
