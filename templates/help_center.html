@@ -1,12 +1,13 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="container mt-5">
-  <h2>❓ {{ t("Centro de Ayuda", "Help Center") }}</h2>
-  <p>{{ t("Aquí encontrarás respuestas a preguntas frecuentes.", "Here you will find answers to common questions.") }}</p>
+<div class="card">
+  <h2>📖 {{ t("Centro de Ayuda", "Help Center") }}</h2>
+  <p>{{ t("Aquí encontrarás información útil sobre cómo usar la plataforma.", "Here you will find useful info about how to use the platform.") }}</p>
+
   <ul>
-    <li>{{ t("¿Cómo registro mi empresa?", "How do I register my company?") }}</li>
-    <li>{{ t("¿Cómo agrego productos o servicios?", "How do I add products or services?") }}</li>
-    <li>{{ t("¿Cómo uso el carrito?", "How do I use the cart?") }}</li>
+    <li>{{ t("Regístrate con tus datos reales (RUT, correo, dirección).", "Register with your real data (Tax ID, email, address).") }}</li>
+    <li>{{ t("Selecciona tu rol según lo que representas (ej: Productor, Exportador).", "Select your role according to what you represent (e.g. Producer, Exporter).") }}</li>
+    <li>{{ t("Si eres cliente extranjero, puedes contactar directamente a exportadores.", "If you are a foreign client, you can directly contact exporters.") }}</li>
   </ul>
 </div>
 {% endblock %}
