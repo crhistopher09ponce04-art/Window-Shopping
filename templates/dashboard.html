@@ -1,11 +1,25 @@
 {% extends "base.html" %}
 {% block content %}
-<h2 class="title-center">Hola {{ usuario }} — Rol: {{ rol }}</h2>
-<div class="grid-3">
-  <a class="tile" href="{{ url_for('accesos', tipo='ventas') }}">💼 {{ _("sell") }}</a>
-  <a class="tile" href="{{ url_for('accesos', tipo='compras') }}">🛒 {{ _("buy") }}</a>
-  <a class="tile" href="{{ url_for('cart') }}">🧺 {{ _("cart") }}</a>
-  <a class="tile" href="{{ url_for('mi_perfil') }}">🏷️ {{ _("my_profile") }}</a>
-  <a class="tile" href="{{ url_for('help_center') }}">❓ {{ _("help") }}</a>
-</div>
+<h2>Bienvenido {{ usuario }} (Rol: {{ rol }})</h2>
+
+{% if my_company %}
+    <p><a href="{{ url_for('mi_perfil') }}">Ver/editar mi perfil ({{ my_company['name'] }})</a></p>
+{% endif %}
+
+<h3>Mis ítems disponibles</h3>
+{% if items %}
+    <ul>
+        {% for it in items %}
+            <li>
+                {{ it['name'] }} - {{ it['variety'] }} |
+                {{ it['quantity'] }} {{ it['measure'] }} |
+                ${{ it['price'] }}
+                <a href="{{ url_for('detalle', item_id=it['id']) }}">Ver detalle</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No tienes ítems cargados todavía.</p>
+{% endif %}
+
 {% endblock %}
