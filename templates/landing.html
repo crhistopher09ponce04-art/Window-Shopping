@@ -1,11 +1,12 @@
 {% extends "base.html" %}
-{% block content %}
-<div class="card">
-  <h1>🌍 Window Shopping</h1>
-  <p>{{ t("Conecta productores, exportadores y clientes en un solo lugar.", "Connect producers, exporters and clients in one place.") }}</p>
 
-  <div style="margin-top:20px;">
-    <a href="{{ url_for('login') }}" class="btn">🔑 {{ t("Iniciar Sesión", "Login") }}</a>
+{% block content %}
+<div class="card center">
+  <h2>{{ t("Bienvenido a Window Shopping", "Welcome to Window Shopping") }}</h2>
+  <p>{{ t("Conecta productores, exportadores y clientes en un solo lugar.", "Connect producers, exporters and clients in one place.") }}</p>
+  
+  <div class="actions">
+    <a href="{{ url_for('login') }}" class="btn">🔑 {{ t("Ingresar", "Login") }}</a>
     <a href="{{ url_for('register') }}" class="btn">📝 {{ t("Registrarse", "Register") }}</a>
   </div>
 </div>
