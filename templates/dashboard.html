@@ -1,8 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="p-5 bg-white shadow rounded">
-    <h2>👋 Bienvenido, {{ user }}</h2>
-    <p>Este es tu panel de control. Desde aquí podrás gestionar productos, servicios y compras.</p>
-    <a href="{{ url_for('logout') }}" class="btn btn-danger">Cerrar Sesión</a>
-</div>
+<h2>{{ t("Panel principal", "Dashboard") }}</h2>
+<p>{{ t("Bienvenido", "Welcome") }} <b>{{ usuario }}</b> ({{ rol }})</p>
+<h3>{{ t("Mi empresa", "My Company") }}</h3>
+<p>{{ my_company.name }} — {{ my_company.city }}, {{ my_company.country }}</p>
+<ul>
+{% for item in my_company.items %}
+    <li>{{ item.get("fruit") or item.get("service") }} | {{ item.get("variety") or item.get("availability") }} | {{ item.get("volume") or "" }} {{ item.get("price") or "" }}</li>
+{% endfor %}
+</ul>
 {% endblock %}
