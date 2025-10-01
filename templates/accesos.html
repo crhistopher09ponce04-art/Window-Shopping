@@ -1,10 +1,40 @@
 {% extends "base.html" %}
 {% block title %}Accesos{% endblock %}
 {% block content %}
-<h2>Bienvenido, {{ usuario }}</h2>
-<p>Rol: {{ rol }}</p>
-<nav>
-    <a href="/tablero">Ir al Tablero</a> |
-    <a href="/detalle">Ver Detalle</a>
-</nav>
+<h2>Opciones de {{ tipo|capitalize }} para {{ usuario }} (Rol: {{ rol }})</h2>
+
+{% if empresas %}
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Ciudad</th>
+                <th>País</th>
+                <th>Producto</th>
+                <th>Volumen</th>
+                <th>Precio Caja</th>
+                <th>Precio Kg</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for e in empresas %}
+            <tr>
+                <td><a href="{{ url_for('detalle', company_id=e.id) }}">{{ e.name }}</a></td>
+                <td>{{ e.city }}</td>
+                <td>{{ e.country }}</td>
+                <td>{{ e.fruit or e.product_requested }}</td>
+                <td>{{ e.volume_tons or e.volume_requested_tons }}</td>
+                <td>{{ e.price_box or "-" }}</td>
+                <td>{{ e.price_kg or "-" }}</td>
+                <td>{{ e.email }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No hay empresas disponibles.</p>
+{% endif %}
+
+<p><a href="{{ url_for('dashboard') }}">⬅ Volver al Dashboard</a></p>
 {% endblock %}
