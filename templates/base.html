@@ -1,33 +1,52 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="{{ cur_lang }}">
 <head>
-    <meta charset="UTF-8">
-    <title>Window Shopping</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+  <meta charset="UTF-8">
+  <title>Window Shopping</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
-    <header>
-        <h1>🍑 Window Shopping</h1>
-        <nav>
-            {% if session.get('usuario') %}
-                <a href="{{ url_for('dashboard') }}">🏠 Panel</a> |
-                <a href="{{ url_for('mi_perfil') }}">👤 Mi Perfil</a> |
-                <a href="{{ url_for('cart') }}">🛒 Carrito</a> |
-                <a href="{{ url_for('help_center') }}">❓ Ayuda</a> |
-                <a href="{{ url_for('logout') }}">🚪 Cerrar Sesión</a>
-            {% else %}
-                <a href="{{ url_for('home') }}">🔑 Iniciar Sesión</a> |
-                <a href="{{ url_for('register') }}">📝 Registro</a>
-            {% endif %}
-        </nav>
-    </header>
+<header class="header">
+  <div class="container header-inner">
+    <h1 class="brand">🌍 Window Shopping</h1>
+    <nav class="nav">
+      {% if session.get('usuario') %}
+        <a href="{{ url_for('dashboard') }}">🏠 {{ tr('dashboard') }}</a>
+        <a href="{{ url_for('mi_perfil') }}">👤 {{ tr('profile') }}</a>
+        <a href="{{ url_for('explorar') }}">🔎 {{ tr('explore') }}</a>
+        <a href="{{ url_for('cart') }}">🛒 {{ tr('cart') }}</a>
+        <a href="{{ url_for('help_center') }}">❓ {{ tr('help') }}</a>
+        <a href="{{ url_for('logout') }}">🚪 {{ tr('logout') }}</a>
+      {% else %}
+        <a href="{{ url_for('login') }}">🔑 {{ tr('login') }}</a>
+        <a href="{{ url_for('register') }}">📝 {{ tr('register') }}</a>
+        <a href="{{ url_for('help_center') }}">❓ {{ tr('help') }}</a>
+      {% endif %}
+      <span class="lang">
+        <a href="{{ url_for('set_lang', code='es', next=request.path) }}">ES</a> |
+        <a href="{{ url_for('set_lang', code='en', next=request.path) }}">EN</a>
+      </span>
+    </nav>
+  </div>
+</header>
 
-    <main>
-        {% block content %}{% endblock %}
-    </main>
+<main class="container">
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <ul class="flash">
+        {% for m in messages %}<li>{{ m }}</li>{% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
 
-    <footer>
-        <p>© 2025 Window Shopping - Plataforma B2B</p>
-    </footer>
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <p>© 2025 Window Shopping — Plataforma B2B</p>
+  </div>
+</footer>
 </body>
 </html>
