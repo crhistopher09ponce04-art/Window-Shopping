@@ -1,17 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="card" style="max-width:800px;margin:24px auto;">
-  <h1>{{ _("help") }}</h1>
-  <p>Resuelve dudas sobre registro, roles, navegación, ítems y carrito.</p>
-  <ul>
-    <li>Usuarios demo (clave 1234): productor1, planta1, packing1, frigorifico1, exportador1, cliente1, transporte1, aduana1, extraportuario1.</li>
-    <li>Perfiles: fruta y servicios con reglas de visualización por rol.</li>
-    <li>Ítems: cada empresa puede publicar múltiples ítems de venta o compra.</li>
-  </ul>
-  <div class="buttons" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;">
-    <a href="{{ url_for('dashboard') }}" class="btn">{{ _("dashboard") }}</a>
-    <a href="{{ url_for('home') }}" class="btn">{{ _("login") }}</a>
-    <a href="{{ url_for('manual') }}" class="btn">{{ _("manual") }}</a>
-  </div>
-</div>
+<h2>Centro de Ayuda</h2>
+<p>Bienvenido al Centro de Ayuda. Aquí encontrarás guías y soporte.</p>
+
+<ul>
+    <li><a href="{{ url_for('manual') }}">📘 Manual de usuario</a></li>
+    <li><a href="{{ url_for('login') }}">🔑 Volver al Login</a></li>
+</ul>
 {% endblock %}
