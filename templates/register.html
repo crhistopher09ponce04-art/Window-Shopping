@@ -1,28 +1,36 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Crear nueva cuenta</h2>
-{% if error %}<p class="error">{{ error }}</p>{% endif %}
-
-<form method="POST" action="{{ url_for('register') }}">
-    <label>Usuario (login):</label>
+<div class="card">
+  <h2>{{ _("register") }}</h2>
+  {% if error %}<p class="error">{{ error }}</p>{% endif %}
+  <form method="POST">
+    <label>Usuario</label>
     <input type="text" name="usuario" required>
-
-    <label>Contraseña:</label>
+    <label>Contraseña</label>
     <input type="password" name="password" required>
-
-    <label>Rol:</label>
+    <label>{{ _("role") }}</label>
     <select name="rol" required>
-        <option value="Productor">Productor</option>
-        <option value="Planta">Planta</option>
-        <option value="Packing">Packing</option>
-        <option value="Frigorífico">Frigorífico</option>
-        <option value="Exportador">Exportador</option>
-        <option value="Cliente extranjero">Cliente extranjero</option>
-        <option value="Transporte">Transporte</option>
-        <option value="Agencia de aduana">Agencia de aduana</option>
-        <option value="Extraportuario">Extraportuario</option>
+      <option>Productor</option>
+      <option>Planta</option>
+      <option>Packing</option>
+      <option>Frigorífico</option>
+      <option>Exportador</option>
+      <option>Cliente extranjero</option>
+      <option>Transporte</option>
+      <option>Agencia de aduana</option>
+      <option>Extraportuario</option>
     </select>
-
-    <button type="submit">Crear cuenta</button>
-</form>
+    <label>{{ _("name") }} empresa</label>
+    <input type="text" name="empresa" required>
+    <label>{{ _("city") }}</label>
+    <input type="text" name="ciudad">
+    <label>{{ _("country") }}</label>
+    <input type="text" name="pais">
+    <label>Teléfono</label>
+    <input type="text" name="telefono">
+    <label>{{ _("email") }}</label>
+    <input type="text" name="email">
+    <button type="submit" class="btn">{{ _("register") }}</button>
+  </form>
+</div>
 {% endblock %}
