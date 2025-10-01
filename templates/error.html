@@ -1,9 +1,9 @@
 {% extends "base.html" %}
+{% block title %}Error{% endblock %}
 {% block content %}
 <div class="card">
-  <h2>⚠️ {{ t("Ha ocurrido un problema", "A problem occurred") }}</h2>
-  <p class="mt-1">{{ t("Código", "Code") }}: {{ code }}</p>
-  <p class="mt-1">{{ message }}</p>
-  <a class="btn mt-2" href="{{ url_for('home') }}">🏠 {{ t("Ir al inicio", "Go home") }}</a>
+  <h2>Error {{ code }}</h2>
+  <p>{{ message }}</p>
+  <a href="{{ url_for('home') }}" class="btn">⬅️ {{ t("Volver","Back","返回") }}</a>
 </div>
 {% endblock %}
