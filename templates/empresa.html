@@ -1,24 +1,26 @@
 {% extends "base.html" %}
-{% block title %}Empresa{% endblock %}
 {% block content %}
 <div class="card">
-  <h2>{{ comp.nombre if not es_user else comp.empresa }}</h2>
+  <h2>{{ comp.nombre }}</h2>
   <p>{{ comp.rol }} - {{ comp.pais }}</p>
-  <p>{{ comp.breve if not es_user else comp.descripcion }}</p>
+  <p>{{ comp.descripcion }}</p>
 </div>
+
 <div class="card">
   <h3>{{ t("Detalles","Details","詳細") }}</h3>
   {% if comp.items %}
-    <form method="post" action="{{ url_for('cart_add') }}">
-      <ul>
-        {% for i in comp.items %}
-          <li>
-            {{ i }}
-            <button type="submit" name="producto" value="{{ i }}">{{ t("Agregar al carrito","Add to cart","加入購物車") }}</button>
-          </li>
-        {% endfor %}
-      </ul>
-    </form>
+    <ul>
+      {% for i in comp.items %}
+        <li>
+          {{ i }}
+          <form method="post" action="{{ url_for('cart_add') }}">
+            <input type="hidden" name="empresa" value="{{ comp.nombre }}">
+            <input type="hidden" name="item" value="{{ i }}">
+            <button type="submit" class="btn">{{ t("Agregar","Add","新增") }}</button>
+          </form>
+        </li>
+      {% endfor %}
+    </ul>
   {% else %}
     <p>{{ t("Sin ítems.","No items.","沒有項目") }}</p>
   {% endif %}
