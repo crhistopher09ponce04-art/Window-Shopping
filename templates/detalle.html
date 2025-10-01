@@ -1,16 +1,22 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Detalle de ítem</h2>
+<h2>Detalle del Ítem</h2>
 
-<p><strong>Empresa:</strong> {{ item['company_name'] }}</p>
-<p><strong>Producto/Servicio:</strong> {{ item['name'] }}</p>
-<p><strong>Variedad:</strong> {{ item['variety'] }}</p>
-<p><strong>Cantidad:</strong> {{ item['quantity'] }} {{ item['measure'] }}</p>
-<p><strong>Precio:</strong> ${{ item['price'] }}</p>
-<p><strong>Notas:</strong> {{ item['notes'] }}</p>
+<section class="card">
+  <p><strong>Empresa:</strong> {{ item['company_name'] }} ({{ item['company_role'] }})</p>
+  <p><strong>Ubicación:</strong> {{ item['city'] }}, {{ item['country'] }}</p>
+  <p><strong>Producto/Servicio:</strong> {{ item['name'] }}</p>
+  <p><strong>Variedad:</strong> {{ item['variety'] }}</p>
+  <p><strong>Cantidad:</strong> {{ item['quantity'] }} {{ item['measure'] }}</p>
+  <p><strong>Precio:</strong> ${{ '%.0f'|format(item['price']) }}</p>
+  <p><strong>Notas:</strong> {{ item['notes'] }}</p>
+  <p><strong>Contacto:</strong> 📞 {{ item['phone'] }} — ✉️ {{ item['email'] }}</p>
 
-<form method="POST">
-    <button type="submit">Agregar al carrito</button>
-</form>
-<a href="{{ url_for('dashboard') }}">⬅ Volver al Dashboard</a>
+  <form method="POST" class="form">
+    <label>Cantidad a solicitar</label>
+    <input type="number" min="1" step="1" name="quantity" value="1">
+    <button class="btn btn-primary" type="submit">Agregar al carrito</button>
+  </form>
+  <p><a class="btn" href="{{ url_for('explorar') }}">⬅ Volver</a></p>
+</section>
 {% endblock %}
