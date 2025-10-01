@@ -1,1 +1,18 @@
-<!-- detalle.html placeholder -->
+{% extends "base.html" %}
+{% block title %}Detalle{% endblock %}
+{% block content %}
+<div class="card">
+    <h2>Perfil de {{ company.name }}</h2>
+    <table>
+        <tbody>
+            <tr><th>ID</th><td>{{ company.id }}</td></tr>
+            <tr><th>Rol</th><td>{{ company.role }}</td></tr>
+            <tr><th>Ciudad</th><td>{{ company.city }}</td></tr>
+            <tr><th>País</th><td>{{ company.country }}</td></tr>
+            <tr><th>Teléfono</th><td>{{ company.phone }}</td></tr>
+            <tr><th>Email</th><td>{{ company.email }}</td></tr>
+        </tbody>
+    </table>
+    <p style="margin-top:15px;"><a href="{{ url_for('dashboard') }}">⬅ Volver al Dashboard</a></p>
+</div>
+{% endblock %}
