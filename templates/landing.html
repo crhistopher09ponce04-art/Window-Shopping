@@ -1,9 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="container text-center mt-5">
-  <h1 class="display-4">🌍 Window Shopping</h1>
-  <p class="lead">{{ t("Conecta exportadores chilenos con el mundo.", "Connecting Chilean exporters with the world.") }}</p>
-  <a href="{{ url_for('login') }}" class="btn btn-lg btn-success shadow mt-3">🔑 {{ t("Iniciar Sesión", "Log In") }}</a>
-  <a href="{{ url_for('register_router') }}" class="btn btn-lg btn-outline-primary shadow mt-3">📝 {{ t("Registrarse", "Register") }}</a>
+<div class="card">
+  <h1>🌍 Window Shopping</h1>
+  <p>{{ t("Conecta productores, exportadores y clientes en un solo lugar.", "Connect producers, exporters and clients in one place.") }}</p>
+
+  <div style="margin-top:20px;">
+    <a href="{{ url_for('login') }}" class="btn">🔑 {{ t("Iniciar Sesión", "Login") }}</a>
+    <a href="{{ url_for('register') }}" class="btn">📝 {{ t("Registrarse", "Register") }}</a>
+  </div>
 </div>
 {% endblock %}
