@@ -1,22 +1,28 @@
-<!-- templates/base.html -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}Window Shopping{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='estilo.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <header>
-        <h1>Window Shopping</h1>
+        <h1>🍑 Window Shopping</h1>
         <nav>
-            <a href="/">Inicio</a> |
-            <a href="/registro">Registro</a> |
-            <a href="/accesos">Accesos</a>
+            {% if session.get('usuario') %}
+                <a href="{{ url_for('dashboard') }}">Dashboard</a> |
+                <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
+            {% else %}
+                <a href="{{ url_for('home') }}">Iniciar Sesión</a> |
+                <a href="{{ url_for('register') }}">Registrarse</a>
+            {% endif %}
         </nav>
     </header>
     <main>
         {% block content %}{% endblock %}
     </main>
+    <footer>
+        <p>© 2025 Window Shopping - Plataforma B2B</p>
+    </footer>
 </body>
 </html>
