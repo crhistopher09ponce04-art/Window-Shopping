@@ -1,9 +1,35 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="text-center p-5 bg-light rounded shadow">
-    <h1 class="mb-3">🚀 Bienvenido a Window Shopping</h1>
-    <p class="lead">Tu plataforma para conectar exportadores, importadores y servicios logísticos.</p>
-    <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg">Iniciar Sesión</a>
-    <a href="{{ url_for('register') }}" class="btn btn-success btn-lg">Registrarse</a>
+<div class="text-center">
+    <h1 class="fw-bold mb-3">Bienvenido a 🌍 Window Shopping</h1>
+    <p class="lead text-muted">Conecta Exportadores, Importadores y Proveedores de Servicios en una sola plataforma.</p>
+    <a href="{{ url_for('explorar') }}" class="btn btn-lg btn-success shadow-sm mt-3">🔎 Explorar Productos</a>
+</div>
+
+<div class="row mt-5 text-center">
+    <div class="col-md-4">
+        <div class="card shadow-lg border-0">
+            <div class="card-body">
+                <h5 class="card-title">👨‍🌾 Exportadores</h5>
+                <p class="card-text">Publica tus productos y llega a compradores en todo el mundo.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow-lg border-0">
+            <div class="card-body">
+                <h5 class="card-title">🛒 Importadores</h5>
+                <p class="card-text">Encuentra la mejor oferta de fruta fresca y servicios de calidad.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow-lg border-0">
+            <div class="card-body">
+                <h5 class="card-title">⚙️ Servicios</h5>
+                <p class="card-text">Ofrece tus servicios de logística, aduana y almacenamiento.</p>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
