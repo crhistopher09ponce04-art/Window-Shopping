@@ -1,72 +1,89 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
-from flask_babel import Babel, gettext as _
 import sqlite3
 import os
 
 app = Flask(__name__)
 app.secret_key = "clave_secreta"
 
-# Configuración de Babel
-app.config['BABEL_DEFAULT_LOCALE'] = 'es'
-app.config['BABEL_TRANSLATION_DIRECTORIES'] = 'translations'
-babel = Babel(app)
-
-# Idiomas disponibles
-LANGUAGES = ['es', 'en']
-
-@babel.localeselector
-def get_locale():
-    return session.get('lang', 'es')
-
-@app.route("/set_lang/<lang>")
-def set_lang(lang):
-    if lang in LANGUAGES:
-        session['lang'] = lang
-    return redirect(request.referrer or url_for("home"))
-
-# Base de datos SQLite
+# 📂 Ruta DB
 DB_NAME = "data.db"
 
+# =============================
+# 🔹 Funciones auxiliares
+# =============================
 def init_db():
-    if not os.path.exists(DB_NAME):
-        conn = sqlite3.connect(DB_NAME)
+    with sqlite3.connect(DB_NAME) as conn:
         c = conn.cursor()
-        c.execute("""CREATE TABLE usuarios (
+        # Tabla de usuarios
+        c.execute('''CREATE TABLE IF NOT EXISTS users (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
                         username TEXT UNIQUE,
                         password TEXT,
-                        perfil TEXT
-                    )""")
-        c.execute("""CREATE TABLE items (
+                        role TEXT,
+                        name TEXT,
+                        tax_id TEXT,
+                        city TEXT,
+                        country TEXT,
+                        phone TEXT,
+                        email TEXT
+                    )''')
+        # Tabla de ítems
+        c.execute('''CREATE TABLE IF NOT EXISTS items (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        usuario_id INTEGER,
-                        nombre TEXT,
-                        variedad TEXT,
-                        medida TEXT,
-                        precio REAL,
-                        cantidad REAL,
-                        FOREIGN KEY(usuario_id) REFERENCES usuarios(id)
-                    )""")
-
-        # Insertar usuarios de prueba
-        usuarios = [
-            ("exportador1", "1234", "exportador"),
-            ("productor1", "1234", "productor"),
-            ("extraportuario1", "1234", "extraportuario"),
-            ("comprador1", "1234", "comprador")
-        ]
-        c.executemany("INSERT INTO usuarios (username, password, perfil) VALUES (?, ?, ?)", usuarios)
-
+                        user_id INTEGER,
+                        type TEXT,
+                        name TEXT,
+                        variety TEXT,
+                        quantity TEXT,
+                        unit TEXT,
+                        price TEXT,
+                        FOREIGN KEY(user_id) REFERENCES users(id)
+                    )''')
         conn.commit()
-        conn.close()
 
-init_db()
+def get_user(username):
+    with sqlite3.connect(DB_NAME) as conn:
+        c = conn.cursor()
+        c.execute("SELECT * FROM users WHERE username=?", (username,))
+        return c.fetchone()
 
-# ---------------- RUTAS ---------------- #
+def get_user_by_id(user_id):
+    with sqlite3.connect(DB_NAME) as conn:
+        c = conn.cursor()
+        c.execute("SELECT * FROM users WHERE id=?", (user_id,))
+        return c.fetchone()
 
+def get_items(user_id):
+    with sqlite3.connect(DB_NAME) as conn:
+        c = conn.cursor()
+        c.execute("SELECT * FROM items WHERE user_id=?", (user_id,))
+        return c.fetchall()
+
+# =============================
+# 🔹 Rutas principales
+# =============================
 @app.route("/")
 def home():
     return render_template("landing.html")
+
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+        role = request.form["role"]
+
+        with sqlite3.connect(DB_NAME) as conn:
+            c = conn.cursor()
+            try:
+                c.execute("INSERT INTO users (username, password, role) VALUES (?, ?, ?)",
+                          (username, password, role))
+                conn.commit()
+                flash("Usuario creado con éxito ✅", "success")
+                return redirect(url_for("login"))
+            except sqlite3.IntegrityError:
+                flash("El usuario ya existe ❌", "danger")
+    return render_template("register.html")
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -74,103 +91,97 @@ def login():
         username = request.form["username"]
         password = request.form["password"]
 
-        conn = sqlite3.connect(DB_NAME)
-        c = conn.cursor()
-        c.execute("SELECT id, perfil FROM usuarios WHERE username=? AND password=?", (username, password))
-        user = c.fetchone()
-        conn.close()
-
-        if user:
-            session["usuario"] = {"id": user[0], "username": username, "perfil": user[1]}
+        user = get_user(username)
+        if user and user[2] == password:
+            session["user_id"] = user[0]
+            session["username"] = user[1]
+            session["role"] = user[3]
+            flash("Bienvenido, " + username, "success")
             return redirect(url_for("dashboard"))
         else:
-            flash(_("Usuario o contraseña incorrectos"))
+            flash("Credenciales incorrectas ❌", "danger")
+
     return render_template("login.html")
 
 @app.route("/logout")
 def logout():
-    session.pop("usuario", None)
+    session.clear()
+    flash("Has cerrado sesión 👋", "info")
     return redirect(url_for("home"))
-
-@app.route("/register", methods=["GET", "POST"])
-def register():
-    if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"]
-        perfil = request.form["perfil"]
-
-        conn = sqlite3.connect(DB_NAME)
-        c = conn.cursor()
-        try:
-            c.execute("INSERT INTO usuarios (username, password, perfil) VALUES (?, ?, ?)", (username, password, perfil))
-            conn.commit()
-            flash(_("Usuario creado con éxito"))
-            return redirect(url_for("login"))
-        except sqlite3.IntegrityError:
-            flash(_("El nombre de usuario ya existe"))
-        finally:
-            conn.close()
-
-    return render_template("register.html")
 
 @app.route("/dashboard")
 def dashboard():
-    if "usuario" not in session:
+    if "user_id" not in session:
         return redirect(url_for("login"))
 
-    usuario = session["usuario"]
+    user = get_user_by_id(session["user_id"])
+    items = get_items(session["user_id"])
+    return render_template("dashboard.html", company=user, items=items)
 
-    conn = sqlite3.connect(DB_NAME)
-    c = conn.cursor()
-    c.execute("SELECT nombre, variedad, medida, precio, cantidad FROM items WHERE usuario_id=?", (usuario["id"],))
-    items = c.fetchall()
-    conn.close()
-
-    return render_template("dashboard.html", usuario=usuario, items=items)
-
-@app.route("/perfil", methods=["GET", "POST"])
-def perfil():
-    if "usuario" not in session:
+# =============================
+# 🔹 Perfil y manejo de ítems
+# =============================
+@app.route("/mi_perfil", methods=["GET", "POST"])
+def mi_perfil():
+    if "user_id" not in session:
         return redirect(url_for("login"))
 
-    usuario = session["usuario"]
+    user_id = session["user_id"]
 
     if request.method == "POST":
-        nombre = request.form["nombre"]
-        variedad = request.form["variedad"]
-        medida = request.form["medida"]
-        precio = request.form["precio"]
-        cantidad = request.form["cantidad"]
+        # Guardar cambios básicos
+        if "name" in request.form:
+            with sqlite3.connect(DB_NAME) as conn:
+                c = conn.cursor()
+                c.execute('''UPDATE users SET name=?, tax_id=?, city=?, country=?, phone=?, email=? 
+                             WHERE id=?''',
+                          (request.form["name"], request.form["tax_id"], request.form["city"],
+                           request.form["country"], request.form["phone"], request.form["email"], user_id))
+                conn.commit()
+                flash("Datos actualizados ✅", "success")
 
-        conn = sqlite3.connect(DB_NAME)
-        c = conn.cursor()
-        c.execute("INSERT INTO items (usuario_id, nombre, variedad, medida, precio, cantidad) VALUES (?, ?, ?, ?, ?, ?)",
-                  (usuario["id"], nombre, variedad, medida, precio, cantidad))
-        conn.commit()
-        conn.close()
-        flash(_("Item agregado con éxito"))
-        return redirect(url_for("perfil"))
+        # Agregar ítem
+        if "add_item" in request.form:
+            with sqlite3.connect(DB_NAME) as conn:
+                c = conn.cursor()
+                c.execute('''INSERT INTO items (user_id, type, name, variety, quantity, unit, price) 
+                             VALUES (?, ?, ?, ?, ?, ?, ?)''',
+                          (user_id, request.form["item_type"], request.form["item_name"],
+                           request.form["item_variety"], request.form["item_quantity"],
+                           request.form["item_unit"], request.form["item_price"]))
+                conn.commit()
+                flash("Ítem agregado ✅", "success")
 
-    conn = sqlite3.connect(DB_NAME)
-    c = conn.cursor()
-    c.execute("SELECT id, nombre, variedad, medida, precio, cantidad FROM items WHERE usuario_id=?", (usuario["id"],))
-    items = c.fetchall()
-    conn.close()
+        # Eliminar ítem
+        if "remove_item" in request.form:
+            item_id = request.form["remove_item"]
+            with sqlite3.connect(DB_NAME) as conn:
+                c = conn.cursor()
+                c.execute("DELETE FROM items WHERE id=?", (item_id,))
+                conn.commit()
+                flash("Ítem eliminado 🗑", "warning")
 
-    return render_template("perfil.html", usuario=usuario, items=items)
+        return redirect(url_for("mi_perfil"))
 
-@app.route("/help")
-def help_center():
-    return render_template("help.html")
+    user = get_user_by_id(user_id)
+    items = get_items(user_id)
+    return render_template("mi_perfil.html", company=user, items=items)
 
-# Manejo de errores
-@app.errorhandler(500)
-def server_error(e):
-    return render_template("error.html", code=500, message=_("Error interno")), 500
-
+# =============================
+# 🔹 Errores personalizados
+# =============================
 @app.errorhandler(404)
 def not_found(e):
-    return render_template("error.html", code=404, message=_("Página no encontrada")), 404
+    return render_template("error.html", code=404, message="Página no encontrada ❌"), 404
 
+@app.errorhandler(500)
+def server_error(e):
+    return render_template("error.html", code=500, message="Error interno ⚠️"), 500
+
+# =============================
+# 🔹 Inicializar DB al inicio
+# =============================
 if __name__ == "__main__":
+    if not os.path.exists(DB_NAME):
+        init_db()
     app.run(debug=True)
