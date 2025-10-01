@@ -1,25 +1,48 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Bienvenido {{ usuario }} (Rol: {{ rol }})</h2>
+<h2>Hola, {{ usuario }} (Rol: {{ rol }})</h2>
 
-{% if my_company %}
-    <p><a href="{{ url_for('mi_perfil') }}">Ver/editar mi perfil ({{ my_company['name'] }})</a></p>
-{% endif %}
+<section class="grid">
+  <div class="card">
+    <h3>Mi Empresa</h3>
+    {% if me %}
+      <p><strong>{{ me['name'] }}</strong> — {{ me['role'] }}</p>
+      <p>{{ me['city'] }}, {{ me['country'] }}</p>
+      <p>📞 {{ me['phone'] }} — ✉️ {{ me['email'] }}</p>
+      <p><a class="btn" href="{{ url_for('mi_perfil') }}">Editar perfil</a></p>
+    {% endif %}
+  </div>
 
-<h3>Mis ítems disponibles</h3>
-{% if items %}
-    <ul>
+  <div class="card">
+    <h3>Acciones</h3>
+    <p><a class="btn btn-primary" href="{{ url_for('explorar') }}">🔎 Explorar mercado</a></p>
+    <p><a class="btn" href="{{ url_for('cart') }}">🛒 Ver carrito</a></p>
+  </div>
+</section>
+
+<section class="card">
+  <h3>Mis Ítems</h3>
+  {% if items %}
+    <table>
+      <thead>
+        <tr>
+          <th>Producto/Servicio</th><th>Variedad</th><th>Cantidad</th><th>Medida</th><th>Precio</th>
+        </tr>
+      </thead>
+      <tbody>
         {% for it in items %}
-            <li>
-                {{ it['name'] }} - {{ it['variety'] }} |
-                {{ it['quantity'] }} {{ it['measure'] }} |
-                ${{ it['price'] }}
-                <a href="{{ url_for('detalle', item_id=it['id']) }}">Ver detalle</a>
-            </li>
+        <tr>
+          <td>{{ it['name'] }}</td>
+          <td>{{ it['variety'] }}</td>
+          <td>{{ it['quantity'] }}</td>
+          <td>{{ it['measure'] }}</td>
+          <td>${{ '%.0f'|format(it['price']) }}</td>
+        </tr>
         {% endfor %}
-    </ul>
-{% else %}
-    <p>No tienes ítems cargados todavía.</p>
-{% endif %}
-
+      </tbody>
+    </table>
+  {% else %}
+    <p>Aún no has publicado ítems. Agrega desde <a href="{{ url_for('mi_perfil') }}">Mi Perfil</a>.</p>
+  {% endif %}
+</section>
 {% endblock %}
