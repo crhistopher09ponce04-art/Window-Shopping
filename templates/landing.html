@@ -1,12 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
-<section class="hero card">
-  <h2>{{ tr('home_title') }}</h2>
-  <p>Conecta productores, plantas, packings, frigoríficos, exportadores, clientes extranjeros y proveedores de servicios.</p>
-  <div class="actions">
-    <a class="btn btn-primary" href="{{ url_for('login') }}">🔑 {{ tr('login') }}</a>
-    <a class="btn btn-secondary" href="{{ url_for('register') }}">📝 {{ tr('register') }}</a>
-    <a class="btn" href="{{ url_for('help_center') }}">❓ {{ tr('help') }}</a>
-  </div>
-</section>
+<div class="text-center">
+    <h1 class="mb-4">🌍 Window Shopping</h1>
+    <p class="lead">{{ _('Conecta exportadores, productores y compradores en un solo lugar') }}</p>
+    <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg m-2">📝 {{ _('Registrarse Ahora') }}</a>
+    <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-lg m-2">🔑 {{ _('Iniciar Sesión') }}</a>
+</div>
 {% endblock %}
