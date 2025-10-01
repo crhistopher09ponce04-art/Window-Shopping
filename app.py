@@ -20,7 +20,15 @@ def t(es, en):
 def inject_globals():
     return {
         "LANGS": LANGS,
-        "cur_lang": get_lang()
+        "cur_lang": get_lang(),
+        "_": lambda key: {
+            "brand": "Window Shopping" if get_lang() == "en" else "Ventana de Compras",
+            "back": "Back" if get_lang() == "en" else "Volver",
+            "register": "Register" if get_lang() == "en" else "Registro",
+            "login": "Login" if get_lang() == "en" else "Iniciar Sesión",
+            "help": "Help Center" if get_lang() == "en" else "Centro de Ayuda",
+            "cart": "Cart" if get_lang() == "en" else "Carrito",
+        }.get(key, key)
     }
 
 @app.route("/lang/<code>")
@@ -85,10 +93,13 @@ usuarios = {
 }
 
 # ------------------------
-# Helpers, reglas de flujo y filtros (se mantienen igual que tu versión larga)
+# Helpers
 # ------------------------
-# ... (todo el bloque con VENTAS_FRUTA, COMPRAS_FRUTA, VENTAS_SERV, COMPRAS_SERV,
-#     más las funciones _matches_rubro, destinos_por_rol, companies_for_roles, etc.)
+def require_login():
+    if "usuario" not in session:
+        flash(t("Inicia sesión para continuar.", "Log in to continue."))
+        return False
+    return True
 
 # ------------------------
 # Rutas públicas
@@ -117,26 +128,26 @@ def login():
 
 @app.route("/register")
 def register():
-    # Registro de prueba → plantilla simple
-    return render_template("register_router.html")
-
-@app.route("/password-reset", methods=["GET", "POST"])
-def password_reset():
-    if request.method == "GET":
-        return render_template("password_reset.html")
-    email = request.form.get("email", "")
-    flash(t("Si el correo existe, te enviaremos un enlace para restablecer.",
-            "If the email exists, we sent you a reset link."))
-    return redirect(url_for("login"))
+    return render_template("register.html")
 
 @app.route("/help")
 def help_center():
     return render_template("help_center.html")
 
 # ------------------------
-# Rutas privadas (dashboard, accesos, detalle, cart, mi_perfil, logout)
+# Rutas privadas
 # ------------------------
-# ... (todo tu bloque original aquí se mantiene sin cambios)
+@app.route("/dashboard")
+def dashboard():
+    if not require_login(): return redirect(url_for("home"))
+    user = usuarios[session["usuario"]]
+    my_company = empresas.get(user["company_id"])
+    return render_template("dashboard.html", usuario=session["usuario"], rol=user["rol"], my_company=my_company)
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect(url_for("home"))
 
 # ------------------------
 # Errores
