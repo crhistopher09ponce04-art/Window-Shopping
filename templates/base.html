@@ -1,30 +1,43 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="{{ cur_lang if cur_lang else 'es' }}">
 <head>
-    <meta charset="UTF-8">
-    <title>Window Shopping</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}Window Shopping{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
 </head>
 <body>
-    <header>
-        <h1>🍑 Window Shopping</h1>
-        <nav>
-            {% if session.get('usuario') %}
-                <a href="{{ url_for('dashboard') }}">Dashboard</a> |
-                <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
-            {% else %}
-                <a href="{{ url_for('home') }}">Iniciar Sesión</a> |
-                <a href="{{ url_for('register') }}">Registrarse</a>
-            {% endif %}
-        </nav>
-    </header>
-
-    <main>
-        {% block content %}{% endblock %}
-    </main>
-
-    <footer>
-        <p>© 2025 Window Shopping - Plataforma B2B</p>
-    </footer>
+  <header class="topbar">
+    <div class="brand">🍑 Window Shopping</div>
+    <nav>
+      <a href="{{ url_for('help_center') }}">¿Ayuda?</a>
+      {% if session.get('usuario') %}
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('cart') }}">🛒 Carrito</a>
+        <a href="{{ url_for('mi_perfil') }}">Mi Perfil</a>
+        <a href="{{ url_for('logout') }}">Salir</a>
+      {% else %}
+        <a href="{{ url_for('login') }}">Entrar</a>
+        <a href="{{ url_for('register_router') }}">Crear cuenta</a>
+      {% endif %}
+      <span class="lang">
+        <a href="{{ url_for('set_lang', code='es', next=request.full_path) }}">ES</a> |
+        <a href="{{ url_for('set_lang', code='en', next=request.full_path) }}">EN</a>
+      </span>
+    </nav>
+  </header>
+  <main>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="flash">
+          {% for m in messages %}<div class="flash-item">{{ m }}</div>{% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="footer">
+    © 2025 Window Shopping
+  </footer>
 </body>
 </html>
