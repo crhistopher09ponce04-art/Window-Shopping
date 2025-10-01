@@ -1,40 +1,62 @@
 {% extends "base.html" %}
-{% block title %}Detalle{% endblock %}
 {% block content %}
 <div class="card">
   <h2>Perfil de {{ company.name }}</h2>
   <table class="table">
     <tbody>
       <tr><th>ID</th><td>{{ company.id }}</td></tr>
-      <tr><th>Rol</th><td>{{ company.role }}</td></tr>
-      <tr><th>Ciudad</th><td>{{ company.city }}</td></tr>
-      <tr><th>País</th><td>{{ company.country }}</td></tr>
-      {% if company.role == "Cliente extranjero" %}
-        <tr><th>Producto solicitado</th><td>{{ company.product_requested }}</td></tr>
-        <tr><th>Variedad solicitada</th><td>{{ company.variety_requested }}</td></tr>
-        <tr><th>Volumen solicitado (tons)</th><td>{{ company.volume_requested_tons }}</td></tr>
-      {% elif company.role in ["Transporte","Agencia de aduana","Extraportuario"] %}
-        <tr><th>Servicio</th><td>{{ company.service }}</td></tr>
-      {% else %}
-        <tr><th>Fruta</th><td>{{ company.fruit }}</td></tr>
-        <tr><th>Variedad</th><td>{{ company.variety }}</td></tr>
-        <tr><th>Volumen (tons)</th><td>{{ company.volume_tons }}</td></tr>
-        <tr><th>Precio por caja</th><td>{{ company.price_box }}</td></tr>
-        <tr><th>Precio por kilo</th><td>{{ company.price_kg }}</td></tr>
-      {% endif %}
+      <tr><th>{{ _("role") }}</th><td>{{ company.role }}</td></tr>
+      <tr><th>{{ _("city") }}</th><td>{{ company.city }}</td></tr>
+      <tr><th>{{ _("country") }}</th><td>{{ company.country }}</td></tr>
       <tr><th>Teléfono</th><td>{{ company.phone }}</td></tr>
-      <tr><th>Email</th><td>{{ company.email }}</td></tr>
+      <tr><th>{{ _("email") }}</th><td>{{ company.email }}</td></tr>
     </tbody>
   </table>
 
-  <form class="add-to-cart" method="post">
-    <label>Cantidad (tons / unidades):</label>
-    <input type="number" min="1" step="1" name="quantity" value="1" required/>
-    <label>Notas (opcional):</label>
-    <input type="text" name="notes" placeholder="Ej: calibre, bultos, fecha..." />
-    <button type="submit" class="btn">Agregar al carrito</button>
-  </form>
+  <h3>{{ _("my_items") }}</h3>
+  {% if company.items %}
+    <table class="table">
+      <thead>
+        <tr>
+          <th>#</th><th>{{ _("rubro") }}</th><th>{{ _("type") }}</th>
+          <th>{{ _("product") }}</th><th>{{ _("variety") }}</th>
+          <th>{{ _("quantity") }}</th><th>{{ _("price") }}</th><th>{{ _("actions") }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for it in company.items %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td>{{ it.rubro }}</td>
+          <td>{{ it.type }}</td>
+          <td>{{ it.product }}</td>
+          <td>{{ it.variety }}</td>
+          <td>{{ it.quantity }} {{ _("units." + it.unit) }}</td>
+          <td>{{ it.price or '-' }}</td>
+          <td>
+            <form class="add-to-cart" method="post" style="grid-template-columns: 1fr 1fr 2fr auto;">
+              <input type="hidden" name="item_index" value="{{ loop.index0 }}">
+              <label>{{ _("quantity") }}</label>
+              <input type="number" min="1" step="1" name="quantity" value="{{ it.quantity }}">
+              <label>{{ _("unit") }}</label>
+              <select name="unit">
+                {% for u in UNITS %}
+                  <option value="{{ u }}" {{ 'selected' if u==it.unit else '' }}>{{ _("units."+u) }}</option>
+                {% endfor %}
+              </select>
+              <label>{{ _("notes") }}</label>
+              <input type="text" name="notes" placeholder="Ej: fecha, calibre, condiciones...">
+              <button type="submit" class="btn">{{ _("add_to_cart") }}</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>{{ _("empty_list") }}</p>
+  {% endif %}
 
-  <p style="margin-top:15px;"><a href="{{ url_for('dashboard') }}">⬅ Volver</a></p>
+  <p style="margin-top:15px;"><a href="{{ url_for('dashboard') }}">⬅ {{ _("back") }}</a></p>
 </div>
 {% endblock %}
