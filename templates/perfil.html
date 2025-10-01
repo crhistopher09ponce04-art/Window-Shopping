@@ -1,88 +1,128 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-8">
-        <div class="card p-4">
-            <h3 class="text-center">👤 {{ _('Mi Perfil') }}</h3>
-
-            <form method="POST">
-                <div class="mb-3">
-                    <label class="form-label">{{ _('Nombre de Empresa') }}</label>
-                    <input type="text" name="name" value="{{ company.name }}" class="form-control">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">{{ _('Ciudad') }}</label>
-                    <input type="text" name="city" value="{{ company.city }}" class="form-control">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">{{ _('País') }}</label>
-                    <input type="text" name="country" value="{{ company.country }}" class="form-control">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">{{ _('Teléfono') }}</label>
-                    <input type="text" name="phone" value="{{ company.phone }}" class="form-control">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">{{ _('Email') }}</label>
-                    <input type="email" name="email" value="{{ company.email }}" class="form-control">
-                </div>
-
-                <!-- Multi-Items -->
-                <h5 class="mt-4">📦 {{ _('Productos / Servicios Ofrecidos o Solicitados') }}</h5>
-                <div id="items-container">
-                    {% for item in company.items %}
-                        <div class="card p-3 mb-2">
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <input type="text" name="items[{{ loop.index0 }}][name]" value="{{ item.name }}" class="form-control" placeholder="{{ _('Producto o Servicio') }}">
-                                </div>
-                                <div class="col-md-3">
-                                    <input type="text" name="items[{{ loop.index0 }}][variety]" value="{{ item.variety }}" class="form-control" placeholder="{{ _('Variedad') }}">
-                                </div>
-                                <div class="col-md-2">
-                                    <input type="text" name="items[{{ loop.index0 }}][volume]" value="{{ item.volume }}" class="form-control" placeholder="{{ _('Volumen') }}">
-                                </div>
-                                <div class="col-md-2">
-                                    <input type="text" name="items[{{ loop.index0 }}][price]" value="{{ item.price }}" class="form-control" placeholder="{{ _('Precio') }}">
-                                </div>
-                            </div>
-                        </div>
-                    {% endfor %}
-                </div>
-
-                <button type="button" class="btn btn-outline-secondary mt-2" onclick="addItem()">➕ {{ _('Agregar Ítem') }}</button>
-
-                <div class="mt-4">
-                    <button type="submit" class="btn btn-success w-100">{{ _('Guardar Cambios') }}</button>
-                </div>
-            </form>
-        </div>
+<div class="card">
+  <h2>👤 {{ t("Mi Perfil", "My Profile") }}</h2>
+  {% if mensaje %}<div class="flash mt-2">{{ mensaje }}</div>{% endif %}
+  <form method="POST" class="mt-2">
+    <input type="hidden" name="action" value="save_profile">
+    <div class="grid-3">
+      <div>
+        <label>{{ t("Nombre empresa", "Company name") }}</label>
+        <input type="text" name="empresa" value="{{ perfil.empresa }}">
+      </div>
+      <div>
+        <label>Email</label>
+        <input type="email" name="email" value="{{ perfil.email }}">
+      </div>
+      <div>
+        <label>{{ t("Teléfono", "Phone") }}</label>
+        <input type="text" name="telefono" value="{{ perfil.telefono }}">
+      </div>
     </div>
+    <label>{{ t("Dirección", "Address") }}</label>
+    <input type="text" name="direccion" value="{{ perfil.direccion }}">
+
+    <label>{{ t("Descripción", "Description") }}</label>
+    <textarea name="descripcion" rows="3">{{ perfil.descripcion }}</textarea>
+
+    <input type="submit" class="mt-2" value="{{ t('Guardar', 'Save') }}">
+  </form>
 </div>
 
-<script>
-    let itemIndex = {{ company.items|length if company.items else 0 }};
-    function addItem() {
-        let container = document.getElementById("items-container");
-        let html = `
-        <div class="card p-3 mb-2">
-            <div class="row">
-                <div class="col-md-4">
-                    <input type="text" name="items[${itemIndex}][name]" class="form-control" placeholder="Producto o Servicio">
-                </div>
-                <div class="col-md-3">
-                    <input type="text" name="items[${itemIndex}][variety]" class="form-control" placeholder="Variedad">
-                </div>
-                <div class="col-md-2">
-                    <input type="text" name="items[${itemIndex}][volume]" class="form-control" placeholder="Volumen (kg, cajas, tons)">
-                </div>
-                <div class="col-md-2">
-                    <input type="text" name="items[${itemIndex}][price]" class="form-control" placeholder="Precio">
-                </div>
-            </div>
-        </div>`;
-        container.insertAdjacentHTML("beforeend", html);
-        itemIndex++;
-    }
-</script>
+<div class="grid">
+  <div class="card">
+    {% if perfil.perfil_tipo=='servicios' %}
+      <h3>➕ {{ t("Agregar servicio", "Add service") }}</h3>
+      <form method="POST" class="mt-2">
+        <input type="hidden" name="action" value="add_item">
+        <div class="grid-3">
+          <div>
+            <label>{{ t("Servicio", "Service") }}</label>
+            <input type="text" name="servicio" placeholder="Almacenaje en frío">
+          </div>
+          <div>
+            <label>{{ t("Capacidad", "Capacity") }}</label>
+            <input type="text" name="capacidad" placeholder="1.000 pallets">
+          </div>
+          <div>
+            <label>{{ t("Ubicación", "Location") }}</label>
+            <input type="text" name="ubicacion" placeholder="Valparaíso">
+          </div>
+        </div>
+        <input type="submit" value="{{ t('Agregar', 'Add') }}">
+      </form>
+    {% else %}
+      <h3>➕ {{ t("Agregar oferta/demanda", "Add offer/demand") }}</h3>
+      <form method="POST" class="mt-2">
+        <input type="hidden" name="action" value="add_item">
+        <div class="grid-4">
+          <div>
+            <label>{{ t("Tipo", "Type") }}</label>
+            <select name="subtipo">
+              <option value="oferta">{{ t("Oferta", "Offer") }}</option>
+              <option value="demanda">{{ t("Demanda", "Demand") }}</option>
+            </select>
+          </div>
+          <div>
+            <label>{{ t("Producto", "Product") }}</label>
+            <input type="text" name="producto" placeholder="Uva, cereza, etc.">
+          </div>
+          <div>
+            <label>{{ t("Cantidad", "Quantity") }}</label>
+            <input type="text" name="cantidad" placeholder="100 pallets">
+          </div>
+          <div>
+            <label>{{ t("Origen", "Origin") }}</label>
+            <input type="text" name="origen" placeholder="VI Región">
+          </div>
+        </div>
+        <label>{{ t("Precio", "Price") }}</label>
+        <input type="text" name="precio" placeholder="{{ t('A convenir', 'To agree') }}">
+        <input type="submit" value="{{ t('Agregar', 'Add') }}">
+      </form>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <h3>{{ t("Mis ítems", "My items") }}</h3>
+    {% if perfil.items and perfil.items|length>0 %}
+      <table class="table mt-2">
+        <thead>
+        <tr>
+          {% if perfil.perfil_tipo=='servicios' %}
+            <th>{{ t("Servicio", "Service") }}</th>
+            <th>{{ t("Capacidad", "Capacity") }}</th>
+            <th>{{ t("Ubicación", "Location") }}</th>
+          {% else %}
+            <th>{{ t("Tipo", "Type") }}</th>
+            <th>{{ t("Producto", "Product") }}</th>
+            <th>{{ t("Cantidad", "Quantity") }}</th>
+            <th>{{ t("Origen", "Origin") }}</th>
+            <th>{{ t("Precio", "Price") }}</th>
+          {% endif %}
+        </tr>
+        </thead>
+        <tbody>
+        {% for it in perfil.items %}
+          <tr>
+            {% if perfil.perfil_tipo=='servicios' %}
+              <td>{{ it.servicio }}</td>
+              <td>{{ it.capacidad }}</td>
+              <td>{{ it.ubicacion }}</td>
+            {% else %}
+              <td>{{ it.tipo }}</td>
+              <td>{{ it.producto }}</td>
+              <td>{{ it.cantidad }}</td>
+              <td>{{ it.origen }}</td>
+              <td>{{ it.precio or '-' }}</td>
+            {% endif %}
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="mt-1">{{ t("Aún no has agregado ítems.", "You haven't added items yet.") }}</p>
+    {% endif %}
+  </div>
+</div>
 {% endblock %}
