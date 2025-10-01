@@ -1,14 +1,21 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="text-center">
-    <h2>📊 {{ _('Bienvenido') }} {{ session.get('usuario') }}</h2>
-    <p class="lead">{{ _('Tu rol es') }}: <strong>{{ session.get('rol') }}</strong></p>
+<h2>📊 Dashboard de {{ session['username'] }}</h2>
+<p>Rol: <strong>{{ session['role'] }}</strong></p>
 
-    <div class="d-flex justify-content-center mt-4">
-        <a href="{{ url_for('perfil') }}" class="btn btn-outline-primary m-2">👤 {{ _('Mi Perfil') }}</a>
-        <a href="{{ url_for('accesos', tipo='ventas') }}" class="btn btn-outline-success m-2">💰 {{ _('Mis Ventas') }}</a>
-        <a href="{{ url_for('accesos', tipo='compras') }}" class="btn btn-outline-info m-2">🛒 {{ _('Mis Compras') }}</a>
-        <a href="{{ url_for('cart') }}" class="btn btn-warning m-2">🛍 {{ _('Mi Carrito') }}</a>
-    </div>
+<div class="card p-3">
+    <h4>Mis Ítems</h4>
+    {% if items %}
+        <ul class="list-group">
+            {% for item in items %}
+                <li class="list-group-item">
+                    <b>{{ item[3] }}</b> ({{ item[2] }}) - 
+                    {{ item[4] }} / {{ item[5] }} {{ item[6] }} - ${{ item[7] }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="text-muted">No tienes ítems registrados aún.</p>
+    {% endif %}
 </div>
 {% endblock %}
