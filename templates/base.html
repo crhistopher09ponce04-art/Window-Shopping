@@ -1,55 +1,48 @@
-{% raw %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🌍 Window Shopping</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <meta charset="UTF-8">
+  <title>{% block title %}Window Shopping{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-    <!-- Header -->
-    <header>
-        <a href="{{ url_for('home') }}" class="logo">🌍 Window Shopping</a>
-        <nav>
-            <ul class="nav-links">
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('home') }}">🏠 Inicio</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">🔑 Iniciar sesión</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('register') }}">📝 Registro</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('help_center') }}">❓ Ayuda</a></li>
-                {% if session.get('username') %}
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('dashboard') }}">📊 Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">🚪 Cerrar sesión</a></li>
-                {% endif %}
-            </ul>
-        </nav>
-        <!-- Selector de idioma -->
-        <div class="lang-switch">
-            🌐
-            <a href="{{ url_for('set_language', lang='es') }}" class="{% if session.get('lang') == 'es' %}active{% endif %}">ES</a> |
-            <a href="{{ url_for('set_language', lang='en') }}" class="{% if session.get('lang') == 'en' %}active{% endif %}">EN</a>
+  <header>
+    <a href="{{ url_for('home') }}" class="logo">🌐 Window Shopping</a>
+    <nav>
+      <ul style="display:flex; list-style:none; margin:0; padding:0;">
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('home') }}">🏠 {{ t("Inicio", "Home") }}</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">🔑 {{ t("Iniciar Sesión", "Login") }}</a></li>
+        <!-- Aquí estaba el error, corregido -->
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('register') }}">📝 {{ t("Registro", "Register") }}</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('help_center') }}">❓ {{ t("Ayuda", "Help") }}</a></li>
+      </ul>
+    </nav>
+    <div class="lang-switch">
+      🌍
+      {% if session.get('lang', 'es') == 'es' %}
+        <span class="active">ES</span> | <a href="{{ url_for('set_lang', lang='en') }}">EN</a>
+      {% else %}
+        <a href="{{ url_for('set_lang', lang='es') }}">ES</a> | <span class="active">EN</span>
+      {% endif %}
+    </div>
+  </header>
+
+  <main>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="flash">
+          {% for message in messages %}
+            <p>{{ message }}</p>
+          {% endfor %}
         </div>
-    </header>
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
 
-    <!-- Main Content -->
-    <main>
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                <div class="flash">
-                    {% for message in messages %}
-                        <p>{{ message }}</p>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        {% endwith %}
-
-        {% block content %}{% endblock %}
-    </main>
-
-    <!-- Footer -->
-    <footer>
-        <p>© 2025 Window Shopping. Todos los derechos reservados.</p>
-    </footer>
+  <footer>
+    <p>© 2025 Window Shopping | {{ t("Todos los derechos reservados", "All rights reserved") }}</p>
+  </footer>
 </body>
 </html>
-{% endraw %}
