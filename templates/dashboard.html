@@ -1,17 +1,12 @@
 {% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
 {% block content %}
-    <h2>Bienvenido {{ usuario }} (Rol: {{ rol }})</h2>
-
-    {% if my_company %}
-        <p style="text-align:center;">
-            Ver mi perfil:
-            <a href="{{ url_for('detalle', company_id=my_company.id) }}">{{ my_company.name }}</a>
-        </p>
-    {% endif %}
-
-    <ul>
-        <li><a href="{{ url_for('accesos', tipo='ventas') }}">Acceder a Ventas</a></li>
-        <li><a href="{{ url_for('accesos', tipo='compras') }}">Acceder a Compras</a></li>
-        <li><a href="{{ url_for('logout') }}">Cerrar Sesión</a></li>
-    </ul>
+<h2 class="title-center">Hola {{ usuario }} — Rol: {{ rol }}</h2>
+<div class="grid-3">
+  <a class="tile" href="{{ url_for('accesos', tipo='ventas') }}">💼 Vender</a>
+  <a class="tile" href="{{ url_for('accesos', tipo='compras') }}">🛒 Comprar</a>
+  <a class="tile" href="{{ url_for('cart') }}">🧺 Carrito</a>
+  <a class="tile" href="{{ url_for('mi_perfil') }}">🏷️ Mi Perfil</a>
+  <a class="tile" href="{{ url_for('help_center') }}">❓ Centro de ayuda</a>
+</div>
 {% endblock %}
