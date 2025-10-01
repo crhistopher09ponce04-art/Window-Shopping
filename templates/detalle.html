@@ -1,14 +1,14 @@
 {% extends "base.html" %}
+{% block title %}Detalle{% endblock %}
 {% block content %}
+<div class="card">
   <h2>Perfil de {{ company.name }}</h2>
-
-  <table class="tabla-detalle">
+  <table class="table">
     <tbody>
       <tr><th>ID</th><td>{{ company.id }}</td></tr>
       <tr><th>Rol</th><td>{{ company.role }}</td></tr>
       <tr><th>Ciudad</th><td>{{ company.city }}</td></tr>
       <tr><th>País</th><td>{{ company.country }}</td></tr>
-
       {% if company.role == "Cliente extranjero" %}
         <tr><th>Producto solicitado</th><td>{{ company.product_requested }}</td></tr>
         <tr><th>Variedad solicitada</th><td>{{ company.variety_requested }}</td></tr>
@@ -22,11 +22,19 @@
         <tr><th>Precio por caja</th><td>{{ company.price_box }}</td></tr>
         <tr><th>Precio por kilo</th><td>{{ company.price_kg }}</td></tr>
       {% endif %}
-
       <tr><th>Teléfono</th><td>{{ company.phone }}</td></tr>
       <tr><th>Email</th><td>{{ company.email }}</td></tr>
     </tbody>
   </table>
 
-  <p style="text-align:center;"><a href="{{ url_for('dashboard') }}">Volver al panel</a></p>
+  <form class="add-to-cart" method="post">
+    <label>Cantidad (tons / unidades):</label>
+    <input type="number" min="1" step="1" name="quantity" value="1" required/>
+    <label>Notas (opcional):</label>
+    <input type="text" name="notes" placeholder="Ej: calibre, bultos, fecha..." />
+    <button type="submit" class="btn">Agregar al carrito</button>
+  </form>
+
+  <p style="margin-top:15px;"><a href="{{ url_for('dashboard') }}">⬅ Volver</a></p>
+</div>
 {% endblock %}
