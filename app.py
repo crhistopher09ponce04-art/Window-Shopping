@@ -226,7 +226,7 @@ def login():
 
 @app.route("/register")
 def register_router():
-    # En esta versión: registro guiado a ayuda (demo); puedes implementar forms reales aquí
+    # (Demo) pantalla intermedia de registro; si quieres registro real, lo implementamos luego
     return render_template("register_router.html")
 
 @app.route("/password-reset", methods=["GET", "POST"])
@@ -241,6 +241,10 @@ def password_reset():
 @app.route("/help")
 def help_center():
     return render_template("help_center.html")
+
+@app.route("/manual")
+def manual():
+    return render_template("manual.html")
 
 # ------------------------
 # Rutas privadas
