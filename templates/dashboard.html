@@ -1,12 +1,18 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>{{ t("Panel principal", "Dashboard") }}</h2>
-<p>{{ t("Bienvenido", "Welcome") }} <b>{{ usuario }}</b> ({{ rol }})</p>
-<h3>{{ t("Mi empresa", "My Company") }}</h3>
-<p>{{ my_company.name }} — {{ my_company.city }}, {{ my_company.country }}</p>
-<ul>
-{% for item in my_company.items %}
-    <li>{{ item.get("fruit") or item.get("service") }} | {{ item.get("variety") or item.get("availability") }} | {{ item.get("volume") or "" }} {{ item.get("price") or "" }}</li>
-{% endfor %}
-</ul>
+<div class="container mt-5">
+  <div class="card shadow-lg p-4">
+    <h2 class="mb-4">👋 {{ usuario }} ({{ rol }})</h2>
+    <p><strong>{{ t("Empresa", "Company") }}:</strong> {{ my_company.name }}</p>
+    <p><strong>{{ t("Ciudad", "City") }}:</strong> {{ my_company.city }}</p>
+    <p><strong>{{ t("País", "Country") }}:</strong> {{ my_company.country }}</p>
+
+    <div class="mt-4">
+      <a href="{{ url_for('accesos', tipo='ventas') }}" class="btn btn-success me-2">📦 {{ t("Mis Ventas", "My Sales") }}</a>
+      <a href="{{ url_for('accesos', tipo='compras') }}" class="btn btn-primary me-2">🛒 {{ t("Mis Compras", "My Purchases") }}</a>
+      <a href="{{ url_for('mi_perfil') }}" class="btn btn-warning me-2">⚙️ {{ t("Editar Perfil", "Edit Profile") }}</a>
+      <a href="{{ url_for('cart') }}" class="btn btn-dark">🛍️ {{ t("Carrito", "Cart") }}</a>
+    </div>
+  </div>
+</div>
 {% endblock %}
