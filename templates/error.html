@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="card">
-  <h2>⚠️ {{ t("Error", "Error") }} {{ code }}</h2>
+  <h2>⚠️ Error {{ code }}</h2>
   <p>{{ message }}</p>
-  <a href="{{ url_for('home') }}" class="btn">{{ t("Volver al inicio", "Go back home") }}</a>
+  <a class="btn" href="{{ url_for('home') }}">{{ t('back') }}</a>
 </div>
 {% endblock %}
