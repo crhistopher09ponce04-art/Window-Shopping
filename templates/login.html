@@ -1,23 +1,25 @@
 {% extends "base.html" %}
+
 {% block content %}
 <div class="card">
-  <h2>🔑 {{ t("Iniciar Sesión", "Login") }}</h2>
+  <h2>{{ t("Iniciar sesión", "Login") }}</h2>
 
   {% if error %}
-    <div class="flash"><p>{{ error }}</p></div>
+    <p class="error">{{ error }}</p>
   {% endif %}
 
-  <form method="POST" action="{{ url_for('login') }}">
-    <label for="username">{{ t("Usuario", "Username") }}</label>
-    <input type="text" id="username" name="username" required>
+  <form method="post">
+    <label>{{ t("Usuario", "Username") }}</label>
+    <input type="text" name="username" required>
 
-    <label for="password">{{ t("Contraseña", "Password") }}</label>
-    <input type="password" id="password" name="password" required>
+    <label>{{ t("Contraseña", "Password") }}</label>
+    <input type="password" name="password" required>
 
-    <input type="submit" value="{{ t('Entrar', 'Login') }}">
+    <button type="submit" class="btn">➡️ {{ t("Ingresar", "Login") }}</button>
   </form>
 
-  <p>{{ t("¿No tienes cuenta?", "Don't have an account?") }}
+  <p style="margin-top:10px;">
+    {{ t("¿No tienes cuenta?", "Don't have an account?") }}
     <a href="{{ url_for('register') }}">📝 {{ t("Regístrate aquí", "Register here") }}</a>
   </p>
 </div>
