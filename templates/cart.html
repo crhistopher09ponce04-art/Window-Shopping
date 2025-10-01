@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Carrito{% endblock %}
+{% block content %}
+<h2>Carrito</h2>
+<div class="card">
+  {% if cart %}
+    <table class="table">
+      <thead>
+        <tr><th>#</th><th>Empresa</th><th>Rol</th><th>Rubro</th><th>Cantidad</th><th>Notas</th><th></th></tr>
+      </thead>
+      <tbody>
+        {% for item in cart %}
+          <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ item.name }}</td>
+            <td>{{ item.role }}</td>
+            <td>{{ item.rubro }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.notes }}</td>
+            <td>
+              <form method="post" style="display:inline">
+                <input type="hidden" name="action" value="remove:{{ loop.index0 }}"/>
+                <button class="btn ghost" type="submit">Quitar</button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div class="cart-actions">
+      <form method="post" style="display:inline">
+        <input type="hidden" name="action" value="clear"/>
+        <button class="btn secondary" type="submit">Vaciar</button>
+      </form>
+      <form method="post" style="display:inline">
+        <input type="hidden" name="action" value="checkout"/>
+        <button class="btn" type="submit">Enviar solicitud</button>
+      </form>
+    </div>
+  {% else %}
+    <p>Tu carrito está vacío.</p>
+  {% endif %}
+</div>
+{% endblock %}
