@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Window Shopping{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="hero-text">
+    <h2>Window Shopping</h2>
+    <p>Plataforma B2B para fruta fresca y servicios logísticos.</p>
+    <div class="cta">
+      <a class="btn" href="{{ url_for('login') }}">Iniciar sesión</a>
+      <a class="btn ghost" href="{{ url_for('register_router') }}">Crear cuenta</a>
+      <a class="btn secondary" href="{{ url_for('help_center') }}">Centro de ayuda</a>
+    </div>
+  </div>
+  <div class="hero-art" aria-hidden="true"></div>
+</section>
+{% endblock %}
