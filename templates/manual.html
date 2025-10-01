@@ -1,25 +1,13 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="card" style="max-width:900px;margin:24px auto;">
-  <h1>{{ _("manual") }}</h1>
-  <h2>1) {{ _("login") }}</h2>
-  <p>Usa tus credenciales o un usuario demo (clave 1234).</p>
+<h2>Manual de Usuario</h2>
+<p>Este manual contiene las instrucciones detalladas de uso de la plataforma Window Shopping.</p>
 
-  <h2>2) {{ _("dashboard") }}</h2>
-  <p>Accede a {{ _("buy") }}, {{ _("sell") }}, {{ _("cart") }}, {{ _("my_profile") }} y {{ _("help") }}.</p>
-
-  <h2>3) Ítems</h2>
-  <p>Desde <strong>{{ _("my_profile") }}</strong> agrega ítems ({{ _("type") }}: {{ _("sale") }}/{{ _("buying") }}, {{ _("rubro") }}: {{ _("fruit") }}/{{ _("service") }}, producto, variedad, {{ _("quantity") }}, {{ _("unit") }}, {{ _("price") }}, {{ _("notes") }}).</p>
-
-  <h2>4) Carrito</h2>
-  <p>Desde <em>Detalle</em> agrega un ítem específico al {{ _("cart") }} y envía la solicitud.</p>
-
-  <h2>5) Traducción</h2>
-  <p>Cambia ES/EN en la barra superior; el contenido clave se traduce automáticamente.</p>
-
-  <div class="buttons" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;">
-    <a href="{{ url_for('dashboard') }}" class="btn">{{ _("dashboard") }}</a>
-    <a href="{{ url_for('home') }}" class="btn">{{ _("login") }}</a>
-  </div>
-</div>
+<ul>
+    <li>Cómo registrarse y crear un perfil.</li>
+    <li>Cómo agregar ítems de venta, compra o servicio.</li>
+    <li>Cómo usar los filtros de búsqueda y navegación.</li>
+    <li>Cómo usar el carrito de compras y enviar solicitudes.</li>
+    <li>Soporte y contacto para dudas.</li>
+</ul>
 {% endblock %}
