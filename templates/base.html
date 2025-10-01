@@ -1,33 +1,67 @@
-<!DOCTYPE html>
-<html lang="es">
+<!doctype html>
+<html lang="{{ session.get('lang','es') }}">
 <head>
-  <meta charset="UTF-8">
-  <title>WS - Window Shopping</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{% block title %}Window Shopping{% endblock %}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-  <header>
-    <a href="{{ url_for('home') }}" class="logo">🌐 WS</a>
-    <nav>
-      {% if session.get("usuario") %}
-        <a href="{{ url_for('dashboard') }}">Dashboard</a>
-        <a href="{{ url_for('logout') }}">Logout</a>
-      {% else %}
-        <a href="{{ url_for('login') }}">Login</a>
-      {% endif %}
-    </nav>
-    <div class="lang-switch">
-      <a href="{{ url_for('set_lang', lang='es') }}" class="{% if session.get('lang','es')=='es' %}active{% endif %}">ES</a> |
-      <a href="{{ url_for('set_lang', lang='en') }}" class="{% if session.get('lang','es')=='en' %}active{% endif %}">EN</a>
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="container">
+      <div class="brand">
+        <a href="{{ url_for('home') }}">🛒 Window Shopping</a>
+      </div>
+
+      <nav class="nav">
+        <ul>
+          {% if session.get('usuario') %}
+            <li><a href="{{ url_for('dashboard') }}">📊 {{ t("Panel", "Dashboard") }}</a></li>
+            <li><a href="{{ url_for('logout') }}">🚪 {{ t("Salir", "Logout") }}</a></li>
+          {% else %}
+            <li><a href="{{ url_for('login') }}">🔑 {{ t("Ingresar", "Login") }}</a></li>
+            <li><a href="{{ url_for('register') }}">📝 {{ t("Registrarse", "Register") }}</a></li>
+          {% endif %}
+        </ul>
+      </nav>
+
+      <!-- Language switch -->
+      <div class="lang-switch">
+        {% set current = session.get('lang','es') %}
+        {% if current == 'es' %}
+          <span class="active">ES</span> |
+          <a href="{{ url_for('set_lang', code='en') }}">EN</a>
+        {% else %}
+          <a href="{{ url_for('set_lang', code='es') }}">ES</a> |
+          <span class="active">EN</span>
+        {% endif %}
+      </div>
     </div>
   </header>
 
-  <main>
+  <!-- Main -->
+  <main class="container">
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="flash">
+          {% for m in messages %}
+            <p>{{ m }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
     {% block content %}{% endblock %}
   </main>
 
-  <footer>
-    <p>© 2025 Window Shopping</p>
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <p>© {{ t("Todos los derechos reservados", "All rights reserved") }} · Window Shopping</p>
+    </div>
   </footer>
+
 </body>
 </html>
