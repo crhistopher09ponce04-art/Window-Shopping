@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Registro{% endblock %}
+{% block content %}
+<div class="card">
+  <h2>Crear cuenta</h2>
+  <p>Selecciona tu tipo de cuenta:</p>
+  <div class="grid-3">
+    <a class="tile" href="#">Nacional (próximamente)</a>
+    <a class="tile" href="#">Extranjero (próximamente)</a>
+    <a class="tile" href="{{ url_for('help_center') }}">Ver ayuda de registro</a>
+  </div>
+  <p style="margin-top:8px;">* Demo: usuarios de prueba — productor1, planta1, packing1, frigorifico1, exportador1, cliente1, transporte1, aduana1, extraportuario1 (clave 1234).</p>
+</div>
+{% endblock %}
