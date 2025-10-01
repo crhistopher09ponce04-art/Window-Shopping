@@ -1,57 +1,15 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="container">
-    <div class="card mt-4 shadow">
-        <div class="card-body">
-            <h3 class="card-title text-center">📦 {{ company.name }}</h3>
-            <h6 class="text-muted text-center">{{ company.role }}</h6>
-
-            <hr>
-
-            <div class="row">
-                <div class="col-md-6">
-                    <p><strong>🌍 {{ _('Ubicación') }}:</strong> {{ company.city }}, {{ company.country }}</p>
-                    <p><strong>📞 {{ _('Teléfono') }}:</strong> {{ company.phone or "—" }}</p>
-                    <p><strong>✉️ {{ _('Email') }}:</strong> {{ company.email or "—" }}</p>
-                </div>
-                <div class="col-md-6">
-                    {% if company.fruit %}
-                        <p><strong>🍑 {{ _('Fruta') }}:</strong> {{ company.fruit }}</p>
-                        <p><strong>🌱 {{ _('Variedad') }}:</strong> {{ company.variety }}</p>
-                        <p><strong>📦 {{ _('Volumen disponible') }}:</strong> {{ company.volume_tons }} tons</p>
-                        <p><strong>💲 {{ _('Precio caja') }}:</strong> {{ company.price_box }} CLP</p>
-                        <p><strong>💲 {{ _('Precio kg') }}:</strong> {{ company.price_kg }} CLP</p>
-                    {% elif company.service %}
-                        <p><strong>🛠 {{ _('Servicio') }}:</strong> {{ company.service }}</p>
-                    {% elif company.product_requested %}
-                        <p><strong>📥 {{ _('Producto solicitado') }}:</strong> {{ company.product_requested }}</p>
-                        <p><strong>🌱 {{ _('Variedad solicitada') }}:</strong> {{ company.variety_requested }}</p>
-                        <p><strong>📦 {{ _('Volumen solicitado') }}:</strong> {{ company.volume_requested_tons }} tons</p>
-                    {% endif %}
-                </div>
-            </div>
-
-            <hr>
-
-            <!-- Formulario para agregar al carrito -->
-            <form method="post" class="mt-3">
-                <div class="row g-2">
-                    <div class="col-md-3">
-                        <input type="number" name="quantity" class="form-control" placeholder="{{ _('Cantidad') }}" min="1" value="1" required>
-                    </div>
-                    <div class="col-md-6">
-                        <input type="text" name="notes" class="form-control" placeholder="{{ _('Notas (opcional)') }}">
-                    </div>
-                    <div class="col-md-3 d-grid">
-                        <button type="submit" class="btn btn-primary">🛒 {{ _('Agregar al carrito') }}</button>
-                    </div>
-                </div>
-            </form>
-
-            <div class="text-center mt-3">
-                <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">⬅️ {{ _('Volver al Panel') }}</a>
-            </div>
-        </div>
-    </div>
-</div>
+<h2>{{ company.name }}</h2>
+<p>{{ company.role }} — {{ company.city }}, {{ company.country }}</p>
+<h3>{{ t("Ítems disponibles", "Available items") }}</h3>
+<ul>
+{% for item in company.items %}
+  <li>{{ item.get("fruit") or item.get("service") }} — {{ item.get("variety") or item.get("availability") }} — {{ item.get("volume") or "" }} {{ item.get("price") or "" }}</li>
+{% endfor %}
+</ul>
+<form method="post">
+    <input type="number" name="quantity" placeholder="Cantidad" min="1" value="1">
+    <button type="submit" class="btn">{{ t("Agregar al carrito", "Add to cart") }}</button>
+</form>
 {% endblock %}
