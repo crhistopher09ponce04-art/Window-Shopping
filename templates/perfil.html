@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card p-4">
+            <h3 class="text-center">👤 {{ _('Mi Perfil') }}</h3>
+
+            <form method="POST">
+                <div class="mb-3">
+                    <label class="form-label">{{ _('Nombre de Empresa') }}</label>
+                    <input type="text" name="name" value="{{ company.name }}" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">{{ _('Ciudad') }}</label>
+                    <input type="text" name="city" value="{{ company.city }}" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">{{ _('País') }}</label>
+                    <input type="text" name="country" value="{{ company.country }}" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">{{ _('Teléfono') }}</label>
+                    <input type="text" name="phone" value="{{ company.phone }}" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">{{ _('Email') }}</label>
+                    <input type="email" name="email" value="{{ company.email }}" class="form-control">
+                </div>
+
+                <!-- Multi-Items -->
+                <h5 class="mt-4">📦 {{ _('Productos / Servicios Ofrecidos o Solicitados') }}</h5>
+                <div id="items-container">
+                    {% for item in company.items %}
+                        <div class="card p-3 mb-2">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <input type="text" name="items[{{ loop.index0 }}][name]" value="{{ item.name }}" class="form-control" placeholder="{{ _('Producto o Servicio') }}">
+                                </div>
+                                <div class="col-md-3">
+                                    <input type="text" name="items[{{ loop.index0 }}][variety]" value="{{ item.variety }}" class="form-control" placeholder="{{ _('Variedad') }}">
+                                </div>
+                                <div class="col-md-2">
+                                    <input type="text" name="items[{{ loop.index0 }}][volume]" value="{{ item.volume }}" class="form-control" placeholder="{{ _('Volumen') }}">
+                                </div>
+                                <div class="col-md-2">
+                                    <input type="text" name="items[{{ loop.index0 }}][price]" value="{{ item.price }}" class="form-control" placeholder="{{ _('Precio') }}">
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <button type="button" class="btn btn-outline-secondary mt-2" onclick="addItem()">➕ {{ _('Agregar Ítem') }}</button>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-success w-100">{{ _('Guardar Cambios') }}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    let itemIndex = {{ company.items|length if company.items else 0 }};
+    function addItem() {
+        let container = document.getElementById("items-container");
+        let html = `
+        <div class="card p-3 mb-2">
+            <div class="row">
+                <div class="col-md-4">
+                    <input type="text" name="items[${itemIndex}][name]" class="form-control" placeholder="Producto o Servicio">
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="items[${itemIndex}][variety]" class="form-control" placeholder="Variedad">
+                </div>
+                <div class="col-md-2">
+                    <input type="text" name="items[${itemIndex}][volume]" class="form-control" placeholder="Volumen (kg, cajas, tons)">
+                </div>
+                <div class="col-md-2">
+                    <input type="text" name="items[${itemIndex}][price]" class="form-control" placeholder="Precio">
+                </div>
+            </div>
+        </div>`;
+        container.insertAdjacentHTML("beforeend", html);
+        itemIndex++;
+    }
+</script>
+{% endblock %}
