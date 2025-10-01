@@ -1,40 +1,54 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="{{ cur_lang }}">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🌍 Window Shopping</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
+    <title>Window Shopping</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="{{ url_for('home') }}">🌍 Window Shopping</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">🔑 Iniciar Sesión</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('register') }}">📝 Registro</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('help') }}">❓ Centro de Ayuda</a></li>
-                </ul>
-            </div>
+    <header>
+        <div class="nav-left">
+            <a href="{{ url_for('home') }}" class="logo">🌐 WS</a>
         </div>
-    </nav>
+        <nav>
+            {% if 'usuario' in session %}
+                <a href="{{ url_for('dashboard') }}">{{ t("Dashboard", "Dashboard") }}</a>
+                <a href="{{ url_for('mi_perfil') }}">{{ t("Mi perfil", "My profile") }}</a>
+                <a href="{{ url_for('cart') }}">{{ t("Carrito", "Cart") }}</a>
+                <a href="{{ url_for('logout') }}">{{ t("Salir", "Logout") }}</a>
+            {% else %}
+                <a href="{{ url_for('login') }}">{{ t("Iniciar sesión", "Login") }}</a>
+                <a href="{{ url_for('register_router') }}">{{ t("Registro", "Register") }}</a>
+            {% endif %}
+            <a href="{{ url_for('help_center') }}">{{ t("Ayuda", "Help") }}</a>
+            <a href="{{ url_for('manual') }}">{{ t("Manual", "Manual") }}</a>
+        </nav>
+        <div class="lang-switch">
+            {% for code, name in LANGS.items() %}
+                {% if cur_lang == code %}
+                    <span class="active">{{ name }}</span>
+                {% else %}
+                    <a href="{{ url_for('set_lang', code=code, next=request.path) }}">{{ name }}</a>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </header>
 
-    <!-- Contenido dinámico -->
-    <main class="container my-5">
+    <main>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="flash">
+                    {% for msg in messages %}
+                        <p>{{ msg }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
         {% block content %}{% endblock %}
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-light text-center py-3 mt-5 border-top">
-        <p class="mb-0">© 2025 Window Shopping — Plataforma B2B</p>
+    <footer>
+        <p>© 2025 Window Shopping — {{ t("Conectando exportadores y compradores", "Connecting exporters and buyers") }}</p>
     </footer>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
