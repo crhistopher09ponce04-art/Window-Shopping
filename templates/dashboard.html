@@ -1,18 +1,17 @@
 {% extends "base.html" %}
-{% block title %}Dashboard{% endblock %}
 {% block content %}
-<h2 style="text-align:center;">Bienvenido {{ usuario }} (Rol: {{ rol }})</h2>
+    <h2>Bienvenido {{ usuario }} (Rol: {{ rol }})</h2>
 
-<div class="card">
-    <h3>Opciones principales</h3>
-    <ul style="list-style:none; padding:0;">
-        {% if rol != "Cliente extranjero" %}
-            <li><a href="{{ url_for('accesos', tipo='ventas') }}">💼 Ver empresas para Vender</a></li>
-        {% endif %}
-        {% if rol != "Productor" and rol != "Planta" %}
-            <li><a href="{{ url_for('accesos', tipo='compras') }}">🛒 Ver empresas para Comprar</a></li>
-        {% endif %}
-        <li><a href="{{ url_for('detalle', company_id=my_company.id) }}">📄 Ver mi empresa</a></li>
+    {% if my_company %}
+        <p style="text-align:center;">
+            Ver mi perfil:
+            <a href="{{ url_for('detalle', company_id=my_company.id) }}">{{ my_company.name }}</a>
+        </p>
+    {% endif %}
+
+    <ul>
+        <li><a href="{{ url_for('accesos', tipo='ventas') }}">Acceder a Ventas</a></li>
+        <li><a href="{{ url_for('accesos', tipo='compras') }}">Acceder a Compras</a></li>
+        <li><a href="{{ url_for('logout') }}">Cerrar Sesión</a></li>
     </ul>
-</div>
 {% endblock %}
