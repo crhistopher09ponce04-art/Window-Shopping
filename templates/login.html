@@ -2,14 +2,11 @@
 {% block content %}
 <h2>Iniciar Sesión</h2>
 {% if error %}<p class="error">{{ error }}</p>{% endif %}
-<form method="POST">
-    <label>Usuario:</label>
-    <input type="text" name="username" required>
-    <label>Contraseña:</label>
-    <input type="password" name="password" required>
-    <button type="submit">Ingresar</button>
+<form method="POST" class="card form">
+  <label>Usuario</label>
+  <input type="text" name="username" required>
+  <label>Contraseña</label>
+  <input type="password" name="password" required>
+  <button type="submit" class="btn btn-primary">Ingresar</button>
 </form>
-<p style="text-align:center;">
-    ¿No tienes cuenta? <a href="{{ url_for('register_router') }}">Regístrate aquí</a>
-</p>
 {% endblock %}
