@@ -1,77 +1,55 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="card">
-  <h2>📝 {{ t("Crear Cuenta", "Create Account") }}</h2>
+<div class="panel" style="max-width:740px;margin:0 auto;">
+  <h3 style="margin:0 0 8px 0;">📝 {{ t("Crear cuenta","Create account","创建账户") }}</h3>
+  <div class="meta">{{ t("Tipo","Type","类型") }}: <span class="badge">{{ 'Nacional' if tipo=='nacional' else 'Extranjero' }}</span></div>
+  {% if error %}<div class="flash alert-bad mt-2">{{ error }}</div>{% endif %}
 
-  {% if error %}
-    <div class="flash"><p>{{ error }}</p></div>
-  {% endif %}
-
-  <form method="POST" action="{{ url_for('register') }}">
-    <div class="grid-3">
+  <form method="POST" class="mt-2">
+    <div class="grid grid-3">
       <div>
-        <label>{{ t("Nacionalidad", "Nationality") }}</label>
-        <select name="nacionalidad" required>
-          <option value="nacional" {% if nacionalidad=='nacional' %}selected{% endif %}>{{ t("Nacional", "National") }}</option>
-          <option value="extranjero" {% if nacionalidad=='extranjero' %}selected{% endif %}>{{ t("Extranjero", "Foreign") }}</option>
-        </select>
-      </div>
-      <div>
-        <label>{{ t("Tipo de perfil", "Profile type") }}</label>
-        <select name="perfil_tipo" required>
-          <option value="compra_venta" {% if perfil_tipo=='compra_venta' %}selected{% endif %}>{{ t("Compra/Venta", "Buy/Sell") }}</option>
-          <option value="servicios" {% if perfil_tipo=='servicios' %}selected{% endif %}>{{ t("Servicios", "Services") }}</option>
-        </select>
-      </div>
-      <div>
-        <label>{{ t("Rol", "Role") }}</label>
-        <select name="rol" required id="rolSelect">
-          {% if perfil_tipo=='servicios' %}
-            {% for r in roles_srv %}<option value="{{ r }}">{{ r }}</option>{% endfor %}
-          {% else %}
-            {% for r in roles_cv %}<option value="{{ r }}">{{ r }}</option>{% endfor %}
-          {% endif %}
-        </select>
-      </div>
-    </div>
-
-    <div class="grid-3">
-      <div>
-        <label>{{ t("Usuario", "Username") }}</label>
+        <label>{{ t("Usuario","Username","用户名") }}</label>
         <input type="text" name="username" required>
       </div>
       <div>
-        <label>{{ t("Contraseña", "Password") }}</label>
+        <label>{{ t("Contraseña","Password","密码") }}</label>
         <input type="password" name="password" required>
       </div>
       <div>
-        <label>{{ t("País (código ISO)", "Country (ISO code)") }}</label>
-        <input type="text" name="pais" placeholder="CL">
+        <label>RUT</label>
+        <input type="text" name="rut" placeholder="11.111.111-1">
       </div>
-    </div>
-
-    <label>{{ t("Correo electrónico", "Email") }}</label>
-    <input type="email" name="email">
-
-    <div class="grid-3">
       <div>
-        <label>{{ t("Teléfono", "Phone") }}</label>
+        <label>{{ t("Correo","Email","邮箱") }}</label>
+        <input type="email" name="email" required>
+      </div>
+      <div>
+        <label>{{ t("Dirección","Address","地址") }}</label>
+        <input type="text" name="address">
+      </div>
+      <div>
+        <label>{{ t("Teléfono","Phone","电话") }}</label>
         <input type="text" name="phone">
       </div>
-      <div class="grid-3" style="grid-template-columns:1fr 2fr 1fr; gap:12px;">
-        <div style="grid-column: span 3;">
-          <label>{{ t("Dirección", "Address") }}</label>
-          <input type="text" name="address" placeholder="Calle, número, ciudad">
-        </div>
-      </div>
     </div>
 
-    <input type="submit" value="{{ t('Crear Cuenta', 'Create Account') }}">
-  </form>
+    <div class="mt-2">
+      <label>{{ t("Rol principal","Main role","主要角色") }}</label>
+      <select name="rol" required>
+        {% for r in compra_venta_roles %}
+          <option value="{{ r }}">{{ r }}</option>
+        {% endfor %}
+        {% for r in servicio_roles if r not in compra_venta_roles %}
+          <option value="{{ r }}">{{ r }}</option>
+        {% endfor %}
+      </select>
+      <p class="mt-1" style="color:#a9c4e5">{{ t("Para servicios están permitidos Packing, Frigorífico, Transporte y Agencia de aduanas.","For services the allowed roles are Packing, Cold Storage, Transport and Customs Agency.","可提供服务的角色：包装、冷藏、运输、报关行。") }}</p>
+    </div>
 
-  <p class="mt-3">
-    {{ t("¿Ya tienes cuenta?", "Already have an account?") }}
-    <a href="{{ url_for('login') }}">🔑 {{ t("Inicia sesión", "Log in") }}</a>
-  </p>
+    <div class="mt-3">
+      <button class="btn">✅ {{ t("Crear cuenta","Create account","创建") }}</button>
+      <a href="{{ url_for('home') }}" class="btn btn-outline me-2">🏠 {{ t("Volver al inicio","Back home","返回首页") }}</a>
+    </div>
+  </form>
 </div>
 {% endblock %}
