@@ -1,10 +1,14 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>{{ t("Iniciar sesión", "Login") }}</h2>
-<form method="post">
-    <input type="text" name="username" placeholder="Usuario" required>
-    <input type="password" name="password" placeholder="Contraseña" required>
-    <button type="submit" class="btn">{{ t("Entrar", "Login") }}</button>
-</form>
-{% if error %}<p style="color:red">{{ error }}</p>{% endif %}
+<div class="container mt-5">
+  <div class="card shadow p-4">
+    <h2>🔑 {{ t("Iniciar Sesión", "Log In") }}</h2>
+    <form method="post">
+      <input class="form-control mb-3" type="text" name="username" placeholder="Usuario">
+      <input class="form-control mb-3" type="password" name="password" placeholder="Contraseña">
+      {% if error %}<div class="alert alert-danger">{{ error }}</div>{% endif %}
+      <button class="btn btn-success w-100">Entrar</button>
+    </form>
+  </div>
+</div>
 {% endblock %}
