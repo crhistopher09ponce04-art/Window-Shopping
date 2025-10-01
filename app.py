@@ -29,10 +29,14 @@ def set_lang(lang):
     return redirect(request.referrer or url_for("home"))
 
 # ---------------------------
-# Datos de demo
+# Datos demo
 # ---------------------------
-ROLES_COMPRA_VENTA = ["Productor", "Planta", "Packing", "Frigorífico", "Exportador", "Cliente extranjero"]
-ROLES_SERVICIOS = ["Packing", "Frigorífico", "Transporte", "Agencia de Aduanas", "Extraportuario"]
+ROLES_COMPRA_VENTA = [
+    "Productor", "Planta", "Packing", "Frigorífico", "Exportador", "Cliente extranjero"
+]
+ROLES_SERVICIOS = [
+    "Packing", "Frigorífico", "Transporte", "Agencia de Aduanas", "Extraportuario"
+]
 
 USERS = {
     "productor1": {"password": "1234", "rol": "Productor", "perfil_tipo": "compra_venta", "pais": "CL"},
@@ -46,22 +50,20 @@ USERS = {
     "extraportuario1": {"password": "1234", "rol": "Extraportuario", "perfil_tipo": "servicios", "pais": "CL"},
 }
 
+# Perfiles de usuarios reales
 USER_PROFILES = {
     u: {
-        "empresa": u.capitalize(),
-        "pais": USERS[u].get("pais", "CL"),
+        "slug": u,
+        "nombre": u.capitalize(),
         "rol": USERS[u]["rol"],
         "perfil_tipo": USERS[u]["perfil_tipo"],
-        "email": f"{u}@demo.cl",
-        "telefono": "+56 9 0000 0000",
-        "direccion": "S/N",
-        "rut": "",
-        "descripcion": "Perfil demo.",
+        "pais": USERS[u]["pais"],
+        "descripcion": "Perfil demo generado automáticamente.",
         "items": []
     } for u in USERS
 }
 
-# Empresas de muestra
+# Empresas demo
 COMPANIES = [
     {
         "slug": "agro-andes",
@@ -69,7 +71,7 @@ COMPANIES = [
         "rol": "Productor",
         "perfil_tipo": "compra_venta",
         "pais": "CL",
-        "breve": "Uva de mesa y arándanos.",
+        "descripcion": "Uva de mesa y arándanos.",
         "items": [
             {"tipo": "oferta", "producto": "Uva Crimson", "cantidad": "80 pallets", "origen": "IV Región", "precio": "A convenir"},
             {"tipo": "demanda", "producto": "Cajas plásticas", "cantidad": "15.000 und", "origen": "CL", "precio": "Oferta"}
@@ -81,10 +83,21 @@ COMPANIES = [
         "rol": "Frigorífico",
         "perfil_tipo": "servicios",
         "pais": "CL",
-        "breve": "Frío y logística en Valparaíso.",
+        "descripcion": "Frío y logística en Valparaíso.",
         "items": [
             {"tipo": "servicio", "servicio": "Almacenaje en frío", "capacidad": "1.200 pallets", "ubicacion": "Valparaíso"},
-            {"tipo": "servicio", "servicio": "Preenfriado", "capacidad": "8 túneles", "ubicacion": "Valparaíso"}
+            {"tipo": "servicio", "servicio": "Preenfriado", "capacidad": "8 túneles", "ubicacion": "Valparaíso"},
+        ]
+    },
+    {
+        "slug": "ocexport",
+        "nombre": "OCExport",
+        "rol": "Exportador",
+        "perfil_tipo": "compra_venta",
+        "pais": "CL",
+        "descripcion": "Exportación multiproducto.",
+        "items": [
+            {"tipo": "demanda", "producto": "Cerezas", "cantidad": "150 pallets", "origen": "VI-VII", "precio": "A convenir"}
         ]
     }
 ]
@@ -102,18 +115,17 @@ def login_required():
 def home():
     return render_template("landing.html", t=t)
 
-@app.route("/login", methods=["GET", "POST"])
+@app.route("/login", methods=["GET","POST"])
 def login():
     error = None
     if request.method == "POST":
-        username = request.form.get("username", "").strip()
-        password = request.form.get("password", "").strip()
-        user = USERS.get(username)
-        if user and user["password"] == password:
-            session["usuario"] = username
+        u = request.form.get("username")
+        p = request.form.get("password")
+        if u in USERS and USERS[u]["password"] == p:
+            session["usuario"] = u
             return redirect(url_for("dashboard"))
         else:
-            error = t("Usuario o clave inválidos.", "Invalid user or password.", "用戶或密碼無效。")
+            error = t("Usuario o clave inválidos.","Invalid user/password.","用戶或密碼錯誤")
     return render_template("login.html", error=error, t=t)
 
 @app.route("/logout")
@@ -125,136 +137,75 @@ def logout():
 def register_router():
     return render_template("register_router.html", t=t)
 
-@app.route("/register", methods=["GET", "POST"])
+@app.route("/register", methods=["GET","POST"])
 def register():
     error = None
-    nacionalidad = request.args.get("nac")
-    perfil_tipo = request.args.get("tipo")
-
     if request.method == "POST":
-        username = request.form.get("username", "").strip()
-        password = request.form.get("password", "").strip()
-        email = request.form.get("email", "").strip()
-        telefono = request.form.get("phone", "").strip()
-        direccion = request.form.get("address", "").strip()
-        pais = request.form.get("pais", "CL").strip()
-        rol = request.form.get("rol", "").strip()
-        perfil_tipo = request.form.get("perfil_tipo", "").strip()
-        rut = request.form.get("rut", "").strip()
-
-        if not username or not password or not rol or not perfil_tipo:
-            error = t("Completa los campos obligatorios.", "Please complete required fields.", "請完成必填欄位。")
-        elif username in USERS:
-            error = t("El usuario ya existe.", "User already exists.", "用戶已存在。")
+        username = request.form.get("username")
+        password = request.form.get("password")
+        rol = request.form.get("rol")
+        perfil_tipo = request.form.get("perfil_tipo")
+        if username in USERS:
+            error = "Usuario ya existe"
         else:
-            USERS[username] = {"password": password, "rol": rol, "perfil_tipo": perfil_tipo, "pais": pais}
+            USERS[username] = {"password": password, "rol": rol, "perfil_tipo": perfil_tipo, "pais": "CL"}
             USER_PROFILES[username] = {
-                "empresa": username.capitalize(),
-                "pais": pais,
+                "slug": username,
+                "nombre": username.capitalize(),
                 "rol": rol,
                 "perfil_tipo": perfil_tipo,
-                "email": email,
-                "telefono": telefono,
-                "direccion": direccion,
-                "rut": rut,
-                "descripcion": "Nuevo perfil.",
+                "pais": "CL",
+                "descripcion": "Perfil registrado.",
                 "items": []
             }
             session["usuario"] = username
             return redirect(url_for("dashboard"))
-
-    return render_template("register.html", error=error, nacionalidad=nacionalidad,
-                           perfil_tipo=perfil_tipo, roles_cv=ROLES_COMPRA_VENTA,
-                           roles_srv=ROLES_SERVICIOS, t=t)
+    return render_template("register.html", error=error, roles_cv=ROLES_COMPRA_VENTA, roles_srv=ROLES_SERVICIOS, t=t)
 
 @app.route("/dashboard")
 def dashboard():
-    if not login_required():
-        return redirect(url_for("login"))
-    username = session["usuario"]
-    user = USERS.get(username)
-    my_company = USER_PROFILES.get(username, {})
-    return render_template("dashboard.html", usuario=username, rol=user["rol"],
-                           perfil_tipo=user["perfil_tipo"], my_company=my_company,
-                           cart=get_cart(), t=t)
+    if not login_required(): return redirect(url_for("login"))
+    u = session["usuario"]
+    prof = USER_PROFILES.get(u)
+    return render_template("dashboard.html", usuario=u, rol=prof["rol"], perfil_tipo=prof["perfil_tipo"], cart=get_cart(), t=t)
 
 @app.route("/accesos/<tipo>")
 def accesos(tipo):
     tipo = tipo.lower()
-    if tipo not in ["ventas", "compras", "servicios"]:
-        abort(404)
+    if tipo not in ["ventas","compras","servicios"]: abort(404)
+    # combinamos companies + perfiles
+    all_data = COMPANIES + list(USER_PROFILES.values())
     if tipo == "servicios":
-        data = [c for c in COMPANIES if c["perfil_tipo"] == "servicios"]
+        data = [c for c in all_data if c["perfil_tipo"] == "servicios"]
     else:
-        data = [c for c in COMPANIES if c["perfil_tipo"] == "compra_venta"]
+        data = [c for c in all_data if c["perfil_tipo"] == "compra_venta"]
     return render_template("accesos.html", tipo=tipo, data=data, t=t)
 
 @app.route("/empresa/<slug>")
 def empresa(slug):
     comp = next((c for c in COMPANIES if c["slug"] == slug), None)
     if not comp:
-        prof = USER_PROFILES.get(slug)
-        if not prof: abort(404)
-        return render_template("empresa.html", comp=prof, es_user=True, t=t)
-    return render_template("empresa.html", comp=comp, es_user=False, t=t)
+        comp = USER_PROFILES.get(slug)
+    if not comp: abort(404)
+    return render_template("empresa.html", comp=comp, t=t)
 
 @app.route("/cart/add", methods=["POST"])
 def cart_add():
-    item = request.form.to_dict()
     cart = get_cart()
-    cart.append(item)
+    cart.append(request.form.to_dict())
     session["cart"] = cart
     return redirect(request.referrer or url_for("dashboard"))
-
-@app.route("/perfil", methods=["GET", "POST"])
-def perfil():
-    if not login_required():
-        return redirect(url_for("login"))
-    username = session["usuario"]
-    prof = USER_PROFILES.get(username)
-    if not prof: abort(404)
-
-    msg = None
-    if request.method == "POST":
-        action = request.form.get("action")
-        if action == "save_profile":
-            prof["empresa"] = request.form.get("empresa", prof["empresa"])
-            prof["email"] = request.form.get("email", prof["email"])
-            prof["telefono"] = request.form.get("telefono", prof["telefono"])
-            prof["direccion"] = request.form.get("direccion", prof["direccion"])
-            prof["rut"] = request.form.get("rut", prof["rut"])
-            prof["descripcion"] = request.form.get("descripcion", prof["descripcion"])
-            msg = t("Perfil actualizado.", "Profile updated.", "檔案已更新。")
-        elif action == "add_item":
-            if prof.get("perfil_tipo") == "servicios":
-                servicio = request.form.get("servicio", "")
-                capacidad = request.form.get("capacidad", "")
-                ubicacion = request.form.get("ubicacion", "")
-                if servicio:
-                    prof["items"].append({"tipo": "servicio", "servicio": servicio, "capacidad": capacidad, "ubicacion": ubicacion})
-                    msg = t("Servicio agregado.", "Service added.", "已添加服務。")
-            else:
-                subtipo = request.form.get("subtipo", "oferta")
-                producto = request.form.get("producto", "")
-                cantidad = request.form.get("cantidad", "")
-                origen = request.form.get("origen", "")
-                precio = request.form.get("precio", "")
-                if producto:
-                    prof["items"].append({"tipo": subtipo, "producto": producto, "cantidad": cantidad, "origen": origen, "precio": precio})
-                    msg = t("Ítem agregado.", "Item added.", "已添加項目。")
-    return render_template("perfil.html", perfil=prof, mensaje=msg, t=t)
 
 # ---------------------------
 # Errores
 # ---------------------------
 @app.errorhandler(404)
 def not_found(e):
-    return render_template("error.html", code=404, message=t("No encontrado", "Not found", "未找到"), t=t), 404
+    return render_template("error.html", code=404, message="No encontrado", t=t), 404
 
 @app.errorhandler(500)
 def server_error(e):
-    return render_template("error.html", code=500, message=t("Error interno", "Internal server error", "內部錯誤"), t=t), 500
+    return render_template("error.html", code=500, message="Error interno", t=t), 500
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", "5000"))
-    app.run(host="0.0.0.0", port=port, debug=True)
+    app.run(debug=True)
