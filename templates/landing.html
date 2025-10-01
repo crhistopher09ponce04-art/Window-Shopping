@@ -1,9 +1,51 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="text-center mt-5">
-    <h1>🌍 Bienvenido a Window Shopping</h1>
-    <p class="lead">Conecta productores, exportadores y compradores en todo el mundo.</p>
-    <a href="{{ url_for('login') }}" class="btn btn-custom btn-lg">Iniciar Sesión</a>
-    <a href="{{ url_for('register') }}" class="btn btn-outline-dark btn-lg">Registrarse</a>
+
+<!-- HERO -->
+<div class="card p-5 mb-4">
+  <div class="row align-items-center">
+    <div class="col-lg-7">
+      <h1 class="mb-3">Conecta productores, plantas, servicios y clientes del mundo</h1>
+      <p class="lead text-muted">
+        Vende y compra fruta, gestiona servicios logísticos, crea tu vitrina y encuentra oportunidades reales.
+      </p>
+
+      {% if session.get('usuario') %}
+        <a href="{{ url_for('dashboard') }}" class="btn btn-custom me-2">Ir a mi Dashboard</a>
+      {% else %}
+        <a href="{{ url_for('login') }}" class="btn btn-custom me-2">Iniciar Sesión</a>
+        <a href="{{ url_for('register_router') }}" class="btn btn-outline-dark">Crear cuenta</a>
+      {% endif %}
+    </div>
+    <div class="col-lg-5 d-none d-lg-block">
+      <img class="img-fluid rounded" alt="hero" src="https://images.unsplash.com/photo-1518843875459-f738682238a6?q=80&w=1400&auto=format&fit=crop">
+    </div>
+  </div>
 </div>
+
+<!-- CARDS DE ACCESO RÁPIDO -->
+<div class="row">
+  <div class="col-md-4">
+    <div class="card p-4 h-100">
+      <h5>Ventas</h5>
+      <p class="text-muted">Publica tus productos o servicios con múltiples ítems y condiciones.</p>
+      <a href="{{ url_for('accesos', tipo='ventas') }}" class="btn btn-outline-dark">Explorar ventas</a>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card p-4 h-100">
+      <h5>Compras</h5>
+      <p class="text-muted">Encuentra proveedores por rol, país, precio y disponibilidad.</p>
+      <a href="{{ url_for('accesos', tipo='compras') }}" class="btn btn-outline-dark">Buscar compras</a>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card p-4 h-100">
+      <h5>Centro de Ayuda</h5>
+      <p class="text-muted">Manual, preguntas frecuentes y contacto directo.</p>
+      <a href="{{ url_for('help_center') }}" class="btn btn-outline-dark">Ir al Centro de Ayuda</a>
+    </div>
+  </div>
+</div>
+
 {% endblock %}
