@@ -1,15 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
-<section class="hero">
-  <div class="hero-text">
-    <h2>{{ _("brand") }}</h2>
-    <p>B2B {{ _("fruit") }} & {{ _("service") }} marketplace.</p>
-    <div class="cta">
-      <a class="btn" href="{{ url_for('login') }}">{{ _("login") }}</a>
-      <a class="btn ghost" href="{{ url_for('register') }}">{{ _("register") }}</a>
-      <a class="btn secondary" href="{{ url_for('help_center') }}">{{ _("help") }}</a>
-    </div>
+<section class="hero card">
+  <h2>{{ tr('home_title') }}</h2>
+  <p>Conecta productores, plantas, packings, frigoríficos, exportadores, clientes extranjeros y proveedores de servicios.</p>
+  <div class="actions">
+    <a class="btn btn-primary" href="{{ url_for('login') }}">🔑 {{ tr('login') }}</a>
+    <a class="btn btn-secondary" href="{{ url_for('register') }}">📝 {{ tr('register') }}</a>
+    <a class="btn" href="{{ url_for('help_center') }}">❓ {{ tr('help') }}</a>
   </div>
-  <div class="hero-art" aria-hidden="true"></div>
 </section>
 {% endblock %}
