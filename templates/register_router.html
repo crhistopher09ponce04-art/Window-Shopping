@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+  <h2>📝 {{ t("Crear cuenta", "Create account") }}</h2>
+  <p>{{ t("Selecciona tu tipo de cuenta:", "Choose your account type:") }}</p>
+
+  <div class="grid-3 mt-2">
+    <a class="tile" href="{{ url_for('register', nac='nacional') }}">{{ t("Nacional", "National") }}</a>
+    <a class="tile" href="{{ url_for('register', nac='extranjero') }}">{{ t("Extranjero", "Foreign") }}</a>
+    <a class="tile" href="#">{{ t("Ver ayuda de registro (pronto)", "See registration help (soon)") }}</a>
+  </div>
+  <p class="mt-2" style="opacity:.8;">* {{ t("Demo: usa usuarios de prueba desde la pantalla de ingreso.", "Demo: use demo users from login screen.") }}</p>
+</div>
+{% endblock %}
