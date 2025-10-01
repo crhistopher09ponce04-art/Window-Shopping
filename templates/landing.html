@@ -1,10 +1,9 @@
 {% extends "base.html" %}
-
 {% block content %}
-<div class="text-center">
-    <h1 class="mt-5">🌍 Bienvenido a Window Shopping</h1>
-    <p class="lead">Conecta exportadores, compradores y proveedores de servicios en un solo lugar.</p>
-    <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg">Inicia Sesión</a>
-    <a href="{{ url_for('register') }}" class="btn btn-success btn-lg">Regístrate</a>
+<div class="text-center p-5 bg-light rounded shadow">
+    <h1 class="mb-3">🚀 Bienvenido a Window Shopping</h1>
+    <p class="lead">Tu plataforma para conectar exportadores, importadores y servicios logísticos.</p>
+    <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg">Iniciar Sesión</a>
+    <a href="{{ url_for('register') }}" class="btn btn-success btn-lg">Registrarse</a>
 </div>
 {% endblock %}
