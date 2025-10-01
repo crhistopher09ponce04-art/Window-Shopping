@@ -1,50 +1,22 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="panel">
-  {% set title = {'ventas': t('Ofertas de venta','Sales offers','销售报价'),
-                  'compras': t('Demandas de compra','Purchase demands','采购需求'),
-                  'servicios': t('Servicios disponibles','Available services','可用服务')} %}
-  <h3 style="margin:0 0 10px 0;">{{ title[tipo] }}</h3>
+<h2>{{ t("Accesos - " + tipo.capitalize(), "Access - " + tipo.capitalize(), "访问 - " + tipo.capitalize()) }}</h2>
 
-  <form class="searchbar" method="get">
-    <input type="text" name="q" value="{{ q or '' }}" placeholder="{{ t('Buscar por producto, empresa, ubicación…','Search by item, company, location…','按品项、公司或地点搜索…') }}">
-    <button class="btn btn-outline">🔎 {{ t('Buscar','Search','搜索') }}</button>
-  </form>
-
-  {% if data %}
-    <div class="grid grid-4">
-      {% for it in data %}
-      <div class="tile">
-        <div class="badge">{{ it.id }}</div>
-        <h4 style="margin:10px 0 4px 0;">{{ it.item }}</h4>
-        <div class="meta">{{ it.company }} — {{ it.location }}</div>
-        <div class="price">{{ it.price }}</div>
-        <div class="meta mt-1">{{ it.qty }} • {{ it.spec }}</div>
-
-        <div class="mt-2">
-          <button class="btn btn-green me-1" onclick="addToCart('{{ tipo }}','{{ it.id }}')">🛒 {{ t('Agregar','Add','加入') }}</button>
-          <button class="btn btn-red btn-outline" onclick="hideItem('{{ tipo }}','{{ it.id }}')">✖ {{ t('Ocultar','Hide','隐藏') }}</button>
+{% if data %}
+  <ul class="listado-items">
+    {% for item in data %}
+      <li>
+        <span>{{ item }}</span>
+        <div class="acciones">
+          <a href="{{ url_for('add_carrito', item=item) }}" class="btn btn-success">🛒 {{ t("Agregar", "Add", "加入") }}</a>
+          <a href="#" onclick="this.parentElement.parentElement.remove()" class="btn btn-danger">❌ {{ t("Eliminar de vista", "Remove from view", "从视图中删除") }}</a>
         </div>
-      </div>
-      {% endfor %}
-    </div>
-  {% else %}
-    <div class="flash alert-warn">{{ t("No hay registros disponibles.","No records available.","暂无记录") }}</div>
-  {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>{{ t("No hay registros disponibles.", "No records available.", "没有可用记录。") }}</p>
+{% endif %}
 
-  <div class="mt-3">
-    <a href="{{ url_for('dashboard') }}" class="btn btn-outline">⬅️ {{ t("Volver","Back","返回") }}</a>
-  </div>
-</div>
-
-<script>
-async function addToCart(tipo,id){
-  await fetch(`{{ url_for('cart_add', tipo='__t__', item_id='__i__') }}`.replace('__t__',tipo).replace('__i__',id),{method:'POST'});
-  alert("{{ t('Agregado al carrito','Added to cart','已加入购物车') }}");
-}
-async function hideItem(tipo,id){
-  await fetch(`{{ url_for('hide_item', tipo='__t__', item_id='__i__') }}`.replace('__t__',tipo).replace('__i__',id),{method:'POST'});
-  location.reload();
-}
-</script>
+<a href="{{ url_for('dashboard') }}" class="btn btn-primary mt-3">⬅️ {{ t("Volver", "Back", "返回") }}</a>
 {% endblock %}
