@@ -1,121 +1,63 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="container">
-    <div class="card mt-4 shadow">
-        <div class="card-body">
-            <h3 class="card-title text-center">👤 {{ _('Mi Perfil') }}</h3>
-            <h6 class="text-muted text-center">{{ company.role }}</h6>
-            <hr>
+<h2>👤 Mi Perfil</h2>
 
-            <!-- Datos básicos -->
-            <form method="post" class="mb-4">
-                <div class="row g-2">
-                    <div class="col-md-6">
-                        <label><strong>{{ _('Nombre de la Empresa') }}</strong></label>
-                        <input type="text" class="form-control" name="name" value="{{ company.name }}">
-                    </div>
-                    <div class="col-md-6">
-                        <label><strong>{{ _('Identificador Fiscal (RUT/EORI)') }}</strong></label>
-                        <input type="text" class="form-control" name="tax_id" value="{{ company.tax_id }}">
-                    </div>
-                    <div class="col-md-4">
-                        <label><strong>{{ _('Ciudad') }}</strong></label>
-                        <input type="text" class="form-control" name="city" value="{{ company.city }}">
-                    </div>
-                    <div class="col-md-4">
-                        <label><strong>{{ _('País') }}</strong></label>
-                        <input type="text" class="form-control" name="country" value="{{ company.country }}">
-                    </div>
-                    <div class="col-md-4">
-                        <label><strong>{{ _('Teléfono') }}</strong></label>
-                        <input type="text" class="form-control" name="phone" value="{{ company.phone }}">
-                    </div>
-                    <div class="col-md-6">
-                        <label><strong>{{ _('Email') }}</strong></label>
-                        <input type="email" class="form-control" name="email" value="{{ company.email }}">
-                    </div>
-                </div>
-
-                <hr>
-
-                <!-- Multi-items -->
-                <h5 class="text-primary">{{ _('Mis Ofertas / Solicitudes') }}</h5>
-                {% if items and items|length > 0 %}
-                    <table class="table table-bordered mt-3">
-                        <thead class="table-light">
-                            <tr>
-                                <th>{{ _('Tipo') }}</th>
-                                <th>{{ _('Producto / Servicio') }}</th>
-                                <th>{{ _('Variedad / Detalle') }}</th>
-                                <th>{{ _('Cantidad') }}</th>
-                                <th>{{ _('Unidad') }}</th>
-                                <th>{{ _('Precio') }}</th>
-                                <th>{{ _('Acción') }}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for i, item in enumerate(items) %}
-                            <tr>
-                                <td>{{ item.type }}</td>
-                                <td>{{ item.name }}</td>
-                                <td>{{ item.variety }}</td>
-                                <td>{{ item.quantity }}</td>
-                                <td>{{ item.unit }}</td>
-                                <td>{{ item.price }}</td>
-                                <td>
-                                    <form method="post" style="display:inline;">
-                                        <input type="hidden" name="remove_item" value="{{ i }}">
-                                        <button type="submit" class="btn btn-sm btn-danger">🗑 {{ _('Eliminar') }}</button>
-                                    </form>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                {% else %}
-                    <p class="text-muted">{{ _('Aún no has agregado ítems.') }}</p>
-                {% endif %}
-
-                <!-- Formulario agregar item -->
-                <div class="row g-2 mt-4">
-                    <div class="col-md-3">
-                        <select name="item_type" class="form-control" required>
-                            <option value="fruta">{{ _('Fruta') }}</option>
-                            <option value="servicio">{{ _('Servicio') }}</option>
-                            <option value="solicitud">{{ _('Solicitud') }}</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <input type="text" class="form-control" name="item_name" placeholder="{{ _('Producto / Servicio') }}" required>
-                    </div>
-                    <div class="col-md-2">
-                        <input type="text" class="form-control" name="item_variety" placeholder="{{ _('Variedad / Detalle') }}">
-                    </div>
-                    <div class="col-md-2">
-                        <input type="number" class="form-control" name="item_quantity" placeholder="{{ _('Cantidad') }}" min="1" required>
-                    </div>
-                    <div class="col-md-1">
-                        <select name="item_unit" class="form-control">
-                            <option value="tons">tons</option>
-                            <option value="kg">kg</option>
-                            <option value="cajas">{{ _('cajas') }}</option>
-                        </select>
-                    </div>
-                    <div class="col-md-1">
-                        <input type="text" class="form-control" name="item_price" placeholder="{{ _('Precio') }}">
-                    </div>
-                </div>
-
-                <div class="d-grid mt-3">
-                    <button type="submit" name="add_item" value="1" class="btn btn-success">➕ {{ _('Agregar Ítem') }}</button>
-                </div>
-
-                <hr>
-                <div class="d-grid">
-                    <button type="submit" class="btn btn-primary">💾 {{ _('Guardar Cambios') }}</button>
-                </div>
-            </form>
+<div class="card p-4 mb-4">
+    <h4>Datos de la Empresa</h4>
+    <form method="POST">
+        <input type="hidden" name="update_profile" value="1">
+        <div class="row mb-2">
+            <div class="col-md-6"><label>Nombre</label><input type="text" name="name" value="{{ company[4] or '' }}" class="form-control"></div>
+            <div class="col-md-6"><label>RUT/ID</label><input type="text" name="tax_id" value="{{ company[5] or '' }}" class="form-control"></div>
         </div>
-    </div>
+        <div class="row mb-2">
+            <div class="col-md-6"><label>Ciudad</label><input type="text" name="city" value="{{ company[6] or '' }}" class="form-control"></div>
+            <div class="col-md-6"><label>País</label><input type="text" name="country" value="{{ company[7] or '' }}" class="form-control"></div>
+        </div>
+        <div class="row mb-2">
+            <div class="col-md-6"><label>Teléfono</label><input type="text" name="phone" value="{{ company[8] or '' }}" class="form-control"></div>
+            <div class="col-md-6"><label>Email</label><input type="text" name="email" value="{{ company[9] or '' }}" class="form-control"></div>
+        </div>
+        <button type="submit" class="btn btn-custom">Actualizar Datos</button>
+    </form>
+</div>
+
+<div class="card p-4">
+    <h4>Mis Ítems</h4>
+    <form method="POST">
+        <input type="hidden" name="add_item" value="1">
+        <div class="row mb-2">
+            <div class="col-md-4"><input type="text" name="item_name" class="form-control" placeholder="Producto/Servicio"></div>
+            <div class="col-md-2"><input type="text" name="item_variety" class="form-control" placeholder="Variedad"></div>
+            <div class="col-md-2"><input type="text" name="item_quantity" class="form-control" placeholder="Cantidad"></div>
+            <div class="col-md-2"><input type="text" name="item_unit" class="form-control" placeholder="Unidad (kg, ton, cajas)"></div>
+            <div class="col-md-2"><input type="text" name="item_price" class="form-control" placeholder="Precio"></div>
+        </div>
+        <div class="mb-2">
+            <select name="item_type" class="form-control">
+                <option value="venta">Venta</option>
+                <option value="compra">Compra</option>
+                <option value="servicio">Servicio</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-success">➕ Agregar Ítem</button>
+    </form>
+
+    <hr>
+    <h5>Ítems Registrados</h5>
+    {% if items %}
+        <ul class="list-group">
+            {% for item in items %}
+                <li class="list-group-item d-flex justify-content-between">
+                    {{ item[3] }} - {{ item[4] }} {{ item[5] }} {{ item[6] }} - ${{ item[7] }}
+                    <form method="POST" style="margin:0;">
+                        <button type="submit" name="remove_item" value="{{ item[0] }}" class="btn btn-danger btn-sm">🗑 Eliminar</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="text-muted">No hay ítems aún.</p>
+    {% endif %}
 </div>
 {% endblock %}
