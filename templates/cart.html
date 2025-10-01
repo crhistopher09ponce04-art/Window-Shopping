@@ -1,50 +1,18 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>{{ _("cart") }}</h2>
-<div class="card">
-  {% if cart %}
-    <table class="table">
-      <thead>
-        <tr>
-          <th>#</th><th>{{ _("name") }}</th><th>{{ _("role") }}</th><th>{{ _("rubro") }}</th><th>{{ _("type") }}</th>
-          <th>{{ _("product") }}</th><th>{{ _("variety") }}</th><th>{{ _("quantity") }}</th><th>{{ _("price") }}</th><th>{{ _("notes") }}</th><th></th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for it in cart %}
-        <tr>
-          <td>{{ loop.index }}</td>
-          <td>{{ it.company_name }}</td>
-          <td>{{ it.role }}</td>
-          <td>{{ it.rubro }}</td>
-          <td>{{ it.type }}</td>
-          <td>{{ it.product }}</td>
-          <td>{{ it.variety }}</td>
-          <td>{{ it.quantity }} {{ _("units."+it.unit) }}</td>
-          <td>{{ it.price or '-' }}</td>
-          <td>{{ it.notes or '' }}</td>
-          <td>
-            <form method="post">
-              <input type="hidden" name="action" value="remove:{{ loop.index0 }}">
-              <button class="btn ghost" type="submit">{{ _("clear") }}</button>
-            </form>
-          </td>
-        </tr>
+<h2>Carrito</h2>
+
+{% if cart %}
+    <ul>
+        {% for c in cart %}
+            <li>{{ c['name'] }} - {{ c['variety'] }} - {{ c['quantity'] }} {{ c['measure'] }}</li>
         {% endfor %}
-      </tbody>
-    </table>
-    <div class="cart-actions">
-      <form method="post">
-        <input type="hidden" name="action" value="clear">
-        <button class="btn secondary" type="submit">{{ _("clear") }}</button>
-      </form>
-      <form method="post">
-        <input type="hidden" name="action" value="checkout">
-        <button class="btn" type="submit">Enviar solicitud</button>
-      </form>
-    </div>
-  {% else %}
-    <p>{{ _("empty_list") }}</p>
-  {% endif %}
-</div>
+    </ul>
+    <form method="POST">
+        <button name="action" value="clear">Vaciar carrito</button>
+        <button name="action" value="checkout">Finalizar pedido</button>
+    </form>
+{% else %}
+    <p>Tu carrito está vacío.</p>
+{% endif %}
 {% endblock %}
