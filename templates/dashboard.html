@@ -1,18 +1,25 @@
 {% extends "base.html" %}
-
 {% block content %}
-<h2>👤 {{ usuario }} ({{ rol }})</h2>
-<p>{{ t("Selecciona una acción:", "Select an action:") }}</p>
+<div class="card">
+  <h2>{{ t("Panel de Usuario", "User Dashboard") }}</h2>
+  <p>{{ t("Bienvenido", "Welcome") }} <strong>{{ usuario }}</strong></p>
+  <p>{{ t("Tu rol es", "Your role is") }}: <strong>{{ rol }}</strong></p>
 
-<div class="btn-group">
-  <a href="{{ url_for('accesos', tipo='ventas') }}" class="btn btn-success me-2">
-    📦 {{ t("Mis Ventas", "My Sales") }}
-  </a>
-  <a href="{{ url_for('accesos', tipo='compras') }}" class="btn btn-warning me-2">
-    🛒 {{ t("Mis Compras", "My Purchases") }}
-  </a>
-  <a href="{{ url_for('cart') }}" class="btn btn-info">
-    🛍️ {{ t("Mi Carrito", "My Cart") }}
-  </a>
+  {% if my_company %}
+    <h3>{{ t("Datos de tu empresa", "Your Company Data") }}</h3>
+    <ul>
+      <li><strong>{{ t("Nombre", "Name") }}:</strong> {{ my_company.name }}</li>
+      <li><strong>{{ t("Ciudad", "City") }}:</strong> {{ my_company.city }}</li>
+      <li><strong>{{ t("País", "Country") }}:</strong> {{ my_company.country }}</li>
+      <li><strong>{{ t("Fruta", "Fruit") }}:</strong> {{ my_company.fruit }} ({{ my_company.variety }})</li>
+      <li><strong>{{ t("Volumen", "Volume") }}:</strong> {{ my_company.volume_tons }} tons</li>
+      <li><strong>{{ t("Precio caja", "Box Price") }}:</strong> ${{ my_company.price_box }}</li>
+      <li><strong>{{ t("Precio kilo", "Kg Price") }}:</strong> ${{ my_company.price_kg }}</li>
+      <li><strong>{{ t("Teléfono", "Phone") }}:</strong> {{ my_company.phone }}</li>
+      <li><strong>{{ t("Email", "Email") }}:</strong> {{ my_company.email }}</li>
+    </ul>
+  {% else %}
+    <p>{{ t("No tienes empresa asociada.", "You don't have a company assigned.") }}</p>
+  {% endif %}
 </div>
 {% endblock %}
