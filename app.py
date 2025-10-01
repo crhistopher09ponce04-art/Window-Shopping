@@ -1,168 +1,421 @@
-import os
-from flask import Flask, render_template, request, redirect, url_for, session, abort, flash
+import os, sqlite3
+from flask import Flask, render_template, request, redirect, url_for, session, flash, g, abort
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "clave_secreta_window_shopping")
 
-# ------------------------
-# i18n simple (ES/EN)
-# ------------------------
+DB_PATH = "data.db"
+
+# ---------------------------
+# DB helpers
+# ---------------------------
+def get_db():
+    if "db" not in g:
+        g.db = sqlite3.connect(DB_PATH)
+        g.db.row_factory = sqlite3.Row
+    return g.db
+
+@app.teardown_appcontext
+def close_db(error=None):
+    db = g.pop("db", None)
+    if db:
+        db.close()
+
+def init_db():
+    db = get_db()
+    db.executescript("""
+    CREATE TABLE IF NOT EXISTS users (
+        username TEXT PRIMARY KEY,
+        password TEXT NOT NULL,
+        rol TEXT NOT NULL,
+        company_id TEXT NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS companies (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        role TEXT NOT NULL,
+        city TEXT,
+        country TEXT,
+        phone TEXT,
+        email TEXT
+    );
+    CREATE TABLE IF NOT EXISTS items (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        company_id TEXT NOT NULL,
+        name TEXT NOT NULL,
+        variety TEXT,
+        measure TEXT NOT NULL,   -- kg | tons | boxes | units
+        quantity REAL NOT NULL DEFAULT 0,
+        price REAL NOT NULL DEFAULT 0,
+        notes TEXT
+    );
+    """)
+    db.commit()
+
+def seed_demo():
+    db = get_db()
+    has_users = db.execute("SELECT COUNT(*) FROM users").fetchone()[0] > 0
+    has_companies = db.execute("SELECT COUNT(*) FROM companies").fetchone()[0] > 0
+    if not has_companies:
+        companies = [
+            ("C001","Agrícola Montolín","Productor","Maule","Chile","+56 9 8765 4321","ventas@montolin.cl"),
+            ("C002","Planta Ejemplo","Planta","Talca","Chile","+56 9 5555 5555","planta@ejemplo.cl"),
+            ("C003","Pukiyai Packing","Packing","Rancagua","Chile","+56 2 2345 6789","info@pukiyai.cl"),
+            ("C004","Frigo Sur","Frigorífico","Curicó","Chile","+56 72 222 3333","contacto@frigosur.cl"),
+            ("C005","Tuniche Fruit","Exportador","Valparaíso","Chile","+56 9 8123 4567","contacto@tuniche.cl"),
+            ("X001","Chensen Ogen Ltd.","Cliente extranjero","Shenzhen","China","+86 138 0000 1111","chen@ogen.cn"),
+            ("S001","Transporte Andes","Transporte","Santiago","Chile","+56 2 3456 7890","contacto@transporteandes.cl"),
+            ("S002","Aduanas Chile Ltda.","Agencia de aduana","Valparaíso","Chile","+56 2 9999 1111","aduana@chile.cl"),
+            ("S003","Puerto Seco SA","Extraportuario","San Antonio","Chile","+56 35 1234 567","info@puertoseco.cl"),
+        ]
+        db.executemany("INSERT INTO companies VALUES (?,?,?,?,?,?,?)", companies)
+        db.commit()
+    if not has_users:
+        users = [
+            ("productor1","1234","Productor","C001"),
+            ("planta1","1234","Planta","C002"),
+            ("packing1","1234","Packing","C003"),
+            ("frigorifico1","1234","Frigorífico","C004"),
+            ("exportador1","1234","Exportador","C005"),
+            ("cliente1","1234","Cliente extranjero","X001"),
+            ("transporte1","1234","Transporte","S001"),
+            ("aduana1","1234","Agencia de aduana","S002"),
+            ("extraportuario1","1234","Extraportuario","S003"),
+        ]
+        db.executemany("INSERT INTO users VALUES (?,?,?,?)", users)
+        db.commit()
+    # si no hay items, cargamos algunos demo
+    has_items = get_db().execute("SELECT COUNT(*) FROM items").fetchone()[0] > 0
+    if not has_items:
+        items = [
+            ("C001","Ciruela","Black Diamond","tons",50,400,"Calibre 50+, buena condición"),
+            ("C003","Ciruela","Black Amber","tons",40,420,"Packing rápido y controlado"),
+            ("C004","Frío","Servicio Frigorífico","units",1,16500,"Espacio disponible 60 tons"),
+            ("C005","Ciruela","Angeleno","tons",30,380,"Listo para exportar"),
+            ("S001","Transporte","Camión Reefer","units",1,0,"Rutas centro-sur"),
+            ("S002","Agenciamiento","Despacho aduana","units",1,0,"Documentación completa"),
+        ]
+        db.executemany(
+            "INSERT INTO items(company_id,name,variety,measure,quantity,price,notes) VALUES (?,?,?,?,?,?,?)",
+            items
+        )
+        db.commit()
+
+# ---------------------------
+# Idiomas simples
+# ---------------------------
 LANGS = {"es": "Español", "en": "English"}
 
 def get_lang():
-    lang = session.get("lang", "es")
+    lang = session.get("lang","es")
     return lang if lang in LANGS else "es"
 
-def t(es, en):
-    return es if get_lang() == "es" else en
+def tr(key):
+    lang = get_lang()
+    STR = {
+        "es": {
+            "home_title": "Plataforma B2B de fruta y servicios",
+            "login": "Iniciar Sesión",
+            "logout": "Cerrar Sesión",
+            "dashboard": "Panel",
+            "profile": "Mi Perfil",
+            "explore": "Explorar Mercado",
+            "cart": "Carrito",
+            "help": "Centro de Ayuda",
+            "register": "Registro",
+            "back": "Volver"
+        },
+        "en": {
+            "home_title": "B2B platform for produce & services",
+            "login": "Log In",
+            "logout": "Log Out",
+            "dashboard": "Dashboard",
+            "profile": "My Profile",
+            "explore": "Explore Market",
+            "cart": "Cart",
+            "help": "Help Center",
+            "register": "Register",
+            "back": "Back"
+        }
+    }
+    return STR.get(lang, STR["es"]).get(key, key)
 
 @app.context_processor
 def inject_globals():
-    return {
-        "LANGS": LANGS,
-        "cur_lang": get_lang(),
-        "_": lambda key: {
-            "brand": "Window Shopping" if get_lang() == "en" else "Ventana de Compras",
-            "back": "Back" if get_lang() == "en" else "Volver",
-            "register": "Register" if get_lang() == "en" else "Registro",
-            "login": "Login" if get_lang() == "en" else "Iniciar Sesión",
-            "help": "Help Center" if get_lang() == "en" else "Centro de Ayuda",
-            "cart": "Cart" if get_lang() == "en" else "Carrito",
-        }.get(key, key)
-    }
+    # Nota: '_' queda disponible por compatibilidad. Si pasas un string, lo devuelve tal cual.
+    return {"LANGS": LANGS, "cur_lang": get_lang(), "tr": tr, "_": lambda s: s}
 
 @app.route("/lang/<code>")
 def set_lang(code):
     session["lang"] = code if code in LANGS else "es"
     return redirect(request.args.get("next") or url_for("home"))
 
-# ------------------------
-# Roles
-# ------------------------
-FRUIT_ROLES = {"Productor", "Planta", "Packing", "Frigorífico", "Exportador", "Cliente extranjero"}
-SERVICE_ROLES = {"Packing", "Frigorífico", "Transporte", "Agencia de aduana", "Extraportuario", "Planta", "Exportador"}
-
-# ------------------------
-# Empresas demo (seed)
-# ------------------------
-empresas = {
-    # Fruta
-    "C001": {"id": "C001", "name": "Agrícola Montolín", "role": "Productor", "city": "Maule", "country": "Chile",
-             "fruit": "Ciruela", "variety": "Black Diamond", "volume_tons": 50, "price_box": 17500, "price_kg": 400,
-             "phone": "+56 9 8765 4321", "email": "ventas@montolin.cl"},
-    "C002": {"id": "C002", "name": "Planta Ejemplo", "role": "Planta", "city": "Talca", "country": "Chile",
-             "fruit": "Ciruela", "variety": "D'Agen", "volume_tons": 28, "price_box": 16800, "price_kg": 390,
-             "phone": "+56 9 5555 5555", "email": "planta@ejemplo.cl"},
-    "C003": {"id": "C003", "name": "Pukiyai Packing", "role": "Packing", "city": "Rancagua", "country": "Chile",
-             "fruit": "Ciruela", "variety": "Black Amber", "volume_tons": 40, "price_box": 18000, "price_kg": 420,
-             "phone": "+56 2 2345 6789", "email": "info@pukiyai.cl"},
-    "C004": {"id": "C004", "name": "Frigo Sur", "role": "Frigorífico", "city": "Curicó", "country": "Chile",
-             "fruit": "Ciruela", "variety": "Angeleno", "volume_tons": 60, "price_box": 16500, "price_kg": 370,
-             "phone": "+56 72 222 3333", "email": "contacto@frigosur.cl"},
-    "C005": {"id": "C005", "name": "Tuniche Fruit", "role": "Exportador", "city": "Valparaíso", "country": "Chile",
-             "fruit": "Ciruela", "variety": "Black Diamond", "volume_tons": 30, "price_box": 17000, "price_kg": 380,
-             "phone": "+56 9 8123 4567", "email": "contacto@tuniche.cl"},
-
-    # Cliente exterior (fruta)
-    "X001": {"id": "X001", "name": "Chensen Ogen Ltd.", "role": "Cliente extranjero", "city": "Shenzhen", "country": "China",
-             "product_requested": "Ciruela fresca", "variety_requested": "Black Diamond", "volume_requested_tons": 50,
-             "phone": "+86 138 0000 1111", "email": "chen@ogen.cn"},
-
-    # Servicios
-    "S001": {"id": "S001", "name": "Transporte Andes", "role": "Transporte", "city": "Santiago", "country": "Chile",
-             "service": "Camiones refrigerados", "phone": "+56 2 3456 7890", "email": "contacto@transporteandes.cl"},
-    "S002": {"id": "S002", "name": "Aduanas Chile Ltda.", "role": "Agencia de aduana", "city": "Valparaíso", "country": "Chile",
-             "service": "Gestión documental y trámites", "phone": "+56 2 9999 1111", "email": "aduana@chile.cl"},
-    "S003": {"id": "S003", "name": "Puerto Seco SA", "role": "Extraportuario", "city": "San Antonio", "country": "Chile",
-             "service": "Almacenaje extraportuario", "phone": "+56 35 1234 567", "email": "info@puertoseco.cl"}
-}
-
-# ------------------------
-# Usuarios demo (1 por perfil)
-# ------------------------
-usuarios = {
-    "productor1": {"password": "1234", "rol": "Productor", "company_id": "C001"},
-    "planta1": {"password": "1234", "rol": "Planta", "company_id": "C002"},
-    "packing1": {"password": "1234", "rol": "Packing", "company_id": "C003"},
-    "frigorifico1": {"password": "1234", "rol": "Frigorífico", "company_id": "C004"},
-    "exportador1": {"password": "1234", "rol": "Exportador", "company_id": "C005"},
-    "cliente1": {"password": "1234", "rol": "Cliente extranjero", "company_id": "X001"},
-    "transporte1": {"password": "1234", "rol": "Transporte", "company_id": "S001"},
-    "aduana1": {"password": "1234", "rol": "Agencia de aduana", "company_id": "S002"},
-    "extraportuario1": {"password": "1234", "rol": "Extraportuario", "company_id": "S003"}
-}
-
-# ------------------------
-# Helpers
-# ------------------------
+# ---------------------------
+# Utilidades
+# ---------------------------
 def require_login():
     if "usuario" not in session:
-        flash(t("Inicia sesión para continuar.", "Log in to continue."))
+        flash("Inicia sesión para continuar.")
         return False
     return True
 
-# ------------------------
+def next_company_id():
+    db = get_db()
+    n = db.execute("SELECT COUNT(*) FROM companies").fetchone()[0] + 1
+    return f"C{n:03d}"
+
+# ---------------------------
 # Rutas públicas
-# ------------------------
+# ---------------------------
 @app.route("/")
 def home():
     if "usuario" in session:
         return redirect(url_for("dashboard"))
     return render_template("landing.html")
 
-@app.route("/login", methods=["GET", "POST"])
+@app.route("/login", methods=["GET","POST"])
 def login():
     if request.method == "GET":
         return render_template("login.html")
-    username = request.form.get("username", "").strip()
-    password = request.form.get("password", "").strip()
-    u = usuarios.get(username)
-    if u and u["password"] == password:
-        session["usuario"] = username
-        session["rol"] = u["rol"]
-        session["company_id"] = u["company_id"]
+    u = (request.form.get("username") or "").strip()
+    p = (request.form.get("password") or "").strip()
+    db = get_db()
+    user = db.execute("SELECT * FROM users WHERE username=?", (u,)).fetchone()
+    if user and user["password"] == p:
+        session["usuario"] = u
+        session["rol"] = user["rol"]
+        session["company_id"] = user["company_id"]
         session.setdefault("cart", [])
-        flash(t("Bienvenido", "Welcome"))
+        flash("¡Bienvenido!")
         return redirect(url_for("dashboard"))
-    return render_template("login.html", error=t("Usuario o contraseña incorrectos", "Invalid credentials"))
+    return render_template("login.html", error="Usuario o contraseña incorrectos")
 
-@app.route("/register")
+@app.route("/register", methods=["GET","POST"])
 def register():
-    return render_template("register.html")
+    if request.method == "GET":
+        return render_template("register.html")
+    # crear user + company
+    db = get_db()
+    username = (request.form.get("username") or "").strip()
+    password = (request.form.get("password") or "").strip()
+    rol = request.form.get("rol")
+    name = (request.form.get("name") or "").strip()
+    city = (request.form.get("city") or "").strip()
+    country = (request.form.get("country") or "").strip()
+    phone = (request.form.get("phone") or "").strip()
+    email = (request.form.get("email") or "").strip()
+
+    if not username or not password or not rol or not name:
+        return render_template("register.html", error="Completa los campos obligatorios.")
+
+    exists = db.execute("SELECT 1 FROM users WHERE username=?", (username,)).fetchone()
+    if exists:
+        return render_template("register.html", error="Ese usuario ya existe.")
+
+    cid = next_company_id()
+    db.execute("INSERT INTO companies(id,name,role,city,country,phone,email) VALUES (?,?,?,?,?,?,?)",
+               (cid, name, rol, city, country, phone, email))
+    db.execute("INSERT INTO users(username,password,rol,company_id) VALUES (?,?,?,?)",
+               (username, password, rol, cid))
+    db.commit()
+    flash("Cuenta creada, ya puedes iniciar sesión.")
+    return redirect(url_for("login"))
 
 @app.route("/help")
 def help_center():
     return render_template("help_center.html")
 
-# ------------------------
+@app.route("/manual")
+def manual():
+    return render_template("manual.html")
+
+# ---------------------------
 # Rutas privadas
-# ------------------------
+# ---------------------------
 @app.route("/dashboard")
 def dashboard():
     if not require_login(): return redirect(url_for("home"))
-    user = usuarios[session["usuario"]]
-    my_company = empresas.get(user["company_id"])
-    return render_template("dashboard.html", usuario=session["usuario"], rol=user["rol"], my_company=my_company)
+    db = get_db()
+    me = db.execute("SELECT * FROM companies WHERE id=?", (session["company_id"],)).fetchone()
+    my_items = db.execute("SELECT * FROM items WHERE company_id=? ORDER BY id DESC", (session["company_id"],)).fetchall()
+    return render_template("dashboard.html", me=me, items=my_items, usuario=session["usuario"], rol=session["rol"])
+
+@app.route("/mi-perfil", methods=["GET","POST"])
+def mi_perfil():
+    if not require_login(): return redirect(url_for("home"))
+    db = get_db()
+    cid = session["company_id"]
+    company = db.execute("SELECT * FROM companies WHERE id=?", (cid,)).fetchone()
+    if request.method == "POST":
+        db.execute("""UPDATE companies SET name=?, city=?, country=?, phone=?, email=? WHERE id=?""",
+                   (request.form.get("name"), request.form.get("city"), request.form.get("country"),
+                    request.form.get("phone"), request.form.get("email"), cid))
+        db.commit()
+        flash("Perfil actualizado.")
+        return redirect(url_for("mi_perfil"))
+    my_items = db.execute("SELECT * FROM items WHERE company_id=? ORDER BY id DESC", (cid,)).fetchall()
+    return render_template("mi_perfil.html", company=company, items=my_items)
+
+@app.route("/mi-perfil/items", methods=["POST"])
+def add_item():
+    if not require_login(): return redirect(url_for("home"))
+    db = get_db()
+    name = request.form.get("name")
+    variety = request.form.get("variety")
+    measure = request.form.get("measure") or "kg"
+    try:
+        quantity = float(request.form.get("quantity") or 0)
+    except:
+        quantity = 0
+    try:
+        price = float(request.form.get("price") or 0)
+    except:
+        price = 0
+    notes = request.form.get("notes")
+    if not name:
+        flash("El producto/servicio es obligatorio.")
+        return redirect(url_for("mi_perfil"))
+    db.execute("""INSERT INTO items(company_id,name,variety,measure,quantity,price,notes)
+                  VALUES (?,?,?,?,?,?,?)""",
+               (session["company_id"], name, variety, measure, quantity, price, notes))
+    db.commit()
+    flash("Ítem agregado.")
+    return redirect(url_for("mi_perfil"))
+
+@app.route("/mi-perfil/items/<int:item_id>/delete", methods=["POST"])
+def delete_item(item_id):
+    if not require_login(): return redirect(url_for("home"))
+    db = get_db()
+    # seguridad: que sea mío
+    owner = db.execute("SELECT company_id FROM items WHERE id=?", (item_id,)).fetchone()
+    if not owner: abort(404)
+    if owner["company_id"] != session["company_id"]:
+        abort(403)
+    db.execute("DELETE FROM items WHERE id=?", (item_id,))
+    db.commit()
+    flash("Ítem eliminado.")
+    return redirect(url_for("mi_perfil"))
+
+@app.route("/explorar")
+def explorar():
+    if not require_login(): return redirect(url_for("home"))
+    db = get_db()
+    q = (request.args.get("q") or "").strip().lower()
+    role = (request.args.get("role") or "").strip()
+    measure = (request.args.get("measure") or "").strip()
+    min_price = request.args.get("min_price")
+    max_price = request.args.get("max_price")
+
+    params = []
+    sql = """
+        SELECT i.*, c.name as company_name, c.role as company_role, c.city, c.country
+        FROM items i JOIN companies c ON c.id = i.company_id
+        WHERE i.company_id != ?
+    """
+    params.append(session["company_id"])
+
+    if q:
+        sql += " AND (LOWER(i.name) LIKE ? OR LOWER(i.variety) LIKE ? OR LOWER(c.name) LIKE ? OR LOWER(c.city) LIKE ? OR LOWER(c.country) LIKE ?)"
+        like = f"%{q}%"
+        params += [like, like, like, like, like]
+
+    if role:
+        sql += " AND c.role = ?"
+        params.append(role)
+
+    if measure:
+        sql += " AND i.measure = ?"
+        params.append(measure)
+
+    def to_float(v):
+        try: return float(v)
+        except: return None
+
+    lo = to_float(min_price)
+    hi = to_float(max_price)
+    if lo is not None:
+        sql += " AND i.price >= ?"
+        params.append(lo)
+    if hi is not None:
+        sql += " AND i.price <= ?"
+        params.append(hi)
+
+    sql += " ORDER BY i.id DESC"
+    rows = db.execute(sql, tuple(params)).fetchall()
+
+    # opciones de filtros
+    roles = [r[0] for r in db.execute("SELECT DISTINCT role FROM companies ORDER BY role").fetchall()]
+    return render_template("explorar.html", items=rows, roles=roles, values=request.args)
+
+@app.route("/detalle/<int:item_id>", methods=["GET","POST"])
+def detalle(item_id):
+    if not require_login(): return redirect(url_for("home"))
+    db = get_db()
+    item = db.execute("""
+        SELECT i.*, c.name as company_name, c.role as company_role, c.city, c.country, c.phone, c.email
+        FROM items i JOIN companies c ON c.id = i.company_id
+        WHERE i.id=?
+    """, (item_id,)).fetchone()
+    if not item: abort(404)
+    if request.method == "POST":
+        cart = session.get("cart", [])
+        cart.append({
+            "item_id": item["id"],
+            "company_id": item["company_id"],
+            "name": item["name"],
+            "variety": item["variety"],
+            "measure": item["measure"],
+            "quantity": request.form.get("quantity") or "1",
+            "price": item["price"],
+            "company_name": item["company_name"]
+        })
+        session["cart"] = cart
+        flash("Agregado al carrito.")
+        return redirect(url_for("cart"))
+    return render_template("detalle.html", item=item)
+
+@app.route("/cart", methods=["GET","POST"])
+def cart():
+    if not require_login(): return redirect(url_for("home"))
+    if request.method == "POST":
+        action = request.form.get("action")
+        if action == "clear":
+            session["cart"] = []
+            flash("Carrito vaciado.")
+        elif action == "checkout":
+            session["cart"] = []
+            flash("¡Solicitud enviada! Te contactaremos a la brevedad.")
+            return redirect(url_for("dashboard"))
+        elif action and action.startswith("remove:"):
+            idx = int(action.split(":")[1])
+            cart = session.get("cart", [])
+            if 0 <= idx < len(cart):
+                cart.pop(idx)
+            session["cart"] = cart
+            flash("Ítem eliminado.")
+    return render_template("cart.html", cart=session.get("cart", []))
 
 @app.route("/logout")
 def logout():
     session.clear()
     return redirect(url_for("home"))
 
-# ------------------------
+# ---------------------------
 # Errores
-# ------------------------
+# ---------------------------
 @app.errorhandler(404)
 def not_found(e):
-    return render_template("error.html", code=404, message=t("Recurso no encontrado", "Resource not found")), 404
+    return render_template("error.html", code=404, message="Recurso no encontrado"), 404
 
 @app.errorhandler(500)
 def server_error(e):
-    return render_template("error.html", code=500, message=t("Error interno", "Internal server error")), 500
+    return render_template("error.html", code=500, message="Error interno"), 500
 
-# ------------------------
-# Entrypoint local
-# ------------------------
+# ---------------------------
+# Start
+# ---------------------------
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port, debug=True)
+    with app.app_context():
+        init_db()
+        seed_demo()
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)), debug=True)
