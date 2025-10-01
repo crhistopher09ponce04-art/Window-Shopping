@@ -1,63 +1,25 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>👤 Mi Perfil</h2>
+<h2>{{ t("Mi perfil", "My profile") }}</h2>
+<p><b>{{ company.name }}</b> — {{ company.role }}</p>
+<p>{{ company.city }}, {{ company.country }}</p>
+<p>{{ company.phone }} | {{ company.email }}</p>
 
-<div class="card p-4 mb-4">
-    <h4>Datos de la Empresa</h4>
-    <form method="POST">
-        <input type="hidden" name="update_profile" value="1">
-        <div class="row mb-2">
-            <div class="col-md-6"><label>Nombre</label><input type="text" name="name" value="{{ company[4] or '' }}" class="form-control"></div>
-            <div class="col-md-6"><label>RUT/ID</label><input type="text" name="tax_id" value="{{ company[5] or '' }}" class="form-control"></div>
-        </div>
-        <div class="row mb-2">
-            <div class="col-md-6"><label>Ciudad</label><input type="text" name="city" value="{{ company[6] or '' }}" class="form-control"></div>
-            <div class="col-md-6"><label>País</label><input type="text" name="country" value="{{ company[7] or '' }}" class="form-control"></div>
-        </div>
-        <div class="row mb-2">
-            <div class="col-md-6"><label>Teléfono</label><input type="text" name="phone" value="{{ company[8] or '' }}" class="form-control"></div>
-            <div class="col-md-6"><label>Email</label><input type="text" name="email" value="{{ company[9] or '' }}" class="form-control"></div>
-        </div>
-        <button type="submit" class="btn btn-custom">Actualizar Datos</button>
-    </form>
-</div>
+<h3>{{ t("Mis ítems", "My items") }}</h3>
+<ul>
+{% for item in company.items %}
+  <li>{{ item.get("fruit") or item.get("service") }} — {{ item.get("variety") or item.get("availability") }} — {{ item.get("volume") or "" }} {{ item.get("price") or "" }}</li>
+{% endfor %}
+</ul>
 
-<div class="card p-4">
-    <h4>Mis Ítems</h4>
-    <form method="POST">
-        <input type="hidden" name="add_item" value="1">
-        <div class="row mb-2">
-            <div class="col-md-4"><input type="text" name="item_name" class="form-control" placeholder="Producto/Servicio"></div>
-            <div class="col-md-2"><input type="text" name="item_variety" class="form-control" placeholder="Variedad"></div>
-            <div class="col-md-2"><input type="text" name="item_quantity" class="form-control" placeholder="Cantidad"></div>
-            <div class="col-md-2"><input type="text" name="item_unit" class="form-control" placeholder="Unidad (kg, ton, cajas)"></div>
-            <div class="col-md-2"><input type="text" name="item_price" class="form-control" placeholder="Precio"></div>
-        </div>
-        <div class="mb-2">
-            <select name="item_type" class="form-control">
-                <option value="venta">Venta</option>
-                <option value="compra">Compra</option>
-                <option value="servicio">Servicio</option>
-            </select>
-        </div>
-        <button type="submit" class="btn btn-success">➕ Agregar Ítem</button>
-    </form>
-
-    <hr>
-    <h5>Ítems Registrados</h5>
-    {% if items %}
-        <ul class="list-group">
-            {% for item in items %}
-                <li class="list-group-item d-flex justify-content-between">
-                    {{ item[3] }} - {{ item[4] }} {{ item[5] }} {{ item[6] }} - ${{ item[7] }}
-                    <form method="POST" style="margin:0;">
-                        <button type="submit" name="remove_item" value="{{ item[0] }}" class="btn btn-danger btn-sm">🗑 Eliminar</button>
-                    </form>
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p class="text-muted">No hay ítems aún.</p>
-    {% endif %}
-</div>
+<h3>{{ t("Agregar nuevo ítem", "Add new item") }}</h3>
+<form method="post">
+    <input type="text" name="fruit" placeholder="Fruta">
+    <input type="text" name="variety" placeholder="Variedad">
+    <input type="text" name="volume" placeholder="Volumen (ej: 20 tons)">
+    <input type="text" name="price" placeholder="Precio (ej: USD 5000)">
+    <input type="text" name="service" placeholder="Servicio">
+    <input type="text" name="availability" placeholder="Disponibilidad">
+    <button type="submit" class="btn">{{ t("Agregar", "Add") }}</button>
+</form>
 {% endblock %}
