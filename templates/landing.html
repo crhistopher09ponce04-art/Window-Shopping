@@ -1,33 +1,57 @@
 {% extends "base.html" %}
+
 {% block content %}
-<div class="text-center">
-    <h1 class="fw-bold mb-3">Bienvenido a 🌍 Window Shopping</h1>
-    <p class="lead text-muted">Conecta Exportadores, Importadores y Proveedores de Servicios en una sola plataforma.</p>
-    <a href="{{ url_for('explorar') }}" class="btn btn-lg btn-success shadow-sm mt-3">🔎 Explorar Productos</a>
+<div class="container text-center mt-5">
+    <h1 class="display-4 fw-bold text-primary">🌎 Bienvenido a Window Shopping</h1>
+    <p class="lead mt-3">
+        Conecta productores, exportadores, servicios y compradores internacionales en una sola plataforma.
+    </p>
+
+    <!-- Botón corregido -->
+    <a href="{{ url_for('dashboard') }}" class="btn btn-lg btn-success shadow-sm mt-3">
+        🔎 Explorar Productos
+    </a>
+
+    <a href="{{ url_for('login') }}" class="btn btn-lg btn-outline-primary shadow-sm mt-3 ms-2">
+        🔑 Iniciar Sesión
+    </a>
+    <a href="{{ url_for('register') }}" class="btn btn-lg btn-outline-secondary shadow-sm mt-3 ms-2">
+        📝 Registrarse
+    </a>
 </div>
 
-<div class="row mt-5 text-center">
-    <div class="col-md-4">
-        <div class="card shadow-lg border-0">
-            <div class="card-body">
-                <h5 class="card-title">👨‍🌾 Exportadores</h5>
-                <p class="card-text">Publica tus productos y llega a compradores en todo el mundo.</p>
+<div class="container mt-5">
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card shadow-lg border-0 h-100">
+                <div class="card-body text-center">
+                    <h5 class="card-title fw-bold">👨‍🌾 Productores</h5>
+                    <p class="card-text">
+                        Muestra tus productos frescos y conecta con exportadores y compradores internacionales.
+                    </p>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card shadow-lg border-0">
-            <div class="card-body">
-                <h5 class="card-title">🛒 Importadores</h5>
-                <p class="card-text">Encuentra la mejor oferta de fruta fresca y servicios de calidad.</p>
+
+        <div class="col-md-4">
+            <div class="card shadow-lg border-0 h-100">
+                <div class="card-body text-center">
+                    <h5 class="card-title fw-bold">🚢 Exportadores</h5>
+                    <p class="card-text">
+                        Gestiona ofertas, servicios y compradores en todo el mundo de manera sencilla y segura.
+                    </p>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card shadow-lg border-0">
-            <div class="card-body">
-                <h5 class="card-title">⚙️ Servicios</h5>
-                <p class="card-text">Ofrece tus servicios de logística, aduana y almacenamiento.</p>
+
+        <div class="col-md-4">
+            <div class="card shadow-lg border-0 h-100">
+                <div class="card-body text-center">
+                    <h5 class="card-title fw-bold">🌍 Compradores</h5>
+                    <p class="card-text">
+                        Encuentra productos chilenos de alta calidad y servicios confiables para tus importaciones.
+                    </p>
+                </div>
             </div>
         </div>
     </div>
