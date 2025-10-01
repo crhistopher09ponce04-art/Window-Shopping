@@ -1,18 +1,24 @@
 {% extends "base.html" %}
 {% block title %}Registro{% endblock %}
 {% block content %}
-<h2>Registro de nuevo usuario</h2>
-<form method="post" action="/registro">
-    <input type="text" name="username" placeholder="Usuario" required>
-    <input type="password" name="password" placeholder="Contraseña" required>
-    <select name="rol" required>
-        <option value="productor">Productor</option>
-        <option value="planta">Planta</option>
-        <option value="packing">Packing</option>
-        <option value="frigorifico">Frigorífico</option>
-        <option value="exportador">Exportador</option>
-        <option value="cliente">Cliente extranjero</option>
-    </select>
-    <button type="submit">Registrar</button>
-</form>
+<div class="card">
+    <h2>Crear nueva cuenta</h2>
+    {% if error %}<p class="error">{{ error }}</p>{% endif %}
+    <form method="POST" action="{{ url_for('register') }}">
+        <label>Usuario:</label>
+        <input type="text" name="usuario" required>
+        <label>Contraseña:</label>
+        <input type="password" name="password" required>
+        <label>Rol:</label>
+        <select name="rol" required>
+            <option value="Productor">Productor</option>
+            <option value="Planta">Planta</option>
+            <option value="Packing">Packing</option>
+            <option value="Frigorífico">Frigorífico</option>
+            <option value="Exportador">Exportador</option>
+            <option value="Cliente extranjero">Cliente extranjero</option>
+        </select>
+        <button type="submit">Crear cuenta</button>
+    </form>
+</div>
 {% endblock %}
