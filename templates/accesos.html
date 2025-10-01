@@ -1,116 +1,90 @@
 {% extends "base.html" %}
-{% block title %}Accesos{% endblock %}
 {% block content %}
-<h2>Opciones de {{ tipo|capitalize }} (Rol: {{ rol }})</h2>
+<h2>Opciones de {{ tipo|capitalize }} (Rol: {{ rol }}) — {{ _("rubro") }}: {{ rubro }}</h2>
 
 <form method="get" class="filters card">
   <div class="row">
     <div>
-      <label>Rubro</label>
+      <label>{{ _("rubro") }}</label>
       <select name="rubro">
-        <option value="fruta" {{ 'selected' if rubro=='fruta' else '' }}>Fruta</option>
-        <option value="servicio" {{ 'selected' if rubro=='servicio' else '' }}>Servicios</option>
+        <option value="fruta" {{ 'selected' if rubro=='fruta' else '' }}>{{ _("fruit") }}</option>
+        <option value="servicio" {{ 'selected' if rubro=='servicio' else '' }}>{{ _("service") }}</option>
       </select>
     </div>
     <div>
-      <label>Búsqueda</label>
-      <input type="text" name="q" value="{{ values.q }}" placeholder="Nombre, ciudad, variedad...">
+      <label>{{ _("type") }}</label>
+      <select name="tipo_item">
+        <option value="">{{ "--" }}</option>
+        <option value="venta" {{ 'selected' if values.tipo_item=='venta' else '' }}>{{ _("sale") }}</option>
+        <option value="compra" {{ 'selected' if values.tipo_item=='compra' else '' }}>{{ _("buying") }}</option>
+      </select>
     </div>
     <div>
-      <label>Rol</label>
+      <label>{{ _("search") }}</label>
+      <input type="text" name="q" value="{{ values.q }}" placeholder="Empresa, ciudad, producto...">
+    </div>
+    <div>
+      <label>{{ _("role") }}</label>
       <select name="role">
-        <option value="">-- Todos --</option>
+        <option value="">--</option>
         {% for r in roles_opts %}
           <option value="{{ r }}" {{ 'selected' if values.role==r else '' }}>{{ r }}</option>
         {% endfor %}
       </select>
     </div>
     <div>
-      <label>País</label>
+      <label>{{ _("country") }}</label>
       <input type="text" name="country" value="{{ values.country }}">
     </div>
     <div>
-      <label>Ciudad</label>
+      <label>{{ _("city") }}</label>
       <input type="text" name="city" value="{{ values.city }}">
     </div>
   </div>
-
   <div class="row">
-    <div><label>Volumen mín (tons)</label><input type="number" step="0.1" name="min_volume" value="{{ values.min_volume }}"></div>
-    <div><label>Volumen máx (tons)</label><input type="number" step="0.1" name="max_volume" value="{{ values.max_volume }}"></div>
-    <div><label>Precio caja mín</label><input type="number" step="1" name="min_price_box" value="{{ values.min_price_box }}"></div>
-    <div><label>Precio caja máx</label><input type="number" step="1" name="max_price_box" value="{{ values.max_price_box }}"></div>
-    <div><label>Precio kg mín</label><input type="number" step="1" name="min_price_kg" value="{{ values.min_price_kg }}"></div>
-    <div><label>Precio kg máx</label><input type="number" step="1" name="max_price_kg" value="{{ values.max_price_kg }}"></div>
-  </div>
-
-  <div class="row">
-    <div>
-      <label>Ordenar por</label>
-      <select name="sort">
-        <option value="name" {{ 'selected' if values.sort=='name' else '' }}>Nombre (A→Z)</option>
-        <option value="-name" {{ 'selected' if values.sort=='-name' else '' }}>Nombre (Z→A)</option>
-        <option value="volume_tons" {{ 'selected' if values.sort=='volume_tons' else '' }}>Volumen</option>
-        <option value="-volume_tons" {{ 'selected' if values.sort=='-volume_tons' else '' }}>Volumen (desc)</option>
-        <option value="price_box" {{ 'selected' if values.sort=='price_box' else '' }}>Precio caja</option>
-        <option value="-price_box" {{ 'selected' if values.sort=='-price_box' else '' }}>Precio caja (desc)</option>
-        <option value="price_kg" {{ 'selected' if values.sort=='price_kg' else '' }}>Precio kg</option>
-        <option value="-price_kg" {{ 'selected' if values.sort=='-price_kg' else '' }}>Precio kg (desc)</option>
-      </select>
+    <div style="align-self:flex-end;">
+      <button type="submit" class="btn">{{ _("apply_filters") }}</button>
     </div>
     <div style="align-self:flex-end;">
-      <button type="submit" class="btn">Aplicar filtros</button>
-    </div>
-    <div style="align-self:flex-end;">
-      <a class="btn ghost" href="{{ url_for('accesos', tipo=tipo) }}">Limpiar</a>
+      <a class="btn ghost" href="{{ url_for('accesos', tipo=tipo) }}">{{ _("clear") }}</a>
     </div>
   </div>
 </form>
 
-{% if empresas %}
+{% if filas %}
   <table class="table">
     <thead>
       <tr>
-        <th>Nombre</th>
-        <th>Rol</th>
-        <th>País</th>
-        <th>Ciudad</th>
-        {% if rubro=='fruta' %}
-          <th>Fruta</th>
-          <th>Variedad</th>
-          <th>Volumen (tons)</th>
-          <th>Valor/caja</th>
-          <th>Valor/kg</th>
-        {% else %}
-          <th>Servicio</th>
-        {% endif %}
-        <th>Correo</th>
+        <th>{{ _("name") }}</th>
+        <th>{{ _("role") }}</th>
+        <th>{{ _("rubro") }}</th>
+        <th>{{ _("type") }}</th>
+        <th>{{ _("product") }}</th>
+        <th>{{ _("variety") }}</th>
+        <th>{{ _("quantity") }}</th>
+        <th>{{ _("price") }}</th>
+        <th>{{ _("email") }}</th>
       </tr>
     </thead>
     <tbody>
-    {% for e in empresas %}
+      {% for f in filas %}
       <tr>
-        <td><a href="{{ url_for('detalle', company_id=e.id) }}">{{ e.name }}</a></td>
-        <td>{{ e.role }}</td>
-        <td>{{ e.country }}</td>
-        <td>{{ e.city }}</td>
-        {% if rubro=='fruta' %}
-          <td>{{ e.fruit or e.product_requested or '-' }}</td>
-          <td>{{ e.variety or e.variety_requested or '-' }}</td>
-          <td>{{ e.volume_tons or e.volume_requested_tons or '-' }}</td>
-          <td>{{ e.price_box or '-' }}</td>
-          <td>{{ e.price_kg or '-' }}</td>
-        {% else %}
-          <td>{{ e.service or '-' }}</td>
-        {% endif %}
-        <td>{{ e.email }}</td>
+        <td><a href="{{ url_for('detalle', company_id=f.company.id) }}">{{ f.company.name }}</a></td>
+        <td>{{ f.company.role }}</td>
+        <td>{{ f.item.rubro }}</td>
+        <td>{{ f.item.type }}</td>
+        <td>{{ f.item.product }}</td>
+        <td>{{ f.item.variety }}</td>
+        <td>{{ f.item.quantity }} {{ _("units." + f.item.unit) }}</td>
+        <td>{{ f.item.price or '-' }}</td>
+        <td>{{ f.company.email }}</td>
       </tr>
-    {% endfor %}
+      {% endfor %}
     </tbody>
   </table>
 {% else %}
-  <p>No hay empresas que coincidan con los filtros.</p>
+  <p>{{ _("empty_list") }}</p>
 {% endif %}
 
-<p style="margin-top:14px;"><a href="{{ url_for('dashboard') }}">⬅ Volver al Dashboard</a></p>
+<p style="margin-top:14px;"><a href="{{ url_for('dashboard') }}">⬅ {{ _("back") }}</a></p>
 {% endblock %}
