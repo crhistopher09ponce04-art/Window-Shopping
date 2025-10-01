@@ -2,350 +2,216 @@ import os
 from flask import Flask, render_template, request, redirect, url_for, session, abort
 
 app = Flask(__name__)
-app.secret_key = os.environ.get("SECRET_KEY", "dev-key")
+app.secret_key = os.environ.get("SECRET_KEY", "dev-key-please-change")
 
-# ---------------------------
-# Idiomas y traducciones
-# ---------------------------
-SUPPORTED_LANGS = ["es", "en", "zh"]  # zh lo dejamos como alias futuro
-DEFAULT_LANG = "es"
+# -------------------- i18n helper --------------------
+def t(es: str, en: str, zh: str | None = None) -> str:
+    lang = session.get("lang", "es")
+    if lang == "zh" and zh is not None:
+        return zh
+    return es if lang == "es" else en
 
-def get_lang():
-    return session.get("lang", DEFAULT_LANG)
+@app.context_processor
+def inject_helpers():
+    return dict(t=t)
 
-def t(es_text, en_text, zh_text=None):
-    lang = get_lang()
-    if lang == "en":
-        return en_text
-    if lang == "zh":
-        # placeholder: usamos EN mientras cargamos chino más adelante
-        return zh_text or en_text
-    return es_text
-
+# -------------------- Language -----------------------
 @app.route("/lang/<lang>")
 def set_lang(lang):
-    if lang not in SUPPORTED_LANGS:
-        lang = DEFAULT_LANG
+    if lang not in ("es", "en", "zh"):
+        lang = "es"
     session["lang"] = lang
-    # vuelve a donde estaba si viene de Referer, si no al home
+    # back to dashboard if logged in, else home
     return redirect(request.referrer or url_for("home"))
 
-# ---------------------------
-# Datos de demo / “DB” en memoria
-# ---------------------------
-# Roles por tipo
-ROLES_COMPRA_VENTA = [
-    "Productor", "Planta", "Packing", "Frigorífico", "Exportador", "Cliente extranjero"
-]
-ROLES_SERVICIOS = [
-    "Packing", "Frigorífico", "Transporte", "Agencia de Aduanas", "Extraportuario"
-]
-
-# Usuarios de prueba (usuario: info)
+# -------------------- Mock data & users --------------
 USERS = {
-    # Compra/Venta
-    "productor1": {"password": "1234", "rol": "Productor", "perfil_tipo": "compra_venta", "pais": "CL"},
-    "planta1": {"password": "1234", "rol": "Planta", "perfil_tipo": "compra_venta", "pais": "CL"},
-    "packing1": {"password": "1234", "rol": "Packing", "perfil_tipo": "compra_venta", "pais": "CL"},
-    "frigorifico1": {"password": "1234", "rol": "Frigorífico", "perfil_tipo": "compra_venta", "pais": "CL"},
-    "exportador1": {"password": "1234", "rol": "Exportador", "perfil_tipo": "compra_venta", "pais": "CL"},
-    "cliente1": {"password": "1234", "rol": "Cliente extranjero", "perfil_tipo": "compra_venta", "pais": "US"},
-    # Servicios
-    "transporte1": {"password": "1234", "rol": "Transporte", "perfil_tipo": "servicios", "pais": "CL"},
-    "aduana1": {"password": "1234", "rol": "Agencia de Aduanas", "perfil_tipo": "servicios", "pais": "CL"},
-    "extraportuario1": {"password": "1234", "rol": "Extraportuario", "perfil_tipo": "servicios", "pais": "CL"},
+    # demo users (username -> dict)
+    "productor1":   {"password": "1234", "rol": "Productor", "rut": "11.111.111-1", "email": "productor1@demo.cl", "address": "Parral, Maule", "phone": "+56 9 1111 1111"},
+    "planta1":      {"password": "1234", "rol": "Planta", "rut": "22.222.222-2", "email": "planta1@demo.cl", "address": "Rengo, O'Higgins", "phone": "+56 9 2222 2222"},
+    "packing1":     {"password": "1234", "rol": "Packing", "rut": "33.333.333-3", "email": "packing1@demo.cl", "address": "Curicó, Maule", "phone": "+56 9 3333 3333"},
+    "frigorifico1": {"password": "1234", "rol": "Frigorífico", "rut": "44.444.444-4", "email": "frigorifico1@demo.cl", "address": "San Fernando", "phone": "+56 9 4444 4444"},
+    "exportador1":  {"password": "1234", "rol": "Exportador", "rut": "55.555.555-5", "email": "exportador1@demo.cl", "address": "Santiago", "phone": "+56 9 5555 5555"},
+    "cliente1":     {"password": "1234", "rol": "Cliente extranjero", "rut": "N/A",          "email": "cliente1@demo.com", "address": "Shanghai, CN", "phone": "+86 21 1234 5678"},
+    "transporte1":  {"password": "1234", "rol": "Transporte", "rut": "66.666.666-6", "email": "transporte1@demo.cl", "address": "Quillota", "phone": "+56 9 6666 6666"},
+    "aduana1":      {"password": "1234", "rol": "Agencia de aduanas", "rut": "77.777.777-7", "email": "aduana1@demo.cl", "address": "Valparaíso", "phone": "+56 9 7777 7777"},
+    "extraportuario1":{"password": "1234", "rol": "Extraportuario", "rut": "88.888.888-8", "email": "extraportuario1@demo.cl", "address": "San Antonio", "phone": "+56 9 8888 8888"},
 }
 
-# Perfiles de empresas/usuarios (datos que se muestran públicamente y que el dueño puede editar)
-# clave = username
-USER_PROFILES = {
-    u: {
-        "empresa": u.capitalize(),
-        "pais": USERS[u].get("pais", "CL"),
-        "rol": USERS[u]["rol"],
-        "perfil_tipo": USERS[u]["perfil_tipo"],
-        "email": f"{u}@demo.cl",
-        "telefono": "+56 9 0000 0000",
-        "direccion": "S/N",
-        "descripcion": "Perfil demo.",
-        # Ítems (para compra/venta: ofertas/demandas; para servicios: servicios ofrecidos)
-        "items": []
-    } for u in USERS
+# demo marketplace items (coherent mixed data)
+ITEMS = {
+    "ventas": [
+        {"id": "V001", "item": "Uva Red Globe", "company": "Viñedos Maule", "qty": "24 pallets", "price": "USD 18.50/box", "location": "San Javier", "spec": "18 lb, exportación"},
+        {"id": "V002", "item": "Cereza Santina", "company": "Campos del Sur", "qty": "10 pallets", "price": "USD 6.20/kg", "location": "Curicó", "spec": "32mm+, pre-reserva"},
+        {"id": "V003", "item": "Manzana Fuji", "company": "Frutícola Andes", "qty": "30 pallets", "price": "USD 10.90/box", "location": "Rengo", "spec": "Cal. 80-100, export"},
+    ],
+    "compras": [
+        {"id": "C101", "item": "Limón Sutil", "company": "Retail Perú SAC", "qty": "15 pallets", "price": "USD 0.75/kg", "location": "Lima (FOB)", "spec": "semana 48-50"},
+        {"id": "C102", "item": "Naranja Navel", "company": "Fresh UK Ltd", "qty": "40 pallets", "price": "USD 9.20/box", "location": "Valparaíso (FOB)", "spec": "pack 18kg"},
+    ],
+    "servicios": [
+        {"id": "S201", "item": "Packing arándano", "company": "Packing Los Robles", "qty": "Capacidad 25 t/día", "price": "USD 0.38/kg", "location": "Los Ángeles", "spec": "BRC AA, clamshell"},
+        {"id": "S202", "item": "Frío de tránsito", "company": "FrioSur", "qty": "Cámaras 1-8°C", "price": "USD 10/pallet/sem", "location": "Rancagua", "spec": "ATP, monitoreo 24/7"},
+        {"id": "S203", "item": "Transporte reefer", "company": "LogisChile", "qty": "Ruta V-RM", "price": "USD 250/viaje", "location": "V Región", "spec": "GPS, 32 pallets"},
+        {"id": "S204", "item": "Agenciamiento aduanas", "company": "Aduanas Valpo", "qty": "Export/Import", "price": "Desde USD 120", "location": "Valparaíso", "spec": "SILOGPORT, EDI"},
+    ],
 }
 
-# Unas cuantas empresas de muestra (para “accesos” listados)
-COMPANIES = [
-    {
-        "slug": "agro-andes",
-        "nombre": "Agro Andes SPA",
-        "rol": "Productor",
-        "perfil_tipo": "compra_venta",
-        "pais": "CL",
-        "breve": "Uva de mesa y arándanos.",
-        "items": [
-            {"tipo": "oferta", "producto": "Uva Crimson", "cantidad": "80 pallets", "origen": "IV Región", "precio": "A convenir"},
-            {"tipo": "demanda", "producto": "Cajas plásticas", "cantidad": "15.000 und", "origen": "CL", "precio": "Oferta"}
-        ]
-    },
-    {
-        "slug": "friopoint",
-        "nombre": "FríoPoint Ltda.",
-        "rol": "Frigorífico",
-        "perfil_tipo": "servicios",
-        "pais": "CL",
-        "breve": "Frío y logística en Valparaíso.",
-        "items": [
-            {"tipo": "servicio", "servicio": "Almacenaje en frío", "capacidad": "1.200 pallets", "ubicacion": "Valparaíso"},
-            {"tipo": "servicio", "servicio": "Preenfriado", "capacidad": "8 túneles", "ubicacion": "Valparaíso"},
-        ]
-    },
-    {
-        "slug": "pack-smart",
-        "nombre": "PackSmart",
-        "rol": "Packing",
-        "perfil_tipo": "servicios",
-        "pais": "CL",
-        "breve": "Servicios de packing fruta fresca.",
-        "items": [
-            {"tipo": "servicio", "servicio": "Embalaje exportación", "capacidad": "30.000 cajas/día", "ubicacion": "R.M."}
-        ]
-    },
-    {
-        "slug": "ocexport",
-        "nombre": "OCExport",
-        "rol": "Exportador",
-        "perfil_tipo": "compra_venta",
-        "pais": "CL",
-        "breve": "Exportación multiproducto.",
-        "items": [
-            {"tipo": "demanda", "producto": "Cerezas", "cantidad": "150 pallets", "origen": "VI-VII", "precio": "A convenir"}
-        ]
-    }
-]
+# which roles can ofrecer servicios
+SERVICE_ROLES = {"Packing","Frigorífico","Transporte","Agencia de aduanas"}
 
-# Carrito (demo, por sesión)
-def get_cart():
-    return session.setdefault("cart", [])
+# -------------------- Utils --------------------------
+def ensure_session():
+    session.setdefault("lang", "es")
+    session.setdefault("cart", {"ventas": [], "compras": [], "servicios": []})
+    session.setdefault("hidden", {"ventas": set(), "compras": set(), "servicios": set()})
 
-# ---------------------------
-# Middlewares / helpers
-# ---------------------------
-def login_required():
-    if "usuario" not in session:
-        return False
-    return True
+def current_user():
+    u = session.get("usuario")
+    if not u: return None
+    data = USERS.get(u, {}).copy()
+    data["username"] = u
+    return data
 
-# ---------------------------
-# Rutas
-# ---------------------------
+# -------------------- Routes -------------------------
 @app.route("/")
 def home():
-    return render_template("landing.html", t=t)
+    ensure_session()
+    return render_template("landing.html")
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    ensure_session()
     error = None
     if request.method == "POST":
-        username = request.form.get("username", "").strip()
-        password = request.form.get("password", "").strip()
-        user = USERS.get(username)
-        if user and user["password"] == password:
-            session["usuario"] = username
+        user = request.form.get("username","").strip()
+        pw   = request.form.get("password","").strip()
+        if user in USERS and USERS[user]["password"] == pw:
+            session["usuario"] = user
             return redirect(url_for("dashboard"))
-        else:
-            error = t("Usuario o clave inválidos.", "Invalid user or password.")
-    return render_template("login.html", error=error, t=t)
+        error = t("Usuario o contraseña incorrectos","Incorrect username or password","用户名或密码不正确")
+    return render_template("login.html", error=error)
 
 @app.route("/logout")
 def logout():
     session.clear()
     return redirect(url_for("home"))
 
-# ----- Registro en 2 pasos: router y formulario -----
+# --- Registro (con filtro Nacional/Extranjero) ------
 @app.route("/register_router")
 def register_router():
-    # Paso 1: elegir nacional/extranjero
-    return render_template("register_router.html", t=t)
+    ensure_session()
+    return render_template("register_router.html")
 
-@app.route("/register", methods=["GET", "POST"])
+@app.route("/register", methods=["GET","POST"])
 def register():
-    # Paso 2: formulario según nacionalidad + tipo de perfil (compra_venta / servicios)
+    ensure_session()
+    kind = request.args.get("tipo","nacional")  # nacional | extranjero
     error = None
-    lang = get_lang()
-
-    # defaults del select si vienen por querystring
-    nacionalidad = request.args.get("nac")  # "nacional" o "extranjero"
-    perfil_tipo = request.args.get("tipo")  # "compra_venta" o "servicios"
-
-    # Si POST, procesamos
     if request.method == "POST":
-        username = request.form.get("username", "").strip()
-        password = request.form.get("password", "").strip()
-        email = request.form.get("email", "").strip()
-        telefono = request.form.get("phone", "").strip()
-        direccion = request.form.get("address", "").strip()
-        pais = request.form.get("pais", "CL").strip()
-        rol = request.form.get("rol", "").strip()
-        perfil_tipo = request.form.get("perfil_tipo", "").strip()
-        nac = request.form.get("nacionalidad", "").strip()
-
-        if not username or not password or not rol or not perfil_tipo or not nac:
-            error = t("Completa los campos obligatorios.", "Please complete required fields.")
-        elif username in USERS:
-            error = t("El usuario ya existe.", "User already exists.")
+        username = request.form.get("username","").strip()
+        if not username or username in USERS:
+            error = t("Nombre de usuario no válido o ya existe","Invalid or already taken username","用户名无效或已存在")
         else:
             USERS[username] = {
-                "password": password,
-                "rol": rol,
-                "perfil_tipo": perfil_tipo,
-                "pais": pais or ("CL" if nac == "nacional" else "EX")
-            }
-            USER_PROFILES[username] = {
-                "empresa": username.capitalize(),
-                "pais": USERS[username]["pais"],
-                "rol": rol,
-                "perfil_tipo": perfil_tipo,
-                "email": email or f"{username}@mail.com",
-                "telefono": telefono or "",
-                "direccion": direccion or "",
-                "descripcion": "Nuevo perfil.",
-                "items": []
+                "password": request.form.get("password",""),
+                "rol": request.form.get("rol",""),
+                "rut": request.form.get("rut",""),
+                "email": request.form.get("email",""),
+                "address": request.form.get("address",""),
+                "phone": request.form.get("phone",""),
             }
             session["usuario"] = username
             return redirect(url_for("dashboard"))
+    # roles visibles según tipo y categoría
+    compra_venta_roles = ["Productor","Planta","Packing","Frigorífico","Exportador","Cliente extranjero"]
+    servicio_roles = ["Packing","Frigorífico","Transporte","Agencia de aduanas"]
+    return render_template("register.html", error=error, tipo=kind,
+                           compra_venta_roles=compra_venta_roles, servicio_roles=servicio_roles)
 
-    # Rol options según selección
-    roles_cv = ROLES_COMPRA_VENTA
-    roles_srv = ROLES_SERVICIOS
-
-    return render_template(
-        "register.html",
-        error=error,
-        nacionalidad=nacionalidad,
-        perfil_tipo=perfil_tipo,
-        roles_cv=roles_cv,
-        roles_srv=roles_srv,
-        t=t
-    )
-
+# -------------------- Dashboard / Perfil -------------
 @app.route("/dashboard")
 def dashboard():
-    if not login_required():
+    ensure_session()
+    if "usuario" not in session:
         return redirect(url_for("login"))
-    username = session["usuario"]
-    user = USERS.get(username)
-    if not user:
-        return redirect(url_for("logout"))
-    my_company = USER_PROFILES.get(username, {})
-    return render_template("dashboard.html",
-                           usuario=username,
-                           rol=user["rol"],
-                           perfil_tipo=user["perfil_tipo"],
-                           my_company=my_company,
-                           cart=get_cart(),
-                           t=t)
+    user = current_user()
+    my_company = user["rol"]
+    return render_template("dashboard.html", usuario=user["username"], rol=user["rol"], my_company=my_company)
 
+@app.route("/perfil", methods=["GET","POST"])
+def perfil():
+    ensure_session()
+    if "usuario" not in session:
+        return redirect(url_for("login"))
+    user = current_user()
+
+    # alta de ítems propios (demo, se agregan a ITEMS)
+    if request.method == "POST":
+        tipo = request.form.get("tipo")  # ventas/compras/servicios
+        if tipo not in ITEMS: abort(400)
+        new = {
+            "id": (tipo[:1].upper()+str(len(ITEMS[tipo])+1001)),
+            "item": request.form.get("item") or "Producto/Servicio",
+            "company": request.form.get("company") or user["rol"],
+            "qty": request.form.get("qty") or "",
+            "price": request.form.get("price") or "",
+            "location": request.form.get("location") or "",
+            "spec": request.form.get("spec") or "",
+        }
+        # reglas: servicios sólo si el rol pertenece
+        if tipo == "servicios" and user["rol"] not in SERVICE_ROLES:
+            pass  # silencioso: no agrega
+        else:
+            ITEMS[tipo].insert(0, new)
+
+    return render_template("perfil.html", user=user)
+
+# -------------------- Accesos (ventas/compras/servicios) -----
 @app.route("/accesos/<tipo>")
 def accesos(tipo):
-    # tipo: "ventas", "compras", "servicios"
-    tipo = tipo.lower()
-    if tipo not in ["ventas", "compras", "servicios"]:
-        abort(404)
-
-    # Filtro de demo: listamos empresas según tipo
-    if tipo == "servicios":
-        data = [c for c in COMPANIES if c["perfil_tipo"] == "servicios"]
-    else:
-        # ventas/compras: usamos compra_venta
-        data = [c for c in COMPANIES if c["perfil_tipo"] == "compra_venta"]
-
-    return render_template("accesos.html", tipo=tipo, data=data, t=t)
-
-@app.route("/empresa/<slug>")
-def empresa(slug):
-    # Perfil público de empresa
-    comp = next((c for c in COMPANIES if c["slug"] == slug), None)
-    if not comp:
-        # Si es usuario real, mostramos su perfil público también
-        prof = USER_PROFILES.get(slug)
-        if not prof:
-            abort(404)
-        return render_template("empresa.html", comp=prof, es_user=True, t=t)
-    return render_template("empresa.html", comp=comp, es_user=False, t=t)
-
-@app.route("/cart/add", methods=["POST"])
-def cart_add():
-    item = request.form.to_dict()
-    cart = get_cart()
-    cart.append(item)
-    session["cart"] = cart
-    return redirect(request.referrer or url_for("dashboard"))
-
-@app.route("/perfil", methods=["GET", "POST"])
-def perfil():
-    if not login_required():
+    ensure_session()
+    if "usuario" not in session:
         return redirect(url_for("login"))
-    username = session["usuario"]
-    prof = USER_PROFILES.get(username)
-    if not prof:
+    if tipo not in ("ventas","compras","servicios"):
         abort(404)
 
-    msg = None
-    if request.method == "POST":
-        action = request.form.get("action")
-        if action == "save_profile":
-            prof["empresa"] = request.form.get("empresa", prof["empresa"]).strip()
-            prof["email"] = request.form.get("email", prof["email"]).strip()
-            prof["telefono"] = request.form.get("telefono", prof["telefono"]).strip()
-            prof["direccion"] = request.form.get("direccion", prof["direccion"]).strip()
-            prof["descripcion"] = request.form.get("descripcion", prof["descripcion"]).strip()
-            msg = t("Perfil actualizado.", "Profile updated.")
-        elif action == "add_item":
-            perfil_tipo = prof.get("perfil_tipo")
-            if perfil_tipo == "servicios":
-                servicio = request.form.get("servicio", "").strip()
-                capacidad = request.form.get("capacidad", "").strip()
-                ubicacion = request.form.get("ubicacion", "").strip()
-                if servicio:
-                    prof["items"].append({
-                        "tipo": "servicio",
-                        "servicio": servicio,
-                        "capacidad": capacidad,
-                        "ubicacion": ubicacion
-                    })
-                    msg = t("Servicio agregado.", "Service added.")
-            else:
-                subtipo = request.form.get("subtipo", "oferta")
-                producto = request.form.get("producto", "").strip()
-                cantidad = request.form.get("cantidad", "").strip()
-                origen = request.form.get("origen", "").strip()
-                precio = request.form.get("precio", "").strip()
-                if producto:
-                    prof["items"].append({
-                        "tipo": subtipo,
-                        "producto": producto,
-                        "cantidad": cantidad,
-                        "origen": origen,
-                        "precio": precio
-                    })
-                    msg = t("Ítem agregado.", "Item added.")
+    q = (request.args.get("q") or "").lower().strip()
+    hidden_ids = session["hidden"][tipo]
+    data = [x for x in ITEMS[tipo] if x["id"] not in hidden_ids]
+    if q:
+        data = [x for x in data if q in x["item"].lower() or q in x["company"].lower() or q in x["location"].lower() or q in x["spec"].lower() or q in x["id"].lower()]
+    return render_template("accesos.html", tipo=tipo, data=data, q=q)
 
-    return render_template("perfil.html", perfil=prof, mensaje=msg, t=t)
+# carrito: add & hide-from-view
+@app.route("/cart/add/<tipo>/<item_id>", methods=["POST"])
+def cart_add(tipo, item_id):
+    ensure_session()
+    if "usuario" not in session:
+        return redirect(url_for("login"))
+    if tipo not in ITEMS: abort(404)
+    if item_id not in session["cart"][tipo]:
+        session["cart"][tipo].append(item_id)
+    return ("",204)
 
-# ---------------------------
-# Errores
-# ---------------------------
+@app.route("/hide/<tipo>/<item_id>", methods=["POST"])
+def hide_item(tipo, item_id):
+    ensure_session()
+    if "usuario" not in session:
+        return redirect(url_for("login"))
+    if tipo not in ITEMS: abort(404)
+    session["hidden"][tipo].add(item_id)
+    return ("",204)
+
+# -------------------- Errors -------------------------
 @app.errorhandler(404)
-def not_found(e):
-    return render_template("error.html", code=404, message=t("No encontrado", "Not found"), t=t), 404
+def not_found(_):
+    return render_template("error.html", code=404, message=t("No encontrado","Not found","未找到")), 404
 
 @app.errorhandler(500)
 def server_error(e):
-    return render_template("error.html", code=500, message=t("Error interno", "Internal server error"), t=t), 500
+    return render_template("error.html", code=500, message=t("Error interno","Internal server error","服务器内部错误")), 500
 
-# ---------------------------
-# Run local
-# ---------------------------
+# -------------------- Run (local) --------------------
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", "5000"))
-    app.run(host="0.0.0.0", port=port, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True)
