@@ -1,12 +1,32 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Centro de Ayuda</h2>
-<div class="card">
-  <ul>
-    <li><a href="{{ url_for('manual') }}">📘 Manual de usuario</a></li>
-    {% if not session.get('usuario') %}
-    <li><a href="{{ url_for('login') }}">🔑 Ir al Login</a></li>
-    {% endif %}
-  </ul>
+<div class="card p-4">
+    <h2>❓ Centro de Ayuda</h2>
+    <p class="text-muted">Aquí encontrarás respuestas rápidas y el manual de uso.</p>
+
+    <h4>Preguntas Frecuentes</h4>
+    <ul>
+        <li>🔑 <b>¿Cómo inicio sesión?</b> → Desde la barra superior, presiona <i>Login</i> e ingresa tu usuario y contraseña.</li>
+        <li>📝 <b>¿Cómo me registro?</b> → Haz clic en <i>Registro</i>, completa tus datos y selecciona tu rol.</li>
+        <li>📊 <b>¿Cómo agrego productos o servicios?</b> → En tu perfil, utiliza el formulario “Agregar Ítem” para añadir productos, variedades y precios.</li>
+        <li>🌍 <b>¿Puedo cambiar el idioma?</b> → Sí, pronto podrás elegir entre español e inglés desde el menú superior.</li>
+    </ul>
+
+    <hr>
+    <h4>📖 Manual de Usuario</h4>
+    <p>Este manual describe el funcionamiento de la plataforma:</p>
+    <ol>
+        <li><b>Registro:</b> crear tu usuario seleccionando el rol (exportador, productor, comprador o servicio).</li>
+        <li><b>Inicio de Sesión:</b> accede con tu cuenta para usar todas las funcionalidades.</li>
+        <li><b>Dashboard:</b> revisa tu panel con los ítems que has registrado.</li>
+        <li><b>Perfil:</b> actualiza tus datos y gestiona múltiples ítems de compra, venta o servicios.</li>
+        <li><b>Centro de Ayuda:</b> accede aquí siempre que tengas dudas.</li>
+    </ol>
+
+    <p class="mt-3">Si necesitas más soporte, contáctanos en: 
+        <a href="mailto:soporte@windowshopping.com">soporte@windowshopping.com</a>
+    </p>
+
+    <a href="{{ url_for('home') }}" class="btn btn-custom mt-3">⬅ Volver al Inicio</a>
 </div>
 {% endblock %}
