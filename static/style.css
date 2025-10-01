@@ -1,98 +1,144 @@
-/* === GENERAL === */
+/* Reset */
+body, h1, h2, h3, p, ul, li, a, input, button, select {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", Roboto, sans-serif;
+}
+
+/* Fondo oscuro elegante */
 body {
-    background: #f8f9fc;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: #333;
+    background: #121212;
+    color: #eee;
+    line-height: 1.6;
 }
 
-/* === NAVBAR === */
-.navbar {
-    background: linear-gradient(90deg, #0066ff, #00bfff);
+/* Header */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 30px;
+    background: #1f1f1f;
+    border-bottom: 2px solid #2e2e2e;
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
-.navbar-brand {
-    font-size: 1.3rem;
-    letter-spacing: 0.5px;
+header .logo {
+    font-size: 1.4rem;
+    font-weight: bold;
+    text-decoration: none;
+    color: #00ff88;
 }
 
-.navbar .nav-link {
-    font-weight: 500;
-    transition: all 0.3s ease-in-out;
+/* Nav links */
+nav a {
+    margin: 0 10px;
+    text-decoration: none;
+    color: #bbb;
+    transition: color 0.2s;
 }
 
-.navbar .nav-link:hover {
-    transform: translateY(-2px);
-    color: #ffd700 !important;
+nav a:hover {
+    color: #00ff88;
 }
 
-/* === HERO LANDING === */
-h1, h2, h3 {
-    font-weight: 700;
+/* Language selector */
+.lang-switch {
+    font-size: 0.9rem;
+}
+.lang-switch a, .lang-switch span {
+    margin-left: 10px;
+    cursor: pointer;
+    color: #bbb;
+}
+.lang-switch .active {
+    font-weight: bold;
+    color: #00ff88;
 }
 
-.lead {
-    font-size: 1.2rem;
+/* Main */
+main {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 20px;
 }
 
-.card {
-    border-radius: 15px;
-    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+/* Footer */
+footer {
+    text-align: center;
+    padding: 20px;
+    background: #1f1f1f;
+    border-top: 2px solid #2e2e2e;
+    margin-top: 40px;
+    color: #888;
 }
 
-.card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.1);
+/* Botones */
+.btn, button, input[type=submit] {
+    background: #00ff88;
+    border: none;
+    padding: 10px 18px;
+    margin: 8px 0;
+    border-radius: 8px;
+    color: #000;
+    cursor: pointer;
+    font-weight: bold;
+    transition: transform 0.2s, background 0.2s;
+    text-decoration: none;
+    display: inline-block;
 }
-
-/* === BOTONES === */
-.btn {
-    border-radius: 25px;
-    font-weight: 600;
-    transition: all 0.3s ease-in-out;
-}
-
-.btn:hover {
+.btn:hover, button:hover, input[type=submit]:hover {
+    background: #00cc6a;
     transform: scale(1.05);
 }
 
-/* === FORMULARIOS === */
-.card form .form-control {
-    border-radius: 10px;
-    border: 1px solid #ddd;
-    padding: 12px;
-    transition: border 0.2s ease;
+/* Inputs */
+input, select {
+    width: 100%;
+    padding: 10px;
+    margin: 6px 0;
+    border: 1px solid #333;
+    border-radius: 6px;
+    background: #1f1f1f;
+    color: #eee;
 }
 
-.card form .form-control:focus {
-    border-color: #0066ff;
-    box-shadow: 0px 0px 8px rgba(0, 102, 255, 0.2);
+/* Flash messages */
+.flash {
+    background: #222;
+    border-left: 4px solid #00ff88;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 6px;
+}
+.flash p {
+    margin: 5px 0;
+    color: #00ff88;
 }
 
-/* === LOGIN Y REGISTER CARDS === */
+/* Cards */
 .card {
-    background: #fff;
-    border: none;
-    box-shadow: 0px 6px 20px rgba(0,0,0,0.08);
+    background: #1f1f1f;
+    padding: 20px;
+    border-radius: 12px;
+    margin: 15px 0;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+    transition: transform 0.2s;
+}
+.card:hover {
+    transform: translateY(-4px);
 }
 
-.card h3 {
-    font-weight: bold;
-    color: #0066ff;
+/* Lists */
+ul {
+    list-style: none;
 }
-
-/* === ANIMACIONES === */
-@keyframes fadeInUp {
-    0% { opacity: 0; transform: translateY(30px); }
-    100% { opacity: 1; transform: translateY(0); }
-}
-
-.card, .btn, .navbar, h1, h2, h3, p {
-    animation: fadeInUp 0.8s ease forwards;
-}
-
-/* === FOOTER === */
-footer {
-    background: #f1f3f6;
-    color: #666;
-    font-size: 0.9rem;
+ul li {
+    margin: 6px 0;
+    padding: 8px;
+    background: #1f1f1f;
+    border-radius: 6px;
 }
