@@ -1,27 +1,11 @@
 {% extends "base.html" %}
-
 {% block content %}
-<div class="card">
-  <h2>👤 Bienvenido, {{ usuario }}</h2>
-  <p>Rol actual: <strong>{{ rol }}</strong></p>
+<div class="card float">
+  <h2>📊 {{ t('dashboard') }} — {{ my_company }} ({{ rol }})</h2>
+  <div class="actions">
+    <a href="{{ url_for('accesos', tipo='compras') }}" class="btn">🛒 {{ t('buy') }}</a>
+    <a href="{{ url_for('accesos', tipo='ventas') }}" class="btn btn-outline">💼 {{ t('sell') }}</a>
+    <a href="{{ url_for('accesos', tipo='servicios') }}" class="btn btn-ghost">🧰 {{ t('services') }}</a>
+  </div>
 </div>
-
-{% if rol == "Exportador" %}
-  <div class="card">
-    <h3>Panel de Exportador</h3>
-    <a href="{{ url_for('accesos', tipo='ventas') }}" class="btn btn-success">📦 Ventas</a>
-    <a href="{{ url_for('accesos', tipo='compras') }}" class="btn btn-info">🛒 Compras</a>
-    <a href="{{ url_for('accesos', tipo='servicios') }}" class="btn btn-warning">⚙️ Servicios</a>
-  </div>
-{% elif rol == "Cliente extranjero" %}
-  <div class="card">
-    <h3>Panel Cliente Extranjero</h3>
-    <a href="{{ url_for('accesos', tipo='compras') }}" class="btn btn-primary">🛒 Ver Compras</a>
-  </div>
-{% else %}
-  <div class="card">
-    <h3>Panel General</h3>
-    <p>Tu rol aún no tiene accesos personalizados.</p>
-  </div>
-{% endif %}
 {% endblock %}
