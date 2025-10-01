@@ -1,54 +1,49 @@
 <!DOCTYPE html>
 <html lang="{{ cur_lang }}">
 <head>
-    <meta charset="UTF-8">
-    <title>Window Shopping</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <meta charset="UTF-8">
+  <title>Window Shopping</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <header>
-        <div class="nav-left">
-            <a href="{{ url_for('home') }}" class="logo">🌐 WS</a>
-        </div>
-        <nav>
-            {% if 'usuario' in session %}
-                <a href="{{ url_for('dashboard') }}">{{ t("Dashboard", "Dashboard") }}</a>
-                <a href="{{ url_for('mi_perfil') }}">{{ t("Mi perfil", "My profile") }}</a>
-                <a href="{{ url_for('cart') }}">{{ t("Carrito", "Cart") }}</a>
-                <a href="{{ url_for('logout') }}">{{ t("Salir", "Logout") }}</a>
-            {% else %}
-                <a href="{{ url_for('login') }}">{{ t("Iniciar sesión", "Login") }}</a>
-                <a href="{{ url_for('register_router') }}">{{ t("Registro", "Register") }}</a>
-            {% endif %}
-            <a href="{{ url_for('help_center') }}">{{ t("Ayuda", "Help") }}</a>
-            <a href="{{ url_for('manual') }}">{{ t("Manual", "Manual") }}</a>
-        </nav>
-        <div class="lang-switch">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="{{ url_for('home') }}">🌍 WS</a>
+    <div class="collapse navbar-collapse">
+      <ul class="navbar-nav ms-auto">
+        {% if 'usuario' in session %}
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('dashboard') }}">📊 Dashboard</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">🚪 {{ t("Salir", "Logout") }}</a></li>
+        {% else %}
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">🔑 Login</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('register_router') }}">📝 Registro</a></li>
+        {% endif %}
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('help_center') }}">❓ Help</a></li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">{{ LANGS[cur_lang] }}</a>
+          <ul class="dropdown-menu">
             {% for code, name in LANGS.items() %}
-                {% if cur_lang == code %}
-                    <span class="active">{{ name }}</span>
-                {% else %}
-                    <a href="{{ url_for('set_lang', code=code, next=request.path) }}">{{ name }}</a>
-                {% endif %}
+              <li><a class="dropdown-item" href="{{ url_for('set_lang', code=code, next=request.path) }}">{{ name }}</a></li>
             {% endfor %}
-        </div>
-    </header>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
 
-    <main>
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                <div class="flash">
-                    {% for msg in messages %}
-                        <p>{{ msg }}</p>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        {% endwith %}
-        {% block content %}{% endblock %}
-    </main>
+<div class="container">
+  {% with msgs = get_flashed_messages() %}
+    {% if msgs %}
+      <div class="alert alert-info mt-3">
+        {% for m in msgs %} <div>{{ m }}</div> {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+</div>
 
-    <footer>
-        <p>© 2025 Window Shopping — {{ t("Conectando exportadores y compradores", "Connecting exporters and buyers") }}</p>
-    </footer>
+{% block content %}{% endblock %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
