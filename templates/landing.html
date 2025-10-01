@@ -1,26 +1,10 @@
 {% extends "base.html" %}
-{% block content %}
-<section class="hero">
-  <h1>Bienvenido a Window Shopping 🌎</h1>
-  <p>La plataforma que conecta <strong>productores, packings, exportadores y compradores internacionales</strong>.</p>
-  <div class="hero-buttons">
-    <a href="{{ url_for('login') }}" class="btn">🔑 Iniciar Sesión</a>
-    <a href="{{ url_for('register') }}" class="btn btn-alt">📝 Registrarse</a>
-  </div>
-</section>
 
-<section class="features">
-  <div class="feature">
-    <h3>📦 Comercio de Frutas</h3>
-    <p>Encuentra productores y exportadores confiables en Chile.</p>
-  </div>
-  <div class="feature">
-    <h3>🚛 Servicios Logísticos</h3>
-    <p>Accede a transporte, frigoríficos y agencias de aduana.</p>
-  </div>
-  <div class="feature">
-    <h3>🌐 Mercado Global</h3>
-    <p>Llega directamente a clientes internacionales en Asia, Europa y más.</p>
-  </div>
-</section>
+{% block content %}
+<div class="text-center">
+    <h1 class="mt-5">🌍 Bienvenido a Window Shopping</h1>
+    <p class="lead">Conecta exportadores, compradores y proveedores de servicios en un solo lugar.</p>
+    <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg">Inicia Sesión</a>
+    <a href="{{ url_for('register') }}" class="btn btn-success btn-lg">Regístrate</a>
+</div>
 {% endblock %}
