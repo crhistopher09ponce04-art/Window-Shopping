@@ -6,9 +6,13 @@
 <div class="card">
     <h3>Opciones principales</h3>
     <ul style="list-style:none; padding:0;">
-        <li><a href="{{ url_for('accesos') }}">🔗 Acceder a opciones de compra/venta</a></li>
-        <li><a href="{{ url_for('detalle') }}">📄 Ver detalles de empresa</a></li>
-        <li><a href="{{ url_for('logout') }}">🚪 Cerrar Sesión</a></li>
+        {% if rol != "Cliente extranjero" %}
+            <li><a href="{{ url_for('accesos', tipo='ventas') }}">💼 Ver empresas para Vender</a></li>
+        {% endif %}
+        {% if rol != "Productor" and rol != "Planta" %}
+            <li><a href="{{ url_for('accesos', tipo='compras') }}">🛒 Ver empresas para Comprar</a></li>
+        {% endif %}
+        <li><a href="{{ url_for('detalle', company_id=my_company.id) }}">📄 Ver mi empresa</a></li>
     </ul>
 </div>
 {% endblock %}
