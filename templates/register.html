@@ -1,20 +1,26 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>{{ t("Registro", "Register") }}</h2>
-<form method="post">
-    <input type="text" name="username" placeholder="Usuario" required>
-    <input type="password" name="password" placeholder="Contraseña" required>
-    <select name="rol" required>
-        <option value="Productor">Productor</option>
-        <option value="Planta">Planta</option>
-        <option value="Packing">Packing</option>
-        <option value="Frigorífico">Frigorífico</option>
-        <option value="Exportador">Exportador</option>
-        <option value="Cliente extranjero">Cliente extranjero</option>
-        <option value="Transporte">Transporte</option>
-        <option value="Agencia de aduana">Agencia de aduana</option>
-        <option value="Extraportuario">Extraportuario</option>
-    </select>
-    <button type="submit" class="btn">{{ t("Registrar", "Register") }}</button>
-</form>
+<div class="container mt-5">
+  <div class="card shadow p-4">
+    <h2>📝 {{ t("Registro de Usuario", "User Registration") }}</h2>
+    <form method="post">
+      <input class="form-control mb-2" type="text" name="username" placeholder="Usuario">
+      <input class="form-control mb-2" type="password" name="password" placeholder="Contraseña">
+      <input class="form-control mb-2" type="text" name="rut" placeholder="RUT Empresa">
+      <input class="form-control mb-2" type="text" name="address" placeholder="Dirección">
+      <select class="form-control mb-2" name="role">
+        <option>Productor</option>
+        <option>Planta</option>
+        <option>Packing</option>
+        <option>Frigorífico</option>
+        <option>Exportador</option>
+        <option>Cliente extranjero</option>
+        <option>Transporte</option>
+        <option>Agencia de aduana</option>
+        <option>Extraportuario</option>
+      </select>
+      <button class="btn btn-primary w-100">Registrar</button>
+    </form>
+  </div>
+</div>
 {% endblock %}
