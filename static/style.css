@@ -1,205 +1,57 @@
-/* ====== RESET ====== */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+/* RESET */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --primary:#007bff;
+  --primary-dark:#0056b3;
+  --bg:#f5f7fa;
+  --card:#fff;
+  --muted:#6c757d;
+  --success:#28a745;
+  --danger:#dc3545;
 }
+body{font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:#333;line-height:1.6}
+.container{max-width:1100px;margin:0 auto;padding:16px}
 
-body {
-    font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background: #f5f7fa;
-    color: #333;
-    line-height: 1.6;
-}
+/* HEADER */
+.header{background:linear-gradient(90deg,var(--primary),var(--primary-dark));color:#fff}
+.header-inner{display:flex;align-items:center;justify-content:space-between}
+.brand{font-size:22px}
+.nav a{color:#fff;text-decoration:none;margin-left:12px;font-weight:600}
+.nav a:hover{color:#ffdd57}
+.lang{margin-left:12px;opacity:.9}
 
-/* ====== HEADER ====== */
-header {
-    background: linear-gradient(90deg, #007bff, #0056b3);
-    color: white;
-    padding: 15px 25px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
+/* FOOTER */
+.footer{margin-top:40px;background:#eceff3;padding:16px;text-align:center;color:#555}
 
-header h1 {
-    font-size: 24px;
-    font-weight: bold;
-}
+/* FLASH */
+.flash{list-style:none;margin:12px 0}
+.flash li{background:#e9f7ef;color:#2e7d32;border:1px solid #a5d6a7;padding:10px 15px;border-radius:6px;margin-bottom:8px}
 
-header nav a {
-    color: white;
-    margin-left: 15px;
-    text-decoration: none;
-    font-weight: 500;
-    transition: color 0.2s;
-}
+/* CARDS & GRID */
+.card{background:var(--card);border-radius:10px;padding:20px;margin:16px 0;box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.hero h2{margin-bottom:8px}
+.actions .btn{margin-right:8px}
 
-header nav a:hover {
-    color: #ffdd57;
-}
+/* FORMS */
+.form label{display:block;margin-top:10px;font-weight:600}
+.form input,.form select{width:100%;padding:10px;margin-top:6px;border:1px solid #ccc;border-radius:6px}
+.form .row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-top:10px}
 
-/* ====== MAIN ====== */
-main {
-    padding: 20px;
-    max-width: 1000px;
-    margin: auto;
-}
+/* BUTTONS */
+.btn{display:inline-block;padding:10px 16px;border-radius:6px;background:#e9ecef;color:#222;text-decoration:none;border:none;cursor:pointer;font-weight:600}
+.btn:hover{filter:brightness(.95)}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-primary:hover{background:var(--primary-dark)}
+.btn-secondary{background:#6c757d;color:#fff}
+.btn-success{background:var(--success);color:#fff}
+.btn-danger{background:var(--danger);color:#fff}
 
-/* ====== FOOTER ====== */
-footer {
-    margin-top: 40px;
-    background: #f1f1f1;
-    padding: 15px;
-    text-align: center;
-    color: #555;
-    font-size: 14px;
-    border-top: 1px solid #ddd;
-}
+/* TABLES */
+table{width:100%;border-collapse:collapse;border-radius:8px;overflow:hidden;background:#fff}
+th,td{padding:12px 10px;border-bottom:1px solid #eee;text-align:center}
+thead{background:var(--primary);color:#fff}
+tr:hover{background:#f9fbff}
 
-/* ====== FLASH MESSAGES ====== */
-.flash {
-    list-style: none;
-    padding: 10px;
-    margin: 10px auto;
-    max-width: 600px;
-}
-.flash li {
-    background: #e9f7ef;
-    color: #2e7d32;
-    border: 1px solid #a5d6a7;
-    padding: 10px 15px;
-    border-radius: 6px;
-    margin-bottom: 8px;
-    text-align: center;
-    font-weight: 500;
-}
-
-/* ====== FORMS ====== */
-form {
-    background: #fff;
-    border: 1px solid #ddd;
-    padding: 20px;
-    margin: 20px auto;
-    border-radius: 10px;
-    max-width: 500px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-}
-
-form label {
-    display: block;
-    margin-top: 12px;
-    font-weight: 600;
-    color: #444;
-}
-
-form input, form select {
-    width: 100%;
-    padding: 10px;
-    margin-top: 6px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    transition: border 0.2s;
-}
-
-form input:focus, form select:focus {
-    border-color: #007bff;
-    outline: none;
-}
-
-form button {
-    display: inline-block;
-    width: 100%;
-    margin-top: 18px;
-    padding: 12px;
-    background: #007bff;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.3s, transform 0.1s;
-}
-
-form button:hover {
-    background: #0056b3;
-    transform: scale(1.02);
-}
-
-button.danger {
-    background: #dc3545;
-}
-button.danger:hover {
-    background: #a71d2a;
-}
-
-/* ====== TABLES ====== */
-table {
-    border-collapse: collapse;
-    width: 100%;
-    margin: 20px auto;
-    background: white;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-}
-
-table thead {
-    background: #007bff;
-    color: white;
-}
-table th, table td {
-    padding: 12px 15px;
-    border-bottom: 1px solid #ddd;
-    text-align: center;
-}
-table tr:hover {
-    background: #f9f9f9;
-}
-
-/* ====== LINKS ====== */
-a {
-    color: #007bff;
-    text-decoration: none;
-    font-weight: 500;
-}
-a:hover {
-    color: #0056b3;
-    text-decoration: underline;
-}
-
-/* ====== CARDS ====== */
-.card {
-    background: white;
-    border-radius: 10px;
-    padding: 20px;
-    margin: 15px 0;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-    transition: transform 0.2s;
-}
-.card:hover {
-    transform: scale(1.02);
-}
-
-/* ====== BUTTON STYLES EXTRA ====== */
-.btn {
-    display: inline-block;
-    padding: 10px 18px;
-    margin: 5px;
-    border-radius: 6px;
-    font-size: 15px;
-    font-weight: 600;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s;
-}
-.btn-primary { background: #007bff; color: white; }
-.btn-primary:hover { background: #0056b3; }
-.btn-secondary { background: #6c757d; color: white; }
-.btn-secondary:hover { background: #565e64; }
-.btn-success { background: #28a745; color: white; }
-.btn-success:hover { background: #218838; }
-.btn-danger { background: #dc3545; color: white; }
-.btn-danger:hover { background: #c82333; }
+/* MISC */
+.error{color:#b00020;margin:8px 0}
