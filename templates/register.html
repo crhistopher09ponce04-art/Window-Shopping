@@ -1,30 +1,31 @@
 {% extends "base.html" %}
+
 {% block content %}
 <div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card p-4">
-            <h3 class="text-center">📝 Registro de Usuario</h3>
-            <form method="POST">
-                <div class="mb-3">
-                    <label>Usuario</label>
-                    <input type="text" name="username" class="form-control" required>
-                </div>
-                <div class="mb-3">
-                    <label>Contraseña</label>
-                    <input type="password" name="password" class="form-control" required>
-                </div>
-                <div class="mb-3">
-                    <label>Rol</label>
-                    <select name="role" class="form-control">
-                        <option value="exportador">Exportador</option>
-                        <option value="productor">Productor</option>
-                        <option value="servicio">Servicio</option>
-                        <option value="comprador">Comprador</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-custom w-100">Registrar</button>
-            </form>
-        </div>
+    <div class="col-md-5">
+        <h2 class="text-center">📝 Registro de Usuario</h2>
+        {% if error %}
+        <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
+        <form method="POST">
+            <div class="mb-3">
+                <label>Usuario</label>
+                <input type="text" name="username" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label>Contraseña</label>
+                <input type="password" name="password" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label>Tipo de Usuario</label>
+                <select name="tipo" class="form-control" required>
+                    <option value="exportador">Exportador</option>
+                    <option value="comprador">Comprador</option>
+                    <option value="servicio">Proveedor de Servicio</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-success w-100">Registrar</button>
+        </form>
     </div>
 </div>
 {% endblock %}
