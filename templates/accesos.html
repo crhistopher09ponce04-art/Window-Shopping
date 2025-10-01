@@ -1,17 +1,18 @@
 {% extends "base.html" %}
-{% block title %}Accesos{% endblock %}
 {% block content %}
-<h2>Opciones de {{ tipo|capitalize }} para {{ usuario }} (Rol: {{ rol }})</h2>
+<h2>Opciones de {{ tipo.capitalize() }}</h2>
+<p><a href="{{ url_for('dashboard') }}">⬅ Volver al dashboard</a></p>
 
 {% if empresas %}
-    <table>
+    <table border="1" cellpadding="6" cellspacing="0">
         <thead>
             <tr>
                 <th>Nombre</th>
-                <th>Ciudad</th>
+                <th>Rol</th>
                 <th>País</th>
-                <th>Producto</th>
-                <th>Volumen</th>
+                <th>Ciudad</th>
+                <th>Fruta/Servicio</th>
+                <th>Volumen (tons)</th>
                 <th>Precio Caja</th>
                 <th>Precio Kg</th>
                 <th>Email</th>
@@ -21,12 +22,23 @@
             {% for e in empresas %}
             <tr>
                 <td><a href="{{ url_for('detalle', company_id=e.id) }}">{{ e.name }}</a></td>
-                <td>{{ e.city }}</td>
+                <td>{{ e.role }}</td>
                 <td>{{ e.country }}</td>
-                <td>{{ e.fruit or e.product_requested }}</td>
-                <td>{{ e.volume_tons or e.volume_requested_tons }}</td>
-                <td>{{ e.price_box or "-" }}</td>
-                <td>{{ e.price_kg or "-" }}</td>
+                <td>{{ e.city }}</td>
+                <td>
+                    {% if e.role == "Cliente extranjero" %}
+                        {{ e.product_requested }} ({{ e.variety_requested }})
+                    {% elif e.role in ["Transporte","Agencia de aduana","Extraportuario"] %}
+                        {{ e.service }}
+                    {% else %}
+                        {{ e.fruit }} ({{ e.variety }})
+                    {% endif %}
+                </td>
+                <td>
+                    {% if e.volume_tons %}{{ e.volume_tons }}{% elif e.volume_requested_tons %}{{ e.volume_requested_tons }}{% else %}-{% endif %}
+                </td>
+                <td>{{ e.price_box if e.price_box else "-" }}</td>
+                <td>{{ e.price_kg if e.price_kg else "-" }}</td>
                 <td>{{ e.email }}</td>
             </tr>
             {% endfor %}
@@ -35,6 +47,4 @@
 {% else %}
     <p>No hay empresas disponibles.</p>
 {% endif %}
-
-<p><a href="{{ url_for('dashboard') }}">⬅ Volver al Dashboard</a></p>
 {% endblock %}
