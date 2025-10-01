@@ -1,14 +1,24 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="card">
-  <h2>📝 {{ t("Crear cuenta", "Create account") }}</h2>
-  <p>{{ t("Selecciona tu tipo de cuenta:", "Choose your account type:") }}</p>
-
-  <div class="grid-3 mt-2">
-    <a class="tile" href="{{ url_for('register', nac='nacional') }}">{{ t("Nacional", "National") }}</a>
-    <a class="tile" href="{{ url_for('register', nac='extranjero') }}">{{ t("Extranjero", "Foreign") }}</a>
-    <a class="tile" href="#">{{ t("Ver ayuda de registro (pronto)", "See registration help (soon)") }}</a>
+<div class="panel">
+  <h3 style="margin:0 0 10px 0;">🧭 {{ t("Elige tipo de registro","Choose registration type","选择注册类型") }}</h3>
+  <div class="grid grid-3 mt-2">
+    <a class="tile" href="{{ url_for('register', tipo='nacional') }}">
+      <div class="badge">🇨🇱</div>
+      <h4 style="margin:8px 0 6px 0;">{{ t("Perfil Nacional","Domestic profile","本地档案") }}</h4>
+      <div class="meta">{{ t("Puede operar compra/venta y/o servicios","Can operate sales/purchases and/or services","可进行买卖和/或服务") }}</div>
+    </a>
+    <a class="tile" href="{{ url_for('register', tipo='extranjero') }}">
+      <div class="badge">🌍</div>
+      <h4 style="margin:8px 0 6px 0;">{{ t("Perfil Extranjero","Foreign profile","海外档案") }}</h4>
+      <div class="meta">{{ t("Orientado a clientes internacionales","For international clients","面向海外客户") }}</div>
+    </a>
+    <a class="tile" href="{{ url_for('home') }}">
+      <div class="badge">ℹ️</div>
+      <h4 style="margin:8px 0 6px 0;">{{ t("Más tarde","Maybe later","稍后再说") }}</h4>
+      <div class="meta">{{ t("Volver al inicio","Back to home","返回首页") }}</div>
+    </a>
   </div>
-  <p class="mt-2" style="opacity:.8;">* {{ t("Demo: usa usuarios de prueba desde la pantalla de ingreso.", "Demo: use demo users from login screen.") }}</p>
+  <p class="mt-3" style="color:#a9c4e5">Demo: productor1, planta1, packing1, frigorifico1, exportador1, cliente1, transporte1, aduana1, extraportuario1 (clave 1234).</p>
 </div>
 {% endblock %}
