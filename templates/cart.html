@@ -2,17 +2,35 @@
 {% block content %}
 <h2>Carrito</h2>
 
-{% if cart %}
-    <ul>
-        {% for c in cart %}
-            <li>{{ c['name'] }} - {{ c['variety'] }} - {{ c['quantity'] }} {{ c['measure'] }}</li>
-        {% endfor %}
-    </ul>
-    <form method="POST">
-        <button name="action" value="clear">Vaciar carrito</button>
-        <button name="action" value="checkout">Finalizar pedido</button>
-    </form>
-{% else %}
-    <p>Tu carrito está vacío.</p>
-{% endif %}
+<section class="card">
+  {% if cart %}
+  <table>
+    <thead>
+      <tr><th>Empresa</th><th>Producto</th><th>Variedad</th><th>Cant</th><th>Medida</th><th></th></tr>
+    </thead>
+    <tbody>
+      {% for it in cart %}
+      <tr>
+        <td>{{ it['company_name'] }}</td>
+        <td>{{ it['name'] }}</td>
+        <td>{{ it['variety'] }}</td>
+        <td>{{ it['quantity'] }}</td>
+        <td>{{ it['measure'] }}</td>
+        <td>
+          <form method="POST">
+            <button class="btn btn-danger" name="action" value="remove:{{ loop.index0 }}">Eliminar</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <form method="POST">
+    <button class="btn" name="action" value="clear">Vaciar</button>
+    <button class="btn btn-success" name="action" value="checkout">Finalizar pedido</button>
+  </form>
+  {% else %}
+  <p>Tu carrito está vacío.</p>
+  {% endif %}
+</section>
 {% endblock %}
