@@ -1,36 +1,25 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <title>Manual de Usuario</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-  <div class="card" style="max-width:900px;margin:24px auto;">
-    <h1>Manual de Usuario — Window Shopping</h1>
+{% extends "base.html" %}
+{% block content %}
+<div class="card" style="max-width:900px;margin:24px auto;">
+  <h1>{{ _("manual") }}</h1>
+  <h2>1) {{ _("login") }}</h2>
+  <p>Usa tus credenciales o un usuario demo (clave 1234).</p>
 
-    <h2>1) Acceso</h2>
-    <p>Ingresa con tu usuario y contraseña. En demo, usa cualquiera de estos usuarios con clave <strong>1234</strong>: productor1, planta1, packing1, frigorifico1, exportador1, cliente1, transporte1, aduana1, extraportuario1.</p>
+  <h2>2) {{ _("dashboard") }}</h2>
+  <p>Accede a {{ _("buy") }}, {{ _("sell") }}, {{ _("cart") }}, {{ _("my_profile") }} y {{ _("help") }}.</p>
 
-    <h2>2) Dashboard</h2>
-    <p>Desde el panel accedes a <em>Comprar</em>, <em>Vender</em>, <em>Carrito</em>, <em>Mi Perfil</em> y <em>Centro de Ayuda</em>. Los accesos se adaptan según tu rol.</p>
+  <h2>3) Ítems</h2>
+  <p>Desde <strong>{{ _("my_profile") }}</strong> agrega ítems ({{ _("type") }}: {{ _("sale") }}/{{ _("buying") }}, {{ _("rubro") }}: {{ _("fruit") }}/{{ _("service") }}, producto, variedad, {{ _("quantity") }}, {{ _("unit") }}, {{ _("price") }}, {{ _("notes") }}).</p>
 
-    <h2>3) Accesos (Listados)</h2>
-    <p>Filtra por rubro (Fruta/Servicios), búsqueda, rol, país/ciudad, volumen y precios. Haz clic en el nombre para ver el detalle.</p>
+  <h2>4) Carrito</h2>
+  <p>Desde <em>Detalle</em> agrega un ítem específico al {{ _("cart") }} y envía la solicitud.</p>
 
-    <h2>4) Detalle y Carrito</h2>
-    <p>En el detalle puedes agregar al carrito indicando cantidad y notas (ej. calibre, bultos, fecha). En el carrito podrás quitar, vaciar o enviar la solicitud.</p>
+  <h2>5) Traducción</h2>
+  <p>Cambia ES/EN en la barra superior; el contenido clave se traduce automáticamente.</p>
 
-    <h2>5) Mi Perfil</h2>
-    <p>Edita tu información: datos de empresa, oferta de fruta o preferencias de compra (cliente extranjero), o detalle de servicio según tu rol.</p>
-
-    <h2>6) Ayuda</h2>
-    <p>Visita el Centro de Ayuda para guías y preguntas frecuentes.</p>
-
-    <div class="buttons" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;">
-      <a href="{{ url_for('dashboard') }}" class="btn">Volver al Dashboard</a>
-      <a href="{{ url_for('home') }}" class="btn">Ir al Login</a>
-    </div>
+  <div class="buttons" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;">
+    <a href="{{ url_for('dashboard') }}" class="btn">{{ _("dashboard") }}</a>
+    <a href="{{ url_for('home') }}" class="btn">{{ _("login") }}</a>
   </div>
-</body>
-</html>
+</div>
+{% endblock %}
