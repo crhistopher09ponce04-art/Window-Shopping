@@ -1,24 +1,24 @@
 <!DOCTYPE html>
-<html lang="{{ cur_lang if cur_lang else 'es' }}">
+<html lang="{{ cur_lang or 'es' }}">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>{% block title %}Window Shopping{% endblock %}</title>
+  <title>{{ _("brand") }}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
 </head>
 <body>
   <header class="topbar">
-    <div class="brand">🍑 Window Shopping</div>
+    <div class="brand">🍑 {{ _("brand") }}</div>
     <nav>
-      <a href="{{ url_for('help_center') }}">¿Ayuda?</a>
+      <a href="{{ url_for('help_center') }}">{{ _("help") }}</a>
       {% if session.get('usuario') %}
-        <a href="{{ url_for('dashboard') }}">Dashboard</a>
-        <a href="{{ url_for('cart') }}">🛒 Carrito</a>
-        <a href="{{ url_for('mi_perfil') }}">Mi Perfil</a>
-        <a href="{{ url_for('logout') }}">Salir</a>
+        <a href="{{ url_for('dashboard') }}">{{ _("dashboard") }}</a>
+        <a href="{{ url_for('cart') }}">🛒 {{ _("cart") }}</a>
+        <a href="{{ url_for('mi_perfil') }}">{{ _("my_profile") }}</a>
+        <a href="{{ url_for('logout') }}">{{ _("logout") }}</a>
       {% else %}
-        <a href="{{ url_for('login') }}">Entrar</a>
-        <a href="{{ url_for('register_router') }}">Crear cuenta</a>
+        <a href="{{ url_for('home') }}">{{ _("login") }}</a>
+        <a href="{{ url_for('register') }}">{{ _("register") }}</a>
       {% endif %}
       <span class="lang">
         <a href="{{ url_for('set_lang', code='es', next=request.full_path) }}">ES</a> |
@@ -26,6 +26,7 @@
       </span>
     </nav>
   </header>
+
   <main>
     {% with messages = get_flashed_messages() %}
       {% if messages %}
@@ -36,8 +37,9 @@
     {% endwith %}
     {% block content %}{% endblock %}
   </main>
+
   <footer class="footer">
-    © 2025 Window Shopping
+    © 2025 {{ _("brand") }}
   </footer>
 </body>
 </html>
