@@ -1,13 +1,19 @@
 {% extends "base.html" %}
-
 {% block content %}
-<div class="card center">
-  <h2>{{ t("Bienvenido a Window Shopping", "Welcome to Window Shopping") }}</h2>
-  <p>{{ t("Conecta productores, exportadores y clientes en un solo lugar.", "Connect producers, exporters and clients in one place.") }}</p>
-  
+<section class="hero float-cards">
+  <h1>{{ t('title') }}</h1>
+  <p class="subtitle">{{ t('welcome') }}</p>
   <div class="actions">
-    <a href="{{ url_for('login') }}" class="btn">🔑 {{ t("Ingresar", "Login") }}</a>
-    <a href="{{ url_for('register') }}" class="btn">📝 {{ t("Registrarse", "Register") }}</a>
+    <a href="{{ url_for('login') }}" class="btn">{{ t('hero_cta_login') }}</a>
+    <a href="{{ url_for('register_choice') }}" class="btn btn-outline">{{ t('hero_cta_register') }}</a>
   </div>
-</div>
+  <div class="hero-grid">
+    <div class="tile">🍇 Productores</div>
+    <div class="tile">🏭 Plantas</div>
+    <div class="tile">📦 Packing</div>
+    <div class="tile">❄️ Frigorífico</div>
+    <div class="tile">🚢 Exportadores</div>
+    <div class="tile">🌍 Clientes</div>
+  </div>
+</section>
 {% endblock %}
