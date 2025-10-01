@@ -1,36 +1,12 @@
 {% extends "base.html" %}
-
 {% block content %}
-<div class="container mt-5">
-    <h2 class="mb-4">❓ Centro de Ayuda</h2>
-    <p>Bienvenido al centro de ayuda de <strong>Window Shopping</strong>. Aquí encontrarás respuestas rápidas y soporte.</p>
-
-    <div class="accordion" id="faqAccordion">
-        <div class="accordion-item">
-            <h2 class="accordion-header" id="faq1">
-                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1">
-                    ¿Cómo me registro en la plataforma?
-                </button>
-            </h2>
-            <div id="collapse1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
-                <div class="accordion-body">
-                    Ve al menú <strong>Registro</strong>, completa tus datos y selecciona tu tipo de usuario (Nacional o Extranjero).
-                </div>
-            </div>
-        </div>
-
-        <div class="accordion-item">
-            <h2 class="accordion-header" id="faq2">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2">
-                    Olvidé mi contraseña
-                </button>
-            </h2>
-            <div id="collapse2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                <div class="accordion-body">
-                    Haz clic en <strong>Iniciar Sesión</strong> y luego en <em>¿Olvidaste tu contraseña?</em> para recuperarla.
-                </div>
-            </div>
-        </div>
-    </div>
+<div class="p-5 bg-light rounded shadow">
+    <h2>❓ Centro de Ayuda</h2>
+    <p>Aquí encontrarás respuestas a preguntas frecuentes:</p>
+    <ul>
+        <li>¿Cómo registrarse? → Desde el menú principal.</li>
+        <li>¿Cómo publicar productos? → Accede a tu panel después de iniciar sesión.</li>
+        <li>¿Olvidaste tu contraseña? → Contáctanos para recuperarla.</li>
+    </ul>
 </div>
 {% endblock %}
