@@ -1,21 +1,16 @@
 {% extends "base.html" %}
-{% block content %}
-<h2>📊 Dashboard de {{ session['username'] }}</h2>
-<p>Rol: <strong>{{ session['role'] }}</strong></p>
 
-<div class="card p-3">
-    <h4>Mis Ítems</h4>
-    {% if items %}
-        <ul class="list-group">
-            {% for item in items %}
-                <li class="list-group-item">
-                    <b>{{ item[3] }}</b> ({{ item[2] }}) - 
-                    {{ item[4] }} / {{ item[5] }} {{ item[6] }} - ${{ item[7] }}
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p class="text-muted">No tienes ítems registrados aún.</p>
+{% block content %}
+<div class="text-center">
+    <h2>👋 Hola, {{ usuario }}</h2>
+    <p class="lead">Estás conectado como <b>{{ tipo }}</b>.</p>
+
+    {% if tipo == "exportador" %}
+        <p>Aquí podrás agregar y gestionar tus productos para la venta.</p>
+    {% elif tipo == "comprador" %}
+        <p>Busca exportadores y ofertas que se adapten a tu necesidad.</p>
+    {% elif tipo == "servicio" %}
+        <p>Publica tus servicios y conecta con exportadores y compradores.</p>
     {% endif %}
 </div>
 {% endblock %}
