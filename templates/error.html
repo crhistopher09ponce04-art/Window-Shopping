@@ -1,8 +1,11 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Error {{ code }}</h2>
-<div class="card">
-  <p>{{ message }}</p>
-  <p><a class="btn" href="{{ url_for('dashboard') if session.get('usuario') else url_for('home') }}">⬅ {{ tr('back') }}</a></p>
+<div class="text-center mt-5">
+    <h1 class="text-danger">⚠️ Error {{ code }}</h1>
+    <p>{{ message }}</p>
+    <a href="{{ url_for('home') }}" class="btn btn-custom mt-3">⬅ Volver al inicio</a>
+    {% if session.get("user_id") %}
+        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-dark mt-3">📊 Ir al Dashboard</a>
+    {% endif %}
 </div>
 {% endblock %}
