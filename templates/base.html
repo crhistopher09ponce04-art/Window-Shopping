@@ -1,42 +1,32 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="{{ session.get('lang','es') }}">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>WS • Window Shopping</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  </head>
-  <body>
-    <nav class="navbar">
-      <div class="brand">
-        <span class="dot"></span>
-        <a href="{{ url_for('home') }}" style="color:#fff;text-decoration:none;">WS • Window Shopping</a>
-      </div>
-      <div class="nav-actions">
-        <a href="{{ url_for('home') }}">{{ t("Inicio","Home","主页") }}</a>
-        {% if session.get('usuario') %}
-          <a href="{{ url_for('dashboard') }}">Dashboard</a>
-          <a href="{{ url_for('perfil') }}">{{ session.get('usuario') }}</a>
-          <a href="{{ url_for('logout') }}">{{ t("Salir","Logout","退出") }}</a>
-        {% else %}
-          <a href="{{ url_for('login') }}">{{ t("Ingresar","Login","登录") }}</a>
-        {% endif %}
-        <span class="lang">
-          <a href="{{ url_for('set_lang', lang='es') }}" class="{% if session.get('lang','es')=='es' %}active{% endif %}">ES</a>
-          <a href="{{ url_for('set_lang', lang='en') }}" class="{% if session.get('lang','es')=='en' %}active{% endif %}">EN</a>
-          <a href="{{ url_for('set_lang', lang='zh') }}" class="{% if session.get('lang','es')=='zh' %}active{% endif %}">ZH</a>
-        </span>
-      </div>
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}WS{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header>
+    <a href="{{ url_for('home') }}" class="logo">🌐 WS</a>
+    <nav>
+      {% if session.get('usuario') %}
+        <a href="{{ url_for('dashboard') }}">🏠 {{ t("Panel","Dashboard","儀表板") }}</a>
+        <a href="{{ url_for('perfil') }}">👤 {{ t("Perfil","Profile","個人資料") }}</a>
+        <a href="{{ url_for('logout') }}">🚪 {{ t("Salir","Logout","登出") }}</a>
+      {% else %}
+        <a href="{{ url_for('login') }}">🔑 {{ t("Ingresar","Login","登入") }}</a>
+        <a href="{{ url_for('register_router') }}">📝 {{ t("Registro","Register","註冊") }}</a>
+      {% endif %}
+      <span class="lang">
+        <a href="{{ url_for('set_lang', lang='es') }}" class="{% if session.get('lang','es')=='es' %}active{% endif %}">ES</a>
+        <a href="{{ url_for('set_lang', lang='en') }}" class="{% if session.get('lang')=='en' %}active{% endif %}">EN</a>
+        <a href="{{ url_for('set_lang', lang='zh') }}" class="{% if session.get('lang')=='zh' %}active{% endif %}">中文</a>
+      </span>
     </nav>
+  </header>
 
-    <div class="container">
-      {% with messages = get_flashed_messages() %}
-        {% if messages %}
-          <div class="flash">{{ messages[0] }}</div>
-        {% endif %}
-      {% endwith %}
-      {% block content %}{% endblock %}
-      <div class="footer">© 2025 Plataforma Window Shopping — Demo</div>
-    </div>
-  </body>
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
+</body>
 </html>
