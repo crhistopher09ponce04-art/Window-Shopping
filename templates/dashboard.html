@@ -1,11 +1,36 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="card float">
-  <h2>📊 {{ t('dashboard') }} — {{ my_company }} ({{ rol }})</h2>
-  <div class="actions">
-    <a href="{{ url_for('accesos', tipo='compras') }}" class="btn">🛒 {{ t('buy') }}</a>
-    <a href="{{ url_for('accesos', tipo='ventas') }}" class="btn btn-outline">💼 {{ t('sell') }}</a>
-    <a href="{{ url_for('accesos', tipo='servicios') }}" class="btn btn-ghost">🧰 {{ t('services') }}</a>
+<div class="card">
+  <h2>👋 {{ t("Hola", "Hi") }} {{ usuario }} — <span class="badge">{{ rol }}</span></h2>
+  <p class="mt-1">{{ t("Tu perfil es", "Your profile is") }}: <strong>{{ t("Compra/Venta","Buy/Sell") if perfil_tipo=='compra_venta' else t("Servicios","Services") }}</strong></p>
+
+  <div class="mt-2">
+    <a href="{{ url_for('accesos', tipo='ventas') }}" class="btn me-2">🛒 {{ t("Ventas/Ofertas", "Sales/Offers") }}</a>
+    <a href="{{ url_for('accesos', tipo='compras') }}" class="btn me-2">📥 {{ t("Compras/Demandas", "Purchases/Demands") }}</a>
+    <a href="{{ url_for('accesos', tipo='servicios') }}" class="btn me-2">🧰 {{ t("Servicios", "Services") }}</a>
+    <a href="{{ url_for('perfil') }}" class="btn btn-secondary">👤 {{ t("Mi Perfil", "My Profile") }}</a>
+  </div>
+</div>
+
+<div class="grid">
+  <div class="card">
+    <h3>{{ t("Mi Empresa", "My Company") }}</h3>
+    <p class="mt-1"><strong>{{ my_company.empresa }}</strong></p>
+    <p>{{ t("País", "Country") }}: {{ my_company.pais }} | {{ t("Rol", "Role") }}: {{ my_company.rol }}</p>
+    <p class="mt-1">{{ my_company.descripcion }}</p>
+  </div>
+
+  <div class="card">
+    <h3>{{ t("Mi Carrito (demo)", "My Cart (demo)") }}</h3>
+    {% if cart and cart|length>0 %}
+      <ul class="mt-1">
+        {% for it in cart %}
+          <li>{{ it.get('empresa','?') }} — {{ it.get('producto') or it.get('servicio') or it.get('tipo') }}</li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="mt-1">{{ t("Aún no agregas ítems.", "No items yet.") }}</p>
+    {% endif %}
   </div>
 </div>
 {% endblock %}
