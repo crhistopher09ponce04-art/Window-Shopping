@@ -1,162 +1,98 @@
-/* ============================
-   🌐 Estilos Generales
-============================ */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-}
-
+/* === GENERAL === */
 body {
-  background: #f7f9fc;
-  color: #333;
-  line-height: 1.6;
+    background: #f8f9fc;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
 }
 
-/* ============================
-   🌐 Navbar
-============================ */
-header {
-  background: linear-gradient(90deg, #0066ff, #0099ff);
-  padding: 12px 20px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
+/* === NAVBAR === */
 .navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  color: white;
+    background: linear-gradient(90deg, #0066ff, #00bfff);
 }
 
-.navbar-brand a {
-  text-decoration: none;
-  color: white;
-  font-weight: bold;
-  font-size: 1.3rem;
+.navbar-brand {
+    font-size: 1.3rem;
+    letter-spacing: 0.5px;
 }
 
-.navbar-links {
-  list-style: none;
-  display: flex;
-  gap: 15px;
+.navbar .nav-link {
+    font-weight: 500;
+    transition: all 0.3s ease-in-out;
 }
 
-.navbar-links a {
-  text-decoration: none;
-  color: white;
-  font-weight: 500;
-  transition: color 0.3s, transform 0.2s;
+.navbar .nav-link:hover {
+    transform: translateY(-2px);
+    color: #ffd700 !important;
 }
 
-.navbar-links a:hover {
-  color: #ffdd57;
-  transform: translateY(-2px);
+/* === HERO LANDING === */
+h1, h2, h3 {
+    font-weight: 700;
 }
 
-/* ============================
-   🌐 Hero Section
-============================ */
-.hero {
-  text-align: center;
-  padding: 80px 20px;
-  background: linear-gradient(180deg, #0099ff10, transparent);
+.lead {
+    font-size: 1.2rem;
 }
 
-.hero h1 {
-  font-size: 2.5rem;
-  color: #0066cc;
-  margin-bottom: 15px;
+.card {
+    border-radius: 15px;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 }
 
-.hero p {
-  font-size: 1.2rem;
-  margin-bottom: 25px;
+.card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.1);
 }
 
-.hero-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-}
-
+/* === BOTONES === */
 .btn {
-  background: #0066ff;
-  color: white;
-  padding: 12px 20px;
-  border-radius: 30px;
-  text-decoration: none;
-  font-weight: bold;
-  transition: all 0.3s ease;
+    border-radius: 25px;
+    font-weight: 600;
+    transition: all 0.3s ease-in-out;
 }
 
 .btn:hover {
-  background: #004ecc;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    transform: scale(1.05);
 }
 
-.btn-alt {
-  background: white;
-  color: #0066ff;
-  border: 2px solid #0066ff;
+/* === FORMULARIOS === */
+.card form .form-control {
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    padding: 12px;
+    transition: border 0.2s ease;
 }
 
-.btn-alt:hover {
-  background: #0066ff;
-  color: white;
+.card form .form-control:focus {
+    border-color: #0066ff;
+    box-shadow: 0px 0px 8px rgba(0, 102, 255, 0.2);
 }
 
-/* ============================
-   🌐 Features Section
-============================ */
-.features {
-  display: flex;
-  justify-content: space-around;
-  padding: 60px 20px;
-  background: #fff;
+/* === LOGIN Y REGISTER CARDS === */
+.card {
+    background: #fff;
+    border: none;
+    box-shadow: 0px 6px 20px rgba(0,0,0,0.08);
 }
 
-.feature {
-  text-align: center;
-  max-width: 300px;
-  padding: 20px;
-  border-radius: 12px;
-  transition: all 0.3s ease;
+.card h3 {
+    font-weight: bold;
+    color: #0066ff;
 }
 
-.feature:hover {
-  transform: translateY(-5px);
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+/* === ANIMACIONES === */
+@keyframes fadeInUp {
+    0% { opacity: 0; transform: translateY(30px); }
+    100% { opacity: 1; transform: translateY(0); }
 }
 
-.feature h3 {
-  color: #0066cc;
-  margin-bottom: 10px;
+.card, .btn, .navbar, h1, h2, h3, p {
+    animation: fadeInUp 0.8s ease forwards;
 }
 
-/* ============================
-   🌐 Error Page
-============================ */
-.error-page {
-  text-align: center;
-  padding: 100px 20px;
-}
-
-.error-page h2 {
-  font-size: 2rem;
-  color: #e74c3c;
-  margin-bottom: 15px;
-}
-
-/* ============================
-   🌐 Footer
-============================ */
+/* === FOOTER === */
 footer {
-  text-align: center;
-  padding: 20px;
-  background: #f1f3f6;
-  color: #555;
-  margin-top: 30px;
-  font-size: 0.9rem;
+    background: #f1f3f6;
+    color: #666;
+    font-size: 0.9rem;
 }
