@@ -1,1 +1,18 @@
-<!-- register.html placeholder -->
+{% extends "base.html" %}
+{% block title %}Registro{% endblock %}
+{% block content %}
+<h2>Registro de nuevo usuario</h2>
+<form method="post" action="/registro">
+    <input type="text" name="username" placeholder="Usuario" required>
+    <input type="password" name="password" placeholder="Contraseña" required>
+    <select name="rol" required>
+        <option value="productor">Productor</option>
+        <option value="planta">Planta</option>
+        <option value="packing">Packing</option>
+        <option value="frigorifico">Frigorífico</option>
+        <option value="exportador">Exportador</option>
+        <option value="cliente">Cliente extranjero</option>
+    </select>
+    <button type="submit">Registrar</button>
+</form>
+{% endblock %}
