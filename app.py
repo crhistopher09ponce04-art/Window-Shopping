@@ -18,7 +18,11 @@ def t(es, en):
 
 @app.context_processor
 def inject_globals():
-    return {"LANGS": LANGS, "cur_lang": get_lang()}
+    return {
+        "LANGS": LANGS,
+        "cur_lang": get_lang(),
+        "t": t   # 👈 esto permite usar {{ t() }} en Jinja
+    }
 
 @app.route("/lang/<code>")
 def set_lang(code):
@@ -36,14 +40,29 @@ SERVICE_ROLES = {"Packing", "Frigorífico", "Transporte", "Agencia de aduana", "
 # ------------------------
 empresas = {
     "C001": {"id": "C001", "name": "Agrícola Montolín", "role": "Productor", "city": "Maule", "country": "Chile",
-             "items": [{"fruit": "Ciruela", "variety": "Black Diamond", "volume_tons": 50, "price_box": 17500, "price_kg": 400}],
+             "fruit": "Ciruela", "variety": "Black Diamond", "volume_tons": 50, "price_box": 17500, "price_kg": 400,
              "phone": "+56 9 8765 4321", "email": "ventas@montolin.cl"},
     "C002": {"id": "C002", "name": "Planta Ejemplo", "role": "Planta", "city": "Talca", "country": "Chile",
-             "items": [{"fruit": "Ciruela", "variety": "D'Agen", "volume_tons": 28, "price_box": 16800, "price_kg": 390}],
+             "fruit": "Ciruela", "variety": "D'Agen", "volume_tons": 28, "price_box": 16800, "price_kg": 390,
              "phone": "+56 9 5555 5555", "email": "planta@ejemplo.cl"},
+    "C003": {"id": "C003", "name": "Pukiyai Packing", "role": "Packing", "city": "Rancagua", "country": "Chile",
+             "fruit": "Ciruela", "variety": "Black Amber", "volume_tons": 40, "price_box": 18000, "price_kg": 420,
+             "phone": "+56 2 2345 6789", "email": "info@pukiyai.cl"},
+    "C004": {"id": "C004", "name": "Frigo Sur", "role": "Frigorífico", "city": "Curicó", "country": "Chile",
+             "fruit": "Ciruela", "variety": "Angeleno", "volume_tons": 60, "price_box": 16500, "price_kg": 370,
+             "phone": "+56 72 222 3333", "email": "contacto@frigosur.cl"},
+    "C005": {"id": "C005", "name": "Tuniche Fruit", "role": "Exportador", "city": "Valparaíso", "country": "Chile",
+             "fruit": "Ciruela", "variety": "Black Diamond", "volume_tons": 30, "price_box": 17000, "price_kg": 380,
+             "phone": "+56 9 8123 4567", "email": "contacto@tuniche.cl"},
+    "X001": {"id": "X001", "name": "Chensen Ogen Ltd.", "role": "Cliente extranjero", "city": "Shenzhen", "country": "China",
+             "product_requested": "Ciruela fresca", "variety_requested": "Black Diamond", "volume_requested_tons": 50,
+             "phone": "+86 138 0000 1111", "email": "chen@ogen.cn"},
     "S001": {"id": "S001", "name": "Transporte Andes", "role": "Transporte", "city": "Santiago", "country": "Chile",
-             "items": [{"service": "Camiones refrigerados", "available": "Sí"}],
-             "phone": "+56 2 3456 7890", "email": "contacto@transporteandes.cl"}
+             "service": "Camiones refrigerados", "phone": "+56 2 3456 7890", "email": "contacto@transporteandes.cl"},
+    "S002": {"id": "S002", "name": "Aduanas Chile Ltda.", "role": "Agencia de aduana", "city": "Valparaíso", "country": "Chile",
+             "service": "Gestión documental y trámites", "phone": "+56 2 9999 1111", "email": "aduana@chile.cl"},
+    "S003": {"id": "S003", "name": "Puerto Seco SA", "role": "Extraportuario", "city": "San Antonio", "country": "Chile",
+             "service": "Almacenaje extraportuario", "phone": "+56 35 1234 567", "email": "info@puertoseco.cl"}
 }
 
 # ------------------------
@@ -52,7 +71,13 @@ empresas = {
 usuarios = {
     "productor1": {"password": "1234", "rol": "Productor", "company_id": "C001"},
     "planta1": {"password": "1234", "rol": "Planta", "company_id": "C002"},
-    "transporte1": {"password": "1234", "rol": "Transporte", "company_id": "S001"}
+    "packing1": {"password": "1234", "rol": "Packing", "company_id": "C003"},
+    "frigorifico1": {"password": "1234", "rol": "Frigorífico", "company_id": "C004"},
+    "exportador1": {"password": "1234", "rol": "Exportador", "company_id": "C005"},
+    "cliente1": {"password": "1234", "rol": "Cliente extranjero", "company_id": "X001"},
+    "transporte1": {"password": "1234", "rol": "Transporte", "company_id": "S001"},
+    "aduana1": {"password": "1234", "rol": "Agencia de aduana", "company_id": "S002"},
+    "extraportuario1": {"password": "1234", "rol": "Extraportuario", "company_id": "S003"}
 }
 
 # ------------------------
@@ -89,37 +114,20 @@ def login():
         return redirect(url_for("dashboard"))
     return render_template("login.html", error=t("Usuario o contraseña incorrectos", "Invalid credentials"))
 
-@app.route("/register", methods=["GET", "POST"])
+@app.route("/register")
 def register_router():
-    if request.method == "GET":
-        return render_template("register_router.html")
-    username = request.form.get("username", "").strip()
-    password = request.form.get("password", "").strip()
-    rut = request.form.get("rut", "").strip()
-    email = request.form.get("email", "").strip()
-    phone = request.form.get("phone", "").strip()
-    city = request.form.get("city", "").strip()
-    country = request.form.get("country", "").strip()
-    rol = request.form.get("rol", "").strip()
-
-    if username in usuarios:
-        return render_template("register_router.html", error="Usuario ya existe")
-
-    company_id = f"U{len(empresas)+1:03d}"
-    empresas[company_id] = {
-        "id": company_id, "name": username, "role": rol, "city": city, "country": country,
-        "items": [], "phone": phone, "email": email, "rut": rut
-    }
-    usuarios[username] = {"password": password, "rol": rol, "company_id": company_id}
-    flash("Usuario registrado correctamente")
-    return redirect(url_for("login"))
+    return render_template("register_router.html")
 
 @app.route("/help")
 def help_center():
     return render_template("help_center.html")
 
+@app.route("/manual")
+def manual():
+    return render_template("manual.html")
+
 # ------------------------
-# Rutas privadas
+# Dashboard y privadas
 # ------------------------
 @app.route("/dashboard")
 def dashboard():
@@ -138,13 +146,14 @@ def detalle(company_id):
             "company_id": company_id,
             "name": c["name"],
             "role": c["role"],
+            "rubro": "servicio" if c["role"] in ["Transporte", "Agencia de aduana", "Extraportuario"] else "fruta",
             "quantity": request.form.get("quantity", "1"),
             "notes": request.form.get("notes", "")
         }
         cart = session.setdefault("cart", [])
         cart.append(item)
         session["cart"] = cart
-        flash("Agregado al carrito.")
+        flash(t("Agregado al carrito.", "Added to cart."))
         return redirect(url_for("cart"))
     return render_template("detalle.html", company=c)
 
@@ -155,17 +164,17 @@ def cart():
         action = request.form.get("action")
         if action == "clear":
             session["cart"] = []
-            flash("Carrito vaciado.")
+            flash(t("Carrito vaciado.", "Cart cleared."))
         elif action and action.startswith("remove:"):
             idx = int(action.split(":")[1])
             cart = session.get("cart", [])
             if 0 <= idx < len(cart):
                 cart.pop(idx)
                 session["cart"] = cart
-                flash("Ítem eliminado.")
+                flash(t("Ítem eliminado.", "Item removed."))
         elif action == "checkout":
             session["cart"] = []
-            flash("¡Solicitud enviada! Nuestro equipo te contactará.")
+            flash(t("¡Solicitud enviada!", "Request sent!"))
             return redirect(url_for("dashboard"))
     return render_template("cart.html", cart=session.get("cart", []))
 
@@ -175,20 +184,14 @@ def mi_perfil():
     company_id = session["company_id"]
     c = empresas.get(company_id)
     if not c: abort(404)
-
     if request.method == "POST":
-        new_item = {
-            "fruit": request.form.get("fruit"),
-            "variety": request.form.get("variety"),
-            "volume_tons": request.form.get("volume_tons"),
-            "price_box": request.form.get("price_box"),
-            "price_kg": request.form.get("price_kg"),
-            "service": request.form.get("service"),
-        }
-        c["items"].append(new_item)
-        flash("Nuevo ítem agregado.")
+        c["name"] = request.form.get("name", c["name"])
+        c["city"] = request.form.get("city", c.get("city", ""))
+        c["country"] = request.form.get("country", c.get("country", ""))
+        c["phone"] = request.form.get("phone", c.get("phone", ""))
+        c["email"] = request.form.get("email", c.get("email", ""))
+        flash(t("Cambios guardados.", "Changes saved."))
         return redirect(url_for("mi_perfil"))
-
     return render_template("mi_perfil.html", company=c)
 
 @app.route("/logout")
@@ -201,11 +204,11 @@ def logout():
 # ------------------------
 @app.errorhandler(404)
 def not_found(e):
-    return render_template("error.html", code=404, message="Recurso no encontrado"), 404
+    return render_template("error.html", code=404, message=t("Recurso no encontrado", "Resource not found")), 404
 
 @app.errorhandler(500)
 def server_error(e):
-    return render_template("error.html", code=500, message="Error interno"), 500
+    return render_template("error.html", code=500, message=t("Error interno", "Internal server error")), 500
 
 # ------------------------
 # Entrypoint local
