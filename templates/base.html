@@ -1,32 +1,48 @@
 <!DOCTYPE html>
 <html lang="{{ session.get('lang','es') }}">
 <head>
-  <meta charset="UTF-8">
-  <title>{% block title %}WS{% endblock %}</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Window Shopping</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-  <header>
-    <a href="{{ url_for('home') }}" class="logo">🌐 WS</a>
-    <nav>
-      {% if session.get('usuario') %}
-        <a href="{{ url_for('dashboard') }}">🏠 {{ t("Panel","Dashboard","儀表板") }}</a>
-        <a href="{{ url_for('perfil') }}">👤 {{ t("Perfil","Profile","個人資料") }}</a>
+<header>
+  <a class="logo" href="{{ url_for('home') }}">WS • Window Shopping</a>
+  <nav>
+    <a href="{{ url_for('home') }}">{{ t("Inicio","Home","首頁") }}</a>
+    {% if session.get('usuario') %}
+      {% if has_endpoint('dashboard') %}
+        <a href="{{ url_for('dashboard') }}">📊 {{ t("Panel","Dashboard","面板") }}</a>
+      {% endif %}
+      {% if has_endpoint('perfil') %}
+        <a href="{{ url_for('perfil') }}">👤 {{ t("Mi Perfil","My Profile","個人資料") }}</a>
+      {% endif %}
+      {% if has_endpoint('logout') %}
         <a href="{{ url_for('logout') }}">🚪 {{ t("Salir","Logout","登出") }}</a>
-      {% else %}
+      {% endif %}
+    {% else %}
+      {% if has_endpoint('login') %}
         <a href="{{ url_for('login') }}">🔑 {{ t("Ingresar","Login","登入") }}</a>
+      {% endif %}
+      {% if has_endpoint('register_router') %}
         <a href="{{ url_for('register_router') }}">📝 {{ t("Registro","Register","註冊") }}</a>
       {% endif %}
-      <span class="lang">
-        <a href="{{ url_for('set_lang', lang='es') }}" class="{% if session.get('lang','es')=='es' %}active{% endif %}">ES</a>
-        <a href="{{ url_for('set_lang', lang='en') }}" class="{% if session.get('lang')=='en' %}active{% endif %}">EN</a>
-        <a href="{{ url_for('set_lang', lang='zh') }}" class="{% if session.get('lang')=='zh' %}active{% endif %}">中文</a>
-      </span>
-    </nav>
-  </header>
+    {% endif %}
+    <span class="lang-switch">
+      <a href="{{ url_for('set_lang', lang='es') }}" class="{% if session.get('lang','es')=='es' %}active{% endif %}">ES</a> |
+      <a href="{{ url_for('set_lang', lang='en') }}" class="{% if session.get('lang','es')=='en' %}active{% endif %}">EN</a> |
+      <a href="{{ url_for('set_lang', lang='zh') }}" class="{% if session.get('lang','es')=='zh' %}active{% endif %}">中文</a>
+    </span>
+  </nav>
+</header>
 
-  <main class="container">
-    {% block content %}{% endblock %}
-  </main>
+<main>
+  {% block content %}{% endblock %}
+</main>
+
+<footer>
+  © {{ t("2025 Plataforma Window Shopping — Demo", "2025 Window Shopping Platform — Demo","2025 Window Shopping 平台 — 演示") }}
+</footer>
 </body>
 </html>
