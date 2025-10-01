@@ -1,35 +1,35 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Registro</h2>
-{% if error %}<p class="error">{{ error }}</p>{% endif %}
-<form method="POST" class="card form">
-  <label>Usuario *</label>
-  <input type="text" name="username" required>
-  <label>Contraseña *</label>
-  <input type="password" name="password" required>
-  <label>Rol *</label>
-  <select name="rol" required>
-    <option value="Productor">Productor</option>
-    <option value="Planta">Planta</option>
-    <option value="Packing">Packing</option>
-    <option value="Frigorífico">Frigorífico</option>
-    <option value="Exportador">Exportador</option>
-    <option value="Cliente extranjero">Cliente extranjero</option>
-    <option value="Transporte">Transporte</option>
-    <option value="Agencia de aduana">Agencia de aduana</option>
-    <option value="Extraportuario">Extraportuario</option>
-  </select>
-  <hr>
-  <label>Nombre de la empresa *</label>
-  <input type="text" name="name" required>
-  <label>Ciudad</label>
-  <input type="text" name="city">
-  <label>País</label>
-  <input type="text" name="country">
-  <label>Teléfono</label>
-  <input type="text" name="phone">
-  <label>Email</label>
-  <input type="email" name="email">
-  <button type="submit" class="btn btn-primary">Crear cuenta</button>
-</form>
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card p-4">
+            <h3 class="text-center">📝 {{ _('Registro de Usuario') }}</h3>
+            <form method="POST">
+                <div class="mb-3">
+                    <label class="form-label">{{ _('Nombre de Usuario') }}</label>
+                    <input type="text" name="username" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">{{ _('Contraseña') }}</label>
+                    <input type="password" name="password" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">{{ _('Rol') }}</label>
+                    <select name="rol" class="form-select" required>
+                        <option value="Productor">🌱 Productor</option>
+                        <option value="Planta">🏭 Planta</option>
+                        <option value="Packing">📦 Packing</option>
+                        <option value="Frigorífico">❄️ Frigorífico</option>
+                        <option value="Exportador">🚢 Exportador</option>
+                        <option value="Cliente extranjero">🌍 Cliente Extranjero</option>
+                        <option value="Transporte">🚚 Transporte</option>
+                        <option value="Agencia de aduana">📑 Agencia de Aduana</option>
+                        <option value="Extraportuario">🏗 Extraportuario</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-success w-100">{{ _('Crear Usuario') }}</button>
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}
