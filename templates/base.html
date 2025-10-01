@@ -2,8 +2,8 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}Window Shopping{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Window Shopping</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <header>
@@ -18,9 +18,11 @@
             {% endif %}
         </nav>
     </header>
+
     <main>
         {% block content %}{% endblock %}
     </main>
+
     <footer>
         <p>© 2025 Window Shopping - Plataforma B2B</p>
     </footer>
