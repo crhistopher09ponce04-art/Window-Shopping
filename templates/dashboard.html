@@ -1,48 +1,14 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Hola, {{ usuario }} (Rol: {{ rol }})</h2>
+<div class="text-center">
+    <h2>📊 {{ _('Bienvenido') }} {{ session.get('usuario') }}</h2>
+    <p class="lead">{{ _('Tu rol es') }}: <strong>{{ session.get('rol') }}</strong></p>
 
-<section class="grid">
-  <div class="card">
-    <h3>Mi Empresa</h3>
-    {% if me %}
-      <p><strong>{{ me['name'] }}</strong> — {{ me['role'] }}</p>
-      <p>{{ me['city'] }}, {{ me['country'] }}</p>
-      <p>📞 {{ me['phone'] }} — ✉️ {{ me['email'] }}</p>
-      <p><a class="btn" href="{{ url_for('mi_perfil') }}">Editar perfil</a></p>
-    {% endif %}
-  </div>
-
-  <div class="card">
-    <h3>Acciones</h3>
-    <p><a class="btn btn-primary" href="{{ url_for('explorar') }}">🔎 Explorar mercado</a></p>
-    <p><a class="btn" href="{{ url_for('cart') }}">🛒 Ver carrito</a></p>
-  </div>
-</section>
-
-<section class="card">
-  <h3>Mis Ítems</h3>
-  {% if items %}
-    <table>
-      <thead>
-        <tr>
-          <th>Producto/Servicio</th><th>Variedad</th><th>Cantidad</th><th>Medida</th><th>Precio</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for it in items %}
-        <tr>
-          <td>{{ it['name'] }}</td>
-          <td>{{ it['variety'] }}</td>
-          <td>{{ it['quantity'] }}</td>
-          <td>{{ it['measure'] }}</td>
-          <td>${{ '%.0f'|format(it['price']) }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  {% else %}
-    <p>Aún no has publicado ítems. Agrega desde <a href="{{ url_for('mi_perfil') }}">Mi Perfil</a>.</p>
-  {% endif %}
-</section>
+    <div class="d-flex justify-content-center mt-4">
+        <a href="{{ url_for('perfil') }}" class="btn btn-outline-primary m-2">👤 {{ _('Mi Perfil') }}</a>
+        <a href="{{ url_for('accesos', tipo='ventas') }}" class="btn btn-outline-success m-2">💰 {{ _('Mis Ventas') }}</a>
+        <a href="{{ url_for('accesos', tipo='compras') }}" class="btn btn-outline-info m-2">🛒 {{ _('Mis Compras') }}</a>
+        <a href="{{ url_for('cart') }}" class="btn btn-warning m-2">🛍 {{ _('Mi Carrito') }}</a>
+    </div>
+</div>
 {% endblock %}
