@@ -1,14 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Manual de Usuario</h2>
-<div class="card">
-  <p>Esta guía resume cómo usar la plataforma:</p>
-  <ol>
-    <li>Regístrate y completa tu empresa.</li>
-    <li>Desde <strong>Mi Perfil</strong> publica ítems (fruta/servicios) con medida, cantidad y precio.</li>
-    <li>Ve a <strong>Explorar Mercado</strong> para filtrar y ver ofertas de otros.</li>
-    <li>Entra al detalle y agrégalo al <strong>Carrito</strong>. Envía tu solicitud.</li>
-    <li>Edita tus datos e ítems cuando quieras.</li>
-  </ol>
+<div class="container mt-5">
+  <h2>📖 {{ t("Manual de Usuario", "User Manual") }}</h2>
+  <p>{{ t("Este manual explica paso a paso cómo usar la plataforma.", "This manual explains step by step how to use the platform.") }}</p>
 </div>
 {% endblock %}
