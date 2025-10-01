@@ -1,26 +1,21 @@
 {% extends "base.html" %}
-
 {% block content %}
-<div class="card">
-  <h2>{{ t("Iniciar sesión", "Login") }}</h2>
-
-  {% if error %}
-    <p class="error">{{ error }}</p>
-  {% endif %}
-
-  <form method="post">
-    <label>{{ t("Usuario", "Username") }}</label>
-    <input type="text" name="username" required>
-
-    <label>{{ t("Contraseña", "Password") }}</label>
-    <input type="password" name="password" required>
-
-    <button type="submit" class="btn">➡️ {{ t("Ingresar", "Login") }}</button>
+<div class="card float">
+  <h2>🔐 {{ t('login') }}</h2>
+  {% if error %}<div class="flash"><p>{{ error }}</p></div>{% endif %}
+  <form method="POST">
+    <label>Usuario</label>
+    <input name="username" required placeholder="exportador1">
+    <label>Contraseña</label>
+    <input type="password" name="password" required placeholder="1234">
+    <button class="btn" type="submit">{{ t('login') }}</button>
   </form>
-
-  <p style="margin-top:10px;">
-    {{ t("¿No tienes cuenta?", "Don't have an account?") }}
-    <a href="{{ url_for('register') }}">📝 {{ t("Regístrate aquí", "Register here") }}</a>
+  <p class="muted">
+    <a href="{{ url_for('password_forgot') }}">{{ t('forgot') }}</a>
+  </p>
+  <p class="muted">
+    {{ t("¿No tienes cuenta?", "No account yet?", "还没有账号？") }}
+    <a href="{{ url_for('register_choice') }}">{{ t('register') }}</a>
   </p>
 </div>
 {% endblock %}
