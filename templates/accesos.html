@@ -1,19 +1,83 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="card">
-  <h2>{{ t("Accesos","Access","訪問") }} - {{ tipo|capitalize }}</h2>
-  {% if data %}
-    <div class="grid">
-      {% for c in data %}
-        <div class="card">
-          <h3><a href="{{ url_for('empresa', slug=c.slug) }}">{{ c.nombre }}</a></h3>
-          <p>{{ c.rol }} - {{ c.pais }}</p>
-          <p>{{ c.descripcion }}</p>
-        </div>
-      {% endfor %}
-    </div>
+<h2 class="mt-1">
+  {% if tipo=='servicios' %}
+    🧰 {{ t("Servicios disponibles", "Available services","可用服務") }}
+  {% elif tipo=='ventas' %}
+    🛒 {{ t("Ofertas/Ventas disponibles", "Available offers/sales","可用供應/銷售") }}
   {% else %}
-    <p>{{ t("No hay registros.","No records.","沒有記錄") }}</p>
+    📥 {{ t("Demandas/Compras disponibles", "Available demands/purchases","可用需求/採購") }}
   {% endif %}
-</div>
+</h2>
+
+{% if data and data|length>0 %}
+  <div class="grid mt-2">
+    {% for c in data %}
+      <div class="card">
+        <h3><a href="{{ url_for('empresa', slug=c.slug) }}">{{ c.nombre }}</a></h3>
+        <p class="mt-1"><span class="badge">{{ c.rol }}</span> • {{ c.pais }}</p>
+        <p class="mt-1">{{ c.descripcion }}</p>
+
+        {% if c.items and c.items|length>0 %}
+          <table class="table mt-2">
+            <thead>
+              <tr>
+                {% if tipo=='servicios' %}
+                  <th>{{ t("Servicio", "Service","服務") }}</th>
+                  <th>{{ t("Capacidad", "Capacity","產能") }}</th>
+                  <th>{{ t("Ubicación", "Location","位置") }}</th>
+                {% else %}
+                  <th>{{ t("Tipo", "Type","類別") }}</th>
+                  <th>{{ t("Producto", "Product","產品") }}</th>
+                  <th>{{ t("Cantidad", "Quantity","數量") }}</th>
+                  <th>{{ t("Origen", "Origin","來源") }}</th>
+                {% endif %}
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+            {% for it in c.items %}
+              <tr>
+                {% if tipo=='servicios' %}
+                  <td>{{ it.servicio }}</td>
+                  <td>{{ it.capacidad }}</td>
+                  <td>{{ it.ubicacion }}</td>
+                {% else %}
+                  <td>{{ it.tipo }}</td>
+                  <td>{{ it.producto }}</td>
+                  <td>{{ it.cantidad }}</td>
+                  <td>{{ it.origen }}</td>
+                {% endif %}
+                <td style="width:1%;white-space:nowrap;">
+                  <form method="POST" action="{{ url_for('cart_add') }}">
+                    <input type="hidden" name="empresa" value="{{ c.nombre }}">
+                    {% if tipo=='servicios' %}
+                      <input type="hidden" name="servicio" value="{{ it.servicio }}">
+                      <input type="hidden" name="tipo" value="servicio">
+                    {% else %}
+                      <input type="hidden" name="producto" value="{{ it.producto }}">
+                      <input type="hidden" name="tipo" value="{{ it.tipo }}">
+                    {% endif %}
+                    <button type="submit" class="btn">{{ t("Agregar", "Add","加入") }}</button>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        {% endif %}
+
+        <div class="mt-2">
+          <a class="btn btn-secondary" href="{{ url_for('empresa', slug=c.slug) }}">{{ t("Ver perfil", "View profile","查看檔案") }}</a>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="card mt-2">
+    <p>{{ t("No hay registros disponibles.", "No records available.","暫無資料") }}</p>
+  </div>
+{% endif %}
+
+<a href="{{ url_for('dashboard') }}" class="btn mt-3">⬅️ {{ t("Volver", "Back","返回") }}</a>
 {% endblock %}
