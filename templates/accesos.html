@@ -1,40 +1,17 @@
 {% extends "base.html" %}
+
 {% block content %}
-<div class="container mt-4">
-  <h2>{{ t("Accesos de", "Access for") }} {{ tipo|capitalize }}</h2>
+<h2>{{ t("Accesos - " + tipo, "Access - " + tipo) }}</h2>
 
-  <form class="row g-2 mb-4">
-    <div class="col-md-3"><input class="form-control" type="text" name="q" placeholder="{{ t('Buscar...', 'Search...') }}" value="{{ values.q }}"></div>
-    <div class="col-md-2"><input class="form-control" type="text" name="country" placeholder="{{ t('País', 'Country') }}" value="{{ values.country }}"></div>
-    <div class="col-md-2"><input class="form-control" type="text" name="city" placeholder="{{ t('Ciudad', 'City') }}" value="{{ values.city }}"></div>
-    <div class="col-md-2">
-      <select class="form-select" name="role">
-        <option value="">{{ t("Rol", "Role") }}</option>
-        {% for r in roles_opts %}
-          <option value="{{r}}" {% if values.role == r %}selected{% endif %}>{{r}}</option>
-        {% endfor %}
-      </select>
-    </div>
-    <div class="col-md-2"><button class="btn btn-primary w-100">🔎 {{ t("Filtrar", "Filter") }}</button></div>
-  </form>
-
-  <div class="row">
-    {% for c in empresas %}
-    <div class="col-md-4 mb-4">
-      <div class="card h-100 shadow-sm">
-        <div class="card-body">
-          <h5 class="card-title">{{ c.name }}</h5>
-          <p class="card-text">
-            <strong>{{ c.role }}</strong><br>
-            📍 {{ c.city }}, {{ c.country }}<br>
-            {% if c.fruit %} 🍑 {{ c.fruit }} ({{ c.variety }}) {% endif %}
-            {% if c.service %} 🛠️ {{ c.service }} {% endif %}
-          </p>
-          <a href="{{ url_for('detalle', company_id=c.id) }}" class="btn btn-outline-success">{{ t("Ver Detalle", "See Detail") }}</a>
-        </div>
-      </div>
-    </div>
+{% if data %}
+  <ul>
+    {% for item in data %}
+      <li>{{ item }}</li>
     {% endfor %}
-  </div>
-</div>
+  </ul>
+{% else %}
+  <p>{{ t("No hay registros disponibles.", "No records available.") }}</p>
+{% endif %}
+
+<a href="{{ url_for('dashboard') }}" class="btn btn-primary mt-3">⬅️ {{ t("Volver", "Back") }}</a>
 {% endblock %}
