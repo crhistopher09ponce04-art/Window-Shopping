@@ -1,23 +1,36 @@
 {% extends "base.html" %}
-{% block title %}Dashboard{% endblock %}
 {% block content %}
 <div class="card">
-  <h2>{{ t("Bienvenido","Welcome","歡迎") }} {{ usuario }}</h2>
-  <p>{{ t("Rol","Role","角色") }}: {{ rol }} | {{ t("Perfil","Profile","配置檔") }}: {{ perfil_tipo }}</p>
+  <h2>👋 {{ t("Hola", "Hi","嗨") }} {{ usuario }} — <span class="badge">{{ rol }}</span></h2>
+  <p class="mt-1">{{ t("Tu perfil es", "Your profile is","你的檔案類型是") }}: <strong>{{ t("Compra/Venta","Buy/Sell","買/賣") if perfil_tipo=='compra_venta' else t("Servicios","Services","服務") }}</strong></p>
+
+  <div class="mt-2">
+    <a href="{{ url_for('accesos', tipo='ventas') }}" class="btn me-2">🛒 {{ t("Ventas/Ofertas", "Sales/Offers","銷售/供應") }}</a>
+    <a href="{{ url_for('accesos', tipo='compras') }}" class="btn me-2">📥 {{ t("Compras/Demandas", "Purchases/Demands","採購/需求") }}</a>
+    <a href="{{ url_for('accesos', tipo='servicios') }}" class="btn me-2">🧰 {{ t("Servicios", "Services","服務") }}</a>
+    <a href="{{ url_for('perfil') }}" class="btn btn-secondary">👤 {{ t("Mi Perfil", "My Profile","我的資料") }}</a>
+  </div>
 </div>
-<div class="grid-3">
-  <a class="tile" href="{{ url_for('accesos', tipo='ventas') }}">{{ t("Ventas/Ofertas","Sales/Offers","銷售/供應") }}</a>
-  <a class="tile" href="{{ url_for('accesos', tipo='compras') }}">{{ t("Compras/Demanda","Purchases/Demand","購買/需求") }}</a>
-  <a class="tile" href="{{ url_for('accesos', tipo='servicios') }}">{{ t("Servicios","Services","服務") }}</a>
+
+<div class="grid">
+  <div class="card">
+    <h3>{{ t("Mi Empresa", "My Company","我的公司") }}</h3>
+    <p class="mt-1"><strong>{{ my_company.nombre }}</strong></p>
+    <p>{{ t("País", "Country","國家") }}: {{ my_company.pais }} | {{ t("Rol", "Role","角色") }}: {{ my_company.rol }}</p>
+    <p class="mt-1">{{ my_company.descripcion }}</p>
+  </div>
+
+  <div class="card">
+    <h3>{{ t("Mi Carrito (demo)", "My Cart (demo)","我的購物車（示範）") }}</h3>
+    {% if cart and cart|length>0 %}
+      <ul class="mt-1">
+        {% for it in cart %}
+          <li>{{ it.get('empresa','?') }} — {{ it.get('producto') or it.get('servicio') or it.get('tipo') }}</li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="mt-1">{{ t("Aún no agregas ítems.", "No items yet.","尚未加入任何項目") }}</p>
+    {% endif %}
+  </div>
 </div>
-{% if cart %}
-<div class="card mt-3">
-  <h3>🛒 {{ t("Carrito","Cart","購物車") }}</h3>
-  <ul>
-    {% for i in cart %}
-      <li>{{ i }}</li>
-    {% endfor %}
-  </ul>
-</div>
-{% endif %}
 {% endblock %}
