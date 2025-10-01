@@ -1,14 +1,15 @@
 {% extends "base.html" %}
-{% block title %}Accesos{% endblock %}
 {% block content %}
 <div class="card">
-  <h2>{{ t("Accesos","Access","訪問") }} - {{ tipo }}</h2>
+  <h2>{{ t("Accesos","Access","訪問") }} - {{ tipo|capitalize }}</h2>
   {% if data %}
     <div class="grid">
       {% for c in data %}
-        <a class="tile" href="{{ url_for('empresa', slug=c.slug if c.slug else c.nombre|lower) }}">
-          {{ c.nombre }} ({{ c.rol }})
-        </a>
+        <div class="card">
+          <h3><a href="{{ url_for('empresa', slug=c.slug) }}">{{ c.nombre }}</a></h3>
+          <p>{{ c.rol }} - {{ c.pais }}</p>
+          <p>{{ c.descripcion }}</p>
+        </div>
       {% endfor %}
     </div>
   {% else %}
