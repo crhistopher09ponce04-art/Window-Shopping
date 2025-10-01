@@ -1,42 +1,57 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>{{ title or "Window Shopping" }}</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌍 Window Shopping</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background: #f9f9f9;
+        }
+        nav {
+            background: linear-gradient(90deg, #007bff, #00c6ff);
+        }
+        nav a {
+            color: white !important;
+            font-weight: bold;
+        }
+        footer {
+            background: #222;
+            color: #aaa;
+            padding: 15px;
+            margin-top: 30px;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <nav class="navbar">
-      <div class="navbar-brand">
-        🌐 <a href="{{ url_for('home') }}">Window Shopping</a>
-      </div>
-      <ul class="navbar-links">
-        {% if session.get("usuario") %}
-          <li><a href="{{ url_for('dashboard') }}">📊 Dashboard</a></li>
-          <li><a href="{{ url_for('mi_perfil') }}">👤 Mi Perfil</a></li>
-          <li><a href="{{ url_for('cart') }}">🛒 Carrito</a></li>
-          <li><a href="{{ url_for('logout') }}">🚪 Salir</a></li>
-        {% else %}
-          <li><a href="{{ url_for('login') }}">🔑 Iniciar Sesión</a></li>
-          <li><a href="{{ url_for('register') }}">📝 Registro</a></li>
-        {% endif %}
-        <li><a href="{{ url_for('help_center') }}">❓ Centro de Ayuda</a></li>
-        <li>
-          <a href="{{ url_for('set_lang', code='es', next=request.path) }}">ES</a> |
-          <a href="{{ url_for('set_lang', code='en', next=request.path) }}">EN</a>
-        </li>
-      </ul>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('home') }}">🌍 Window Shopping</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav ms-auto">
+                    {% if session.get('usuario') %}
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('dashboard') }}">📊 Dashboard</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">🚪 Cerrar Sesión</a></li>
+                    {% else %}
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">🔑 Iniciar Sesión</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('register') }}">📝 Registro</a></li>
+                    {% endif %}
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('help') }}">❓ Centro de Ayuda</a></li>
+                </ul>
+            </div>
+        </div>
     </nav>
-  </header>
 
-  <main>
-    {% block content %}{% endblock %}
-  </main>
+    <!-- Contenido -->
+    <div class="container mt-4">
+        {% block content %}{% endblock %}
+    </div>
 
-  <footer>
-    <p>© 2025 Window Shopping — Plataforma B2B</p>
-  </footer>
+    <footer>
+        🌐 Window Shopping © 2025 - Plataforma Global de Comercio
+    </footer>
 </body>
 </html>
