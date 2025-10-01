@@ -1,50 +1,116 @@
 {% extends "base.html" %}
+{% block title %}Accesos{% endblock %}
 {% block content %}
-<h2>Opciones de {{ tipo.capitalize() }}</h2>
-<p><a href="{{ url_for('dashboard') }}">⬅ Volver al dashboard</a></p>
+<h2>Opciones de {{ tipo|capitalize }} (Rol: {{ rol }})</h2>
+
+<form method="get" class="filters card">
+  <div class="row">
+    <div>
+      <label>Rubro</label>
+      <select name="rubro">
+        <option value="fruta" {{ 'selected' if rubro=='fruta' else '' }}>Fruta</option>
+        <option value="servicio" {{ 'selected' if rubro=='servicio' else '' }}>Servicios</option>
+      </select>
+    </div>
+    <div>
+      <label>Búsqueda</label>
+      <input type="text" name="q" value="{{ values.q }}" placeholder="Nombre, ciudad, variedad...">
+    </div>
+    <div>
+      <label>Rol</label>
+      <select name="role">
+        <option value="">-- Todos --</option>
+        {% for r in roles_opts %}
+          <option value="{{ r }}" {{ 'selected' if values.role==r else '' }}>{{ r }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label>País</label>
+      <input type="text" name="country" value="{{ values.country }}">
+    </div>
+    <div>
+      <label>Ciudad</label>
+      <input type="text" name="city" value="{{ values.city }}">
+    </div>
+  </div>
+
+  <div class="row">
+    <div><label>Volumen mín (tons)</label><input type="number" step="0.1" name="min_volume" value="{{ values.min_volume }}"></div>
+    <div><label>Volumen máx (tons)</label><input type="number" step="0.1" name="max_volume" value="{{ values.max_volume }}"></div>
+    <div><label>Precio caja mín</label><input type="number" step="1" name="min_price_box" value="{{ values.min_price_box }}"></div>
+    <div><label>Precio caja máx</label><input type="number" step="1" name="max_price_box" value="{{ values.max_price_box }}"></div>
+    <div><label>Precio kg mín</label><input type="number" step="1" name="min_price_kg" value="{{ values.min_price_kg }}"></div>
+    <div><label>Precio kg máx</label><input type="number" step="1" name="max_price_kg" value="{{ values.max_price_kg }}"></div>
+  </div>
+
+  <div class="row">
+    <div>
+      <label>Ordenar por</label>
+      <select name="sort">
+        <option value="name" {{ 'selected' if values.sort=='name' else '' }}>Nombre (A→Z)</option>
+        <option value="-name" {{ 'selected' if values.sort=='-name' else '' }}>Nombre (Z→A)</option>
+        <option value="volume_tons" {{ 'selected' if values.sort=='volume_tons' else '' }}>Volumen</option>
+        <option value="-volume_tons" {{ 'selected' if values.sort=='-volume_tons' else '' }}>Volumen (desc)</option>
+        <option value="price_box" {{ 'selected' if values.sort=='price_box' else '' }}>Precio caja</option>
+        <option value="-price_box" {{ 'selected' if values.sort=='-price_box' else '' }}>Precio caja (desc)</option>
+        <option value="price_kg" {{ 'selected' if values.sort=='price_kg' else '' }}>Precio kg</option>
+        <option value="-price_kg" {{ 'selected' if values.sort=='-price_kg' else '' }}>Precio kg (desc)</option>
+      </select>
+    </div>
+    <div style="align-self:flex-end;">
+      <button type="submit" class="btn">Aplicar filtros</button>
+    </div>
+    <div style="align-self:flex-end;">
+      <a class="btn ghost" href="{{ url_for('accesos', tipo=tipo) }}">Limpiar</a>
+    </div>
+  </div>
+</form>
 
 {% if empresas %}
-    <table border="1" cellpadding="6" cellspacing="0">
-        <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Rol</th>
-                <th>País</th>
-                <th>Ciudad</th>
-                <th>Fruta/Servicio</th>
-                <th>Volumen (tons)</th>
-                <th>Precio Caja</th>
-                <th>Precio Kg</th>
-                <th>Email</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for e in empresas %}
-            <tr>
-                <td><a href="{{ url_for('detalle', company_id=e.id) }}">{{ e.name }}</a></td>
-                <td>{{ e.role }}</td>
-                <td>{{ e.country }}</td>
-                <td>{{ e.city }}</td>
-                <td>
-                    {% if e.role == "Cliente extranjero" %}
-                        {{ e.product_requested }} ({{ e.variety_requested }})
-                    {% elif e.role in ["Transporte","Agencia de aduana","Extraportuario"] %}
-                        {{ e.service }}
-                    {% else %}
-                        {{ e.fruit }} ({{ e.variety }})
-                    {% endif %}
-                </td>
-                <td>
-                    {% if e.volume_tons %}{{ e.volume_tons }}{% elif e.volume_requested_tons %}{{ e.volume_requested_tons }}{% else %}-{% endif %}
-                </td>
-                <td>{{ e.price_box if e.price_box else "-" }}</td>
-                <td>{{ e.price_kg if e.price_kg else "-" }}</td>
-                <td>{{ e.email }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Rol</th>
+        <th>País</th>
+        <th>Ciudad</th>
+        {% if rubro=='fruta' %}
+          <th>Fruta</th>
+          <th>Variedad</th>
+          <th>Volumen (tons)</th>
+          <th>Valor/caja</th>
+          <th>Valor/kg</th>
+        {% else %}
+          <th>Servicio</th>
+        {% endif %}
+        <th>Correo</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for e in empresas %}
+      <tr>
+        <td><a href="{{ url_for('detalle', company_id=e.id) }}">{{ e.name }}</a></td>
+        <td>{{ e.role }}</td>
+        <td>{{ e.country }}</td>
+        <td>{{ e.city }}</td>
+        {% if rubro=='fruta' %}
+          <td>{{ e.fruit or e.product_requested or '-' }}</td>
+          <td>{{ e.variety or e.variety_requested or '-' }}</td>
+          <td>{{ e.volume_tons or e.volume_requested_tons or '-' }}</td>
+          <td>{{ e.price_box or '-' }}</td>
+          <td>{{ e.price_kg or '-' }}</td>
+        {% else %}
+          <td>{{ e.service or '-' }}</td>
+        {% endif %}
+        <td>{{ e.email }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
 {% else %}
-    <p>No hay empresas disponibles.</p>
+  <p>No hay empresas que coincidan con los filtros.</p>
 {% endif %}
+
+<p style="margin-top:14px;"><a href="{{ url_for('dashboard') }}">⬅ Volver al Dashboard</a></p>
 {% endblock %}
