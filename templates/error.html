@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="text-center p-5 bg-danger text-white rounded shadow">
-    <h1>⚠️ Error {{ code }}</h1>
-    <p>{{ message }}</p>
-    <a href="{{ url_for('home') }}" class="btn btn-light mt-3">Volver al inicio</a>
+<div class="container text-center mt-5">
+  <h1>⚠️ Error {{ code }}</h1>
+  <p>{{ message }}</p>
+  <a href="{{ url_for('home') }}" class="btn btn-primary">🏠 {{ t("Volver al inicio", "Back to home") }}</a>
 </div>
 {% endblock %}
