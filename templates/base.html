@@ -1,41 +1,28 @@
 <!DOCTYPE html>
-<html lang="{{ cur_lang }}">
+<html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Window Shopping</title>
+  <title>WS - Window Shopping</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
   <header>
-    <a href="{{ url_for('home') }}" class="logo">🌍 WS</a>
+    <a href="{{ url_for('home') }}" class="logo">🌐 WS</a>
     <nav>
-      {% if "usuario" in session %}
+      {% if session.get("usuario") %}
         <a href="{{ url_for('dashboard') }}">Dashboard</a>
         <a href="{{ url_for('logout') }}">Logout</a>
       {% else %}
         <a href="{{ url_for('login') }}">Login</a>
-        <a href="{{ url_for('register') }}">Register</a>
       {% endif %}
     </nav>
     <div class="lang-switch">
-      {% if cur_lang == "es" %}
-        <span class="active">ES</span> | <a href="{{ url_for('set_lang', code='en') }}">EN</a>
-      {% else %}
-        <a href="{{ url_for('set_lang', code='es') }}">ES</a> | <span class="active">EN</span>
-      {% endif %}
+      <a href="{{ url_for('set_lang', lang='es') }}" class="{% if session.get('lang','es')=='es' %}active{% endif %}">ES</a> |
+      <a href="{{ url_for('set_lang', lang='en') }}" class="{% if session.get('lang','es')=='en' %}active{% endif %}">EN</a>
     </div>
   </header>
 
   <main>
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <div class="flash">
-          {% for msg in messages %}
-            <p>{{ msg }}</p>
-          {% endfor %}
-        </div>
-      {% endif %}
-    {% endwith %}
     {% block content %}{% endblock %}
   </main>
 
