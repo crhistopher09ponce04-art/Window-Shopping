@@ -1,43 +1,13 @@
-<!DOCTYPE html>
-<html lang="{{ session.get('lang','es') }}">
-<head>
-    <meta charset="UTF-8">
-    <title>Error {{ code }}</title>
-    <style>
-        body {
-            background: #0d1117;
-            color: #fff;
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding-top: 10%;
-        }
-        .card {
-            background: #161b22;
-            display: inline-block;
-            padding: 20px 40px;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-        }
-        a {
-            display: inline-block;
-            margin-top: 15px;
-            background: #0099ff;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 5px;
-            text-decoration: none;
-        }
-        a:hover {
-            background: #0077cc;
-        }
-    </style>
-</head>
-<body>
-    <div class="card">
-        <h2>⚠ {{ t("Ha ocurrido un problema", "An error has occurred", "發生錯誤") }}</h2>
-        <p><b>{{ t("Código", "Code", "代碼") }}:</b> {{ code }}</p>
-        <p>{{ message }}</p>
-        <a href="{{ url_for('home') }}">🏠 {{ t("Ir al inicio", "Go home", "回到首頁") }}</a>
-    </div>
-</body>
-</html>
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+  <h2>🆘 {{ t("Centro de Ayuda", "Help Center", "幫助中心") }}</h2>
+  <form method="POST">
+    <label>Email</label>
+    <input type="email" name="email" required>
+    <label>{{ t("Mensaje", "Message", "訊息") }}</label>
+    <textarea name="mensaje" required></textarea>
+    <input type="submit" value="📨 {{ t('Enviar', 'Send', '發送') }}">
+  </form>
+</div>
+{% endblock %}
