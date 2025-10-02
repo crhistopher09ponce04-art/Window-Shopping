@@ -10,16 +10,16 @@
 <header>
   <a class="logo" href="{{ url_for('home') }}">WS • Window Shopping</a>
   <nav>
-    <a href="{{ url_for('home') }}">{{ t("Inicio", "Home","首页") }}</a>
+    <a href="{{ url_for('home') }}">{{ t("Inicio", "Home", "首頁") }}</a>
     {% if session.get('usuario') %}
-      <a href="{{ url_for('dashboard') }}">{{ t("Panel", "Dashboard","仪表盘") }}</a>
-      <a href="{{ url_for('perfil') }}">👤 {{ t("Mi Perfil","My Profile","个人资料") }}</a>
-      <a href="{{ url_for('cart_view') }}">🛒 {{ t("Carrito","Cart","购物车") }}</a>
-      <a href="{{ url_for('ayuda') }}">❓ {{ t("Ayuda","Help","帮助") }}</a>
-      <a href="{{ url_for('logout') }}">{{ t("Salir", "Logout","退出") }}</a>
+      <a href="{{ url_for('dashboard') }}">📊 {{ t("Panel", "Dashboard", "主頁") }}</a>
+      <a href="{{ url_for('perfil') }}">👤 {{ t("Mi Perfil", "My Profile", "個人資料") }}</a>
+      <a href="{{ url_for('carrito') }}">🛒 {{ t("Carrito", "Cart", "購物車") }}</a>
+      <a href="{{ url_for('ayuda') }}">🆘 {{ t("Ayuda", "Help", "幫助") }}</a>
+      <a href="{{ url_for('logout') }}">{{ t("Salir", "Logout", "登出") }}</a>
     {% else %}
-      <a href="{{ url_for('login') }}">{{ t("Ingresar", "Login","登录") }}</a>
-      <a href="{{ url_for('register_router') }}">{{ t("Registro", "Register","注册") }}</a>
+      <a href="{{ url_for('login') }}">🔑 {{ t("Ingresar", "Login", "登入") }}</a>
+      <a href="{{ url_for('register_router') }}">📝 {{ t("Registro", "Register", "註冊") }}</a>
     {% endif %}
     <span class="lang-switch">
       <a href="{{ url_for('set_lang', lang='es') }}" class="{% if session.get('lang','es')=='es' %}active{% endif %}">ES</a> |
@@ -30,11 +30,18 @@
 </header>
 
 <main>
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <div class="flash">
+        {% for m in messages %}<p>{{ m }}</p>{% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
   {% block content %}{% endblock %}
 </main>
 
 <footer>
-  © {{ t("2025 Plataforma Window Shopping — Demo", "2025 Window Shopping Platform — Demo","2025 窗口购物平台 — 演示") }}
+  © {{ t("2025 Plataforma Window Shopping — Demo", "2025 Window Shopping Platform — Demo", "2025 Window Shopping 平台 — 示範") }}
 </footer>
 </body>
 </html>
