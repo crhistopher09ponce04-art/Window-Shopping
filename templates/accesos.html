@@ -1,16 +1,42 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>
-  {% if tipo=='servicios' %}🧰 {{ t("Servicios","Services","服务") }}
-  {% elif tipo=='ventas' %}🛒 {{ t("Ventas/Ofertas","Sales/Offers","销售/供应") }}
-  {% else %}📥 {{ t("Compras/Demandas","Purchases/Demands","采购/需求") }}
+<h2 class="mt-1">
+  {% if tipo=='servicios' %}
+    🧰 {{ t("Servicios disponibles", "Available services", "可用服務") }}
+  {% elif tipo=='ventas' %}
+    🛒 {{ t("Ofertas/Ventas disponibles", "Available offers/sales", "可用供給/銷售") }}
+  {% else %}
+    📥 {{ t("Demandas/Compras disponibles", "Available demands/purchases", "可用需求/採購") }}
   {% endif %}
 </h2>
 
-{% for c in data %}
-<div class="card">
-  <h3><a href="{{ url_for('empresa', slug=c.slug) }}">{{ c.nombre }}</a></h3>
-  <p>{{ c.rol }} • {{ c.pais }}</p>
+<div class="card mt-2">
+  <p>{{ t("Sugerencia: ahora puedes usar las vistas de detalle con filtros:",
+           "Tip: now you can use detailed views with filters:",
+           "提示：可使用帶篩選的詳細視圖：") }}</p>
+  <div class="mt-1">
+    <a class="btn" href="{{ url_for('detalles', tipo=tipo) }}">➡️ {{ t("Ir a Detalle", "Go to Detail", "前往詳細") }}</a>
+  </div>
 </div>
-{% endfor %}
+
+{% if data and data|length>0 %}
+  <div class="grid mt-2">
+    {% for c in data %}
+      <div class="card">
+        <h3><a href="{{ url_for('empresa', slug=c.slug) }}">{{ c.nombre }}</a></h3>
+        <p class="mt-1"><span class="badge">{{ c.rol }}</span> • {{ c.pais }}</p>
+        <p class="mt-1">{{ c.breve }}</p>
+        <div class="mt-2">
+          <a class="btn btn-secondary" href="{{ url_for('empresa', slug=c.slug) }}">{{ t("Ver perfil", "View profile", "查看檔案") }}</a>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="card mt-2">
+    <p>{{ t("No hay registros disponibles.", "No records available.", "暫無資料") }}</p>
+  </div>
+{% endif %}
+
+<a href="{{ url_for('dashboard') }}" class="btn mt-3">⬅️ {{ t("Volver", "Back", "返回") }}</a>
 {% endblock %}
