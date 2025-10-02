@@ -1,14 +1,13 @@
 {% extends "base.html" %}
-{% block title %}Panel - Window Shopping{% endblock %}
 {% block content %}
-<div class="container">
-    <h2>👋 Hola {{ session['user'] }} — {{ usuarios[session['user']]['rol'] }}</h2>
-    <p>Tu perfil es: {{ usuarios[session['user']]['perfil'] }}</p>
-    <div class="btn-group">
-        <a class="btn" href="{{ url_for('detalle_ventas') }}">🛒 Ventas/Ofertas</a>
-        <a class="btn" href="{{ url_for('detalle_compras') }}">📥 Compras/Demandas</a>
-        <a class="btn" href="{{ url_for('detalle_servicios') }}">💼 Servicios</a>
-        <a class="btn" href="{{ url_for('perfil') }}">👤 Mi Perfil</a>
-    </div>
+<div class="card">
+  <h2>📊 {{ t("Panel de Control", "Dashboard", "控制面板") }}</h2>
+  <p>{{ t("Bienvenido", "Welcome", "歡迎") }} {{ session['usuario']['username'] }} 👋</p>
+
+  <div class="grid mt-2">
+    <a class="btn" href="{{ url_for('detalle_ventas') }}">🍇 {{ t("Ventas / Ofertas", "Sales / Offers", "銷售/供應") }}</a>
+    <a class="btn" href="{{ url_for('detalle_compras') }}">🛒 {{ t("Compras / Demandas", "Purchases / Demands", "採購/需求") }}</a>
+    <a class="btn" href="{{ url_for('detalle_servicios') }}">🔧 {{ t("Servicios", "Services", "服務") }}</a>
+  </div>
 </div>
 {% endblock %}
