@@ -1,21 +1,9 @@
 {% extends "base.html" %}
+{% block title %}Carrito - WS{% endblock %}
 {% block content %}
-<div class="card">
-  <h2>🛒 {{ t("Mi Carrito", "My Cart", "我的購物車") }}</h2>
-  {% if cart and cart|length > 0 %}
-    <ul class="mt-2">
-      {% for it in cart %}
-        <li>
-          <b>{{ it.get("empresa","?") }}</b> — 
-          {{ it.get("producto") or it.get("servicio") or it.get("tipo") }}
-        </li>
-      {% endfor %}
-    </ul>
-    <a href="{{ url_for('dashboard') }}" class="btn mt-2">✅ {{ t("Finalizar", "Checkout", "結帳") }}</a>
-    <a href="{{ url_for('dashboard') }}" class="btn btn-secondary mt-2">⬅️ {{ t("Volver", "Back", "返回") }}</a>
-  {% else %}
-    <p>{{ t("Tu carrito está vacío.", "Your cart is empty.", "購物車是空的。") }}</p>
-    <a href="{{ url_for('dashboard') }}" class="btn mt-2">⬅️ {{ t("Volver", "Back", "返回") }}</a>
-  {% endif %}
+<div class="container">
+    <h2>🛒 Mi Carrito</h2>
+    <p>Tu carrito está vacío.</p>
+    <a class="btn" href="{{ url_for('dashboard') }}">⬅ Volver</a>
 </div>
 {% endblock %}
