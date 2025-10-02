@@ -1,25 +1,42 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="container">
-    <h2>Servicios Disponibles</h2>
-    <table>
-        <tr><th>Empresa</th><th>Servicio</th><th>Capacidad</th><th>Ubicación</th><th>Acción</th></tr>
-        {% for comp in data %}
-            {% for item in comp.items %}
-                <tr>
-                    <td><a href="{{ url_for('empresa', slug=comp.slug) }}">{{ comp.nombre }}</a></td>
-                    <td>{{ item.servicio }}</td>
-                    <td>{{ item.capacidad }}</td>
-                    <td>{{ item.ubicacion }}</td>
-                    <td>
-                        <form method="post" action="{{ url_for('cart_add') }}">
-                            <input type="hidden" name="servicio" value="{{ item.servicio }}">
-                            <button type="submit">Agregar al carrito</button>
-                        </form>
-                    </td>
-                </tr>
-            {% endfor %}
+<div class="card">
+  <h2>🧰 {{ t("Servicios disponibles", "Available Services") }}</h2>
+  {% if data and data|length > 0 %}
+    <table class="table mt-2">
+      <thead>
+        <tr>
+          <th>{{ t("Empresa", "Company") }}</th>
+          <th>{{ t("Servicio", "Service") }}</th>
+          <th>{{ t("Capacidad", "Capacity") }}</th>
+          <th>{{ t("Ubicación", "Location") }}</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in data %}
+          {% for it in c.items %}
+            <tr>
+              <td><a href="{{ url_for('empresa', slug=c.slug) }}">{{ c.nombre }}</a></td>
+              <td>{{ it.servicio }}</td>
+              <td>{{ it.capacidad }}</td>
+              <td>{{ it.ubicacion }}</td>
+              <td>
+                <form method="POST" action="{{ url_for('cart_add') }}">
+                  <input type="hidden" name="empresa" value="{{ c.nombre }}">
+                  <input type="hidden" name="servicio" value="{{ it.servicio }}">
+                  <input type="hidden" name="tipo" value="servicio">
+                  <button type="submit" class="btn">{{ t("Agregar", "Add") }}</button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
         {% endfor %}
+      </tbody>
     </table>
+  {% else %}
+    <p>{{ t("No hay servicios disponibles.", "No services available.") }}</p>
+  {% endif %}
 </div>
+<a href="{{ url_for('dashboard') }}" class="btn mt-3">⬅️ {{ t("Volver", "Back") }}</a>
 {% endblock %}
