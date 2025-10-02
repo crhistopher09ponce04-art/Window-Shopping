@@ -25,7 +25,7 @@
       </div>
       <div>
         <label>{{ t("Rol", "Role", "角色") }}</label>
-        <select name="rol" required id="rolSelect">
+        <select name="rol" required>
           {% if perfil_tipo=='servicios' %}
             {% for r in roles_srv %}<option value="{{ r }}">{{ r }}</option>{% endfor %}
           {% else %}
@@ -70,10 +70,5 @@
 
     <input type="submit" value="{{ t('Crear Cuenta', 'Create Account', '建立帳號') }}">
   </form>
-
-  <p class="mt-3">
-    {{ t("¿Ya tienes cuenta?", "Already have an account?", "已經有帳號？") }}
-    <a href="{{ url_for('login') }}">🔑 {{ t("Inicia sesión", "Log in", "登入") }}</a>
-  </p>
 </div>
 {% endblock %}
