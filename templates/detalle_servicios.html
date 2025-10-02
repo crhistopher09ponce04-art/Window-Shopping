@@ -1,35 +1,18 @@
 {% extends "base.html" %}
+{% block title %}Servicios - WS{% endblock %}
 {% block content %}
-<div class="card">
-  <h2>🧰 {{ t("Servicios disponibles", "Available Services") }}</h2>
-  {% if data and data|length > 0 %}
-    <table class="table mt-2">
-      <thead>
+<div class="container">
+    <h2>💼 Servicios disponibles</h2>
+    <table>
+        <tr><th>Servicio</th><th>Descripción</th><th>Empresa</th><th></th></tr>
+        {% for item in servicios %}
         <tr>
-          <th>{{ t("Empresa", "Company") }}</th>
-          <th>{{ t("Servicio", "Service") }}</th>
-          <th>{{ t("Capacidad", "Capacity") }}</th>
-          <th>{{ t("Ubicación", "Location") }}</th>
+            <td>{{ item.nombre }}</td>
+            <td>{{ item.descripcion }}</td>
+            <td><a href="{{ url_for('empresa', id=item.empresa_id) }}">{{ item.empresa }}</a></td>
+            <td><a class="btn" href="{{ url_for('carrito') }}">Agregar</a></td>
         </tr>
-      </thead>
-      <tbody>
-        {% for c in data %}
-          {% for it in c.items %}
-            {% if it.tipo == "servicio" %}
-              <tr>
-                <td><a href="{{ url_for('empresa', slug=c.slug) }}">{{ c.nombre }}</a></td>
-                <td>{{ it.servicio }}</td>
-                <td>{{ it.capacidad }}</td>
-                <td>{{ it.ubicacion }}</td>
-              </tr>
-            {% endif %}
-          {% endfor %}
         {% endfor %}
-      </tbody>
     </table>
-  {% else %}
-    <p>{{ t("No hay servicios disponibles.", "No services available.") }}</p>
-  {% endif %}
 </div>
-<a href="{{ url_for('dashboard') }}" class="btn mt-3">⬅️ {{ t("Volver", "Back") }}</a>
 {% endblock %}
