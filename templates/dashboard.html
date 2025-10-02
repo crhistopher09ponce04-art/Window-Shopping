@@ -1,41 +1,15 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="card">
-  <h2>👋 {{ t("Hola", "Hi", "你好") }} {{ usuario }} — <span class="badge">{{ rol }}</span></h2>
-  <p class="mt-1">{{ t("Tu perfil es", "Your profile is", "你的资料类型是") }}:
-    <strong>{{ t("Compra/Venta","Buy/Sell","买卖") if perfil_tipo=='compra_venta' else t("Servicios","Services","服务") }}</strong>
-  </p>
+  <h2>👋 {{ t("Hola","Hi","你好") }} {{ usuario }} — <span class="badge">{{ rol }}</span></h2>
+  <p>{{ t("Tu perfil es", "Your profile is","你的档案是") }}:
+     <strong>{{ t("Compra/Venta","Buy/Sell","买/卖") if perfil_tipo=='compra_venta' else t("Servicios","Services","服务") }}</strong></p>
 
   <div class="mt-2">
-    <a href="{{ url_for('detalle_ventas') }}" class="btn me-2">🛒 {{ t("Ventas/Ofertas", "Sales/Offers", "销售/报价") }}</a>
-    <a href="{{ url_for('detalle_compras') }}" class="btn me-2">📥 {{ t("Compras/Demandas", "Purchases/Demands", "采购/需求") }}</a>
-    <a href="{{ url_for('detalle_servicios') }}" class="btn me-2">🧰 {{ t("Servicios", "Services", "服务") }}</a>
-    <a href="{{ url_for('perfil') }}" class="btn btn-secondary">👤 {{ t("Mi Perfil", "My Profile", "我的资料") }}</a>
-  </div>
-</div>
-
-<div class="grid">
-  <div class="card">
-    <h3>{{ t("Mi Empresa", "My Company", "我的公司") }}</h3>
-    <p class="mt-1"><strong>{{ my_company.empresa }}</strong></p>
-    <p>{{ t("País", "Country", "国家") }}: {{ my_company.pais }} |
-       {{ t("Rol", "Role", "角色") }}: {{ my_company.rol }} |
-       RUT: {{ my_company.rut }}</p>
-    <p class="mt-1">{{ my_company.descripcion }}</p>
-  </div>
-
-  <div class="card">
-    <h3>{{ t("Mi Carrito (demo)", "My Cart (demo)", "我的购物车（演示）") }}</h3>
-    {% if cart and cart|length>0 %}
-      <ul class="mt-1">
-        {% for it in cart %}
-          <li>{{ it.get('empresa','?') }} — {{ it.get('producto') or it.get('servicio') or it.get('tipo') }}</li>
-        {% endfor %}
-      </ul>
-      <a class="btn mt-2" href="{{ url_for('cart_view') }}">{{ t("Ver carrito", "View cart", "查看购物车") }}</a>
-    {% else %}
-      <p class="mt-1">{{ t("Aún no agregas ítems.", "No items yet.", "尚未添加项目。") }}</p>
-    {% endif %}
+    <a href="{{ url_for('detalles', tipo='ventas') }}" class="btn">🛒 {{ t("Ventas/Ofertas","Sales/Offers","销售/供应") }}</a>
+    <a href="{{ url_for('detalles', tipo='compras') }}" class="btn">📥 {{ t("Compras/Demandas","Purchases/Demands","购买/需求") }}</a>
+    <a href="{{ url_for('detalles', tipo='servicios') }}" class="btn">🧰 {{ t("Servicios","Services","服务") }}</a>
+    <a href="{{ url_for('perfil') }}" class="btn btn-secondary">👤 {{ t("Mi Perfil","My Profile","我的资料") }}</a>
   </div>
 </div>
 {% endblock %}
