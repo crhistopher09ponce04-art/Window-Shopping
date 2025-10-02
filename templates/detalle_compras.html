@@ -1,35 +1,19 @@
 {% extends "base.html" %}
+{% block title %}Compras - WS{% endblock %}
 {% block content %}
-<div class="card">
-  <h2>📥 {{ t("Demandas de Compra", "Purchase Demands") }}</h2>
-  {% if data and data|length > 0 %}
-    <table class="table mt-2">
-      <thead>
+<div class="container">
+    <h2>📥 Demandas de Compras</h2>
+    <table>
+        <tr><th>Producto</th><th>Variedad</th><th>Cantidad</th><th>Empresa</th><th></th></tr>
+        {% for item in compras %}
         <tr>
-          <th>{{ t("Empresa", "Company") }}</th>
-          <th>{{ t("Producto", "Product") }}</th>
-          <th>{{ t("Cantidad", "Quantity") }}</th>
-          <th>{{ t("Origen", "Origin") }}</th>
+            <td>{{ item.producto }}</td>
+            <td>{{ item.variedad }}</td>
+            <td>{{ item.cantidad }}</td>
+            <td><a href="{{ url_for('empresa', id=item.empresa_id) }}">{{ item.empresa }}</a></td>
+            <td><a class="btn" href="{{ url_for('carrito') }}">Agregar</a></td>
         </tr>
-      </thead>
-      <tbody>
-        {% for c in data %}
-          {% for it in c.items %}
-            {% if it.tipo == "demanda" %}
-              <tr>
-                <td><a href="{{ url_for('empresa', slug=c.slug) }}">{{ c.nombre }}</a></td>
-                <td>{{ it.producto }}</td>
-                <td>{{ it.cantidad }}</td>
-                <td>{{ it.origen }}</td>
-              </tr>
-            {% endif %}
-          {% endfor %}
         {% endfor %}
-      </tbody>
     </table>
-  {% else %}
-    <p>{{ t("No hay demandas disponibles.", "No purchase demands available.") }}</p>
-  {% endif %}
 </div>
-<a href="{{ url_for('dashboard') }}" class="btn mt-3">⬅️ {{ t("Volver", "Back") }}</a>
 {% endblock %}
