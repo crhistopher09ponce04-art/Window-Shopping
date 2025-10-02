@@ -1,7 +1,14 @@
 {% extends "base.html" %}
+{% block title %}Perfil de Empresa - WS{% endblock %}
 {% block content %}
-<div class="card">
-  <h2>{{ comp.empresa }}</h2>
-  <p><b>RUT:</b> {{ comp.rut or "N/A" }}</p>
-  <p><b>Rol:</b> {{ comp.rol }} | <b>País:</b> {{ comp.pais }}</p>
-  <p>📧 {{ comp.email }} | 📞 {{ comp.telefono }}</
+<div class="container">
+    <h2>{{ empresa.nombre }}</h2>
+    <p><b>RUT:</b> {{ empresa.rut }}</p>
+    <p><b>Rol:</b> {{ empresa.rol }}</p>
+    <p><b>País:</b> {{ empresa.pais }}</p>
+    <p><b>Dirección:</b> {{ empresa.direccion }}</p>
+    <p><b>Email:</b> {{ empresa.email }}</p>
+    <p><b>Teléfono:</b> {{ empresa.telefono }}</p>
+    <a class="btn" href="{{ url_for('ayuda') }}">✉ Enviar mensaje</a>
+</div>
+{% endblock %}
