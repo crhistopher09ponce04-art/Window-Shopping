@@ -10,7 +10,6 @@
           <th>{{ t("Producto", "Product") }}</th>
           <th>{{ t("Cantidad", "Quantity") }}</th>
           <th>{{ t("Origen", "Origin") }}</th>
-          <th></th>
         </tr>
       </thead>
       <tbody>
@@ -22,14 +21,6 @@
                 <td>{{ it.producto }}</td>
                 <td>{{ it.cantidad }}</td>
                 <td>{{ it.origen }}</td>
-                <td>
-                  <form method="POST" action="{{ url_for('cart_add') }}">
-                    <input type="hidden" name="empresa" value="{{ c.nombre }}">
-                    <input type="hidden" name="producto" value="{{ it.producto }}">
-                    <input type="hidden" name="tipo" value="demanda">
-                    <button type="submit" class="btn">{{ t("Agregar", "Add") }}</button>
-                  </form>
-                </td>
               </tr>
             {% endif %}
           {% endfor %}
