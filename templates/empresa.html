@@ -1,14 +1,17 @@
 {% extends "base.html" %}
-{% block title %}Perfil de Empresa - WS{% endblock %}
 {% block content %}
-<div class="container">
-    <h2>{{ empresa.nombre }}</h2>
-    <p><b>RUT:</b> {{ empresa.rut }}</p>
-    <p><b>Rol:</b> {{ empresa.rol }}</p>
-    <p><b>País:</b> {{ empresa.pais }}</p>
-    <p><b>Dirección:</b> {{ empresa.direccion }}</p>
-    <p><b>Email:</b> {{ empresa.email }}</p>
-    <p><b>Teléfono:</b> {{ empresa.telefono }}</p>
-    <a class="btn" href="{{ url_for('ayuda') }}">✉ Enviar mensaje</a>
+<div class="card">
+  <h2>🏢 {{ empresa.nombre }}</h2>
+  <p><strong>RUT:</strong> {{ empresa.rut }}</p>
+  <p><strong>Email:</strong> {{ empresa.email }}</p>
+  <p><strong>{{ t("Teléfono", "Phone", "電話") }}:</strong> {{ empresa.phone }}</p>
+  <p><strong>{{ t("Rol", "Role", "角色") }}:</strong> {{ empresa.rol }}</p>
+  <p><strong>{{ t("Dirección", "Address", "地址") }}:</strong> {{ empresa.address }}</p>
+
+  <form method="POST" action="{{ url_for('enviar_mensaje', id=empresa.id) }}">
+    <label>{{ t("Mensaje", "Message", "訊息") }}</label>
+    <textarea name="mensaje" required></textarea>
+    <button type="submit" class="btn">📨 {{ t("Enviar Mensaje", "Send Message", "發送訊息") }}</button>
+  </form>
 </div>
 {% endblock %}
