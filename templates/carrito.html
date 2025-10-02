@@ -1,34 +1,23 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="card">
-  <h2>🛒 {{ t("Mi Carrito", "My Cart", "購物車") }}</h2>
+<div class="container">
+    <h2>Mi Carrito</h2>
 
-  {% if cart and cart|length>0 %}
-    <table class="table mt-2">
-      <thead>
-        <tr>
-          <th>{{ t("Empresa", "Company", "公司") }}</th>
-          <th>{{ t("Detalle", "Detail", "明細") }}</th>
-          <th>{{ t("Tipo", "Type", "類型") }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for it in cart %}
-        <tr>
-          <td>{{ it.get('empresa','-') }}</td>
-          <td>{{ it.get('producto') or it.get('servicio') or '-' }}</td>
-          <td>{{ it.get('tipo') or '-' }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    <form method="POST" action="{{ url_for('cart_clear') }}" class="mt-2">
-      <button class="btn btn-secondary" type="submit">{{ t("Vaciar carrito","Clear cart","清空購物車") }}</button>
-    </form>
-  {% else %}
-    <p class="mt-1">{{ t("Aún no agregas ítems.", "No items yet.", "尚未加入任何項目") }}</p>
-  {% endif %}
+    {% if cart and cart|length > 0 %}
+        <table>
+            <tr><th>Item</th><th>Acción</th></tr>
+            {% for item in cart %}
+                <tr>
+                    <td>{{ item.producto or item.servicio }}</td>
+                    <td><button disabled>En desarrollo</button></td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>🚫 Tu carrito está vacío.</p>
+    {% endif %}
 
-  <a href="{{ url_for('dashboard') }}" class="btn mt-3">⬅️ {{ t("Volver al Panel","Back to Dashboard","返回主頁") }}</a>
+    <br>
+    <a href="{{ url_for('dashboard') }}" class="btn">⬅ Volver</a>
 </div>
 {% endblock %}
