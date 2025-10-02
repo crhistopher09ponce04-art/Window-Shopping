@@ -1,10 +1,13 @@
 {% extends "base.html" %}
-{% block title %}Mi Perfil - WS{% endblock %}
 {% block content %}
-<div class="container">
-    <h2>👤 Mi Perfil</h2>
-    <p><b>Usuario:</b> {{ session['user'] }}</p>
-    <p><b>Rol:</b> {{ usuarios[session['user']]['rol'] }}</p>
-    <p><b>Perfil:</b> {{ usuarios[session['user']]['perfil'] }}</p>
+<div class="card">
+  <h2>👤 {{ t("Mi Perfil", "My Profile", "我的資料") }}</h2>
+  <p><strong>{{ t("Usuario", "Username", "使用者") }}:</strong> {{ user.username }}</p>
+  <p><strong>RUT:</strong> {{ user.rut }}</p>
+  <p><strong>Email:</strong> {{ user.email }}</p>
+  <p><strong>{{ t("Rol", "Role", "角色") }}:</strong> {{ user.rol }}</p>
+  <p><strong>{{ t("País", "Country", "國家") }}:</strong> {{ user.pais }}</p>
+  <p><strong>{{ t("Teléfono", "Phone", "電話") }}:</strong> {{ user.phone }}</p>
+  <p><strong>{{ t("Dirección", "Address", "地址") }}:</strong> {{ user.address }}</p>
 </div>
 {% endblock %}
