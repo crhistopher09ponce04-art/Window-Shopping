@@ -1,31 +1,24 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="card" style="max-width:520px;margin:0 auto;">
-  <h2>🔑 {{ t("Ingresar", "Login", "登录") }}</h2>
+  <h2>🔑 {{ t("Ingresar","Login","登录") }}</h2>
+  {% if error %}<div class="flash">{{ error }}</div>{% endif %}
 
-  {% if error %}
-    <div class="flash">{{ error }}</div>
-  {% endif %}
-
-  <form method="POST" class="mt-2">
-    <label for="username">{{ t("Usuario", "Username", "用户名") }}</label>
+  <form method="POST">
+    <label for="username">{{ t("Usuario","Username","用户") }}</label>
     <input type="text" id="username" name="username" required>
-
-    <label for="password">{{ t("Contraseña", "Password", "密码") }}</label>
+    <label for="password">{{ t("Contraseña","Password","密码") }}</label>
     <input type="password" id="password" name="password" required>
-
-    <input type="submit" value="{{ t('Entrar', 'Sign in', '登录') }}">
+    <input type="submit" value="{{ t('Entrar','Sign in','进入') }}">
   </form>
 
-  <p class="mt-2">{{ t("¿No tienes cuenta?", "Don't have an account?", "还没有账号？") }}
-    <a href="{{ url_for('register_router') }}">📝 {{ t("Regístrate aquí", "Register here", "点此注册") }}</a>
+  <p class="mt-2">{{ t("¿No tienes cuenta?","Don't have an account?","还没有账户？") }}
+    <a href="{{ url_for('register_router') }}">📝 {{ t("Regístrate aquí","Register here","在此注册") }}</a>
   </p>
 
   <div class="mt-3">
-    <strong>{{ t("Usuarios demo", "Demo users", "演示用户") }}</strong>:
-    <div class="mt-1">
-      productor1 / 1234 • planta1 / 1234 • packing1 / 1234 • frigorifico1 / 1234 • exportador1 / 1234 • cliente1 / 1234 • transporte1 / 1234 • aduana1 / 1234 • extraportuario1 / 1234
-    </div>
+    <strong>{{ t("Usuarios demo","Demo users","演示用户") }}</strong>:
+    <div class="mt-1">productor1 / 1234 • packing1 / 1234 • frigorifico1 / 1234 • exportador1 / 1234 • cliente1 / 1234 • transporte1 / 1234 • aduana1 / 1234 • extraportuario1 / 1234</div>
   </div>
 </div>
 {% endblock %}
