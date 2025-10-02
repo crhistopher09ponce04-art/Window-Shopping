@@ -29,52 +29,69 @@ def set_lang(lang):
     return redirect(request.referrer or url_for("home"))
 
 # ---------------------------
-# Datos ficticios para demo
+# Datos de demo
 # ---------------------------
+ROLES_COMPRA_VENTA = ["Productor", "Planta", "Packing", "Frigorífico", "Exportador", "Cliente extranjero"]
+ROLES_SERVICIOS = ["Packing", "Frigorífico", "Transporte", "Agencia de Aduanas", "Extraportuario"]
+
+USERS = {
+    "exportador1": {"password": "1234", "rol": "Exportador", "perfil_tipo": "compra_venta", "pais": "CL"},
+    "cliente1": {"password": "1234", "rol": "Cliente extranjero", "perfil_tipo": "compra_venta", "pais": "US"},
+    "packing1": {"password": "1234", "rol": "Packing", "perfil_tipo": "servicios", "pais": "CL"},
+    "frigorifico1": {"password": "1234", "rol": "Frigorífico", "perfil_tipo": "servicios", "pais": "CL"},
+    "transporte1": {"password": "1234", "rol": "Transporte", "perfil_tipo": "servicios", "pais": "CL"},
+    "aduana1": {"password": "1234", "rol": "Agencia de Aduanas", "perfil_tipo": "servicios", "pais": "CL"},
+}
+
+USER_PROFILES = {
+    u: {
+        "empresa": u.capitalize(),
+        "pais": USERS[u].get("pais", "CL"),
+        "rol": USERS[u]["rol"],
+        "perfil_tipo": USERS[u]["perfil_tipo"],
+        "email": f"{u}@demo.cl",
+        "telefono": "+56 9 1111 1111",
+        "direccion": "Calle Falsa 123",
+        "rut": "76.543.210-K",
+        "descripcion": "Perfil demo de empresa.",
+        "items": []
+    } for u in USERS
+}
+
 COMPANIES = [
     {
-        "slug": "agro-andes",
-        "nombre": "Agro Andes SPA",
-        "rut": "76.123.456-7",
+        "slug": "frutal-sur",
+        "nombre": "Frutal Sur Ltda.",
         "rol": "Productor",
         "perfil_tipo": "compra_venta",
         "pais": "CL",
-        "breve": "Productores de uva de mesa.",
+        "rut": "96.111.222-3",
+        "breve": "Productores de cerezas y ciruelas frescas.",
         "items": [
-            {"tipo": "oferta", "producto": "Uva Crimson", "cantidad": "80 pallets", "origen": "IV Región", "precio": "A convenir"},
-            {"tipo": "demanda", "producto": "Cajas plásticas", "cantidad": "15.000 und", "origen": "CL", "precio": "Oferta"}
+            {"tipo": "oferta", "producto": "Cerezas Lapins", "cantidad": "120 pallets", "origen": "VI Región", "precio": "A convenir"},
+            {"tipo": "oferta", "producto": "Ciruelas D’Agen", "cantidad": "80 pallets", "origen": "VII Región", "precio": "A convenir"},
         ]
     },
     {
         "slug": "friopoint",
-        "nombre": "FríoPoint Ltda.",
-        "rut": "77.654.321-0",
+        "nombre": "FríoPoint SPA",
         "rol": "Frigorífico",
         "perfil_tipo": "servicios",
         "pais": "CL",
-        "breve": "Frío y logística en Valparaíso.",
+        "rut": "77.222.333-4",
+        "breve": "Servicios de almacenaje en frío.",
         "items": [
-            {"tipo": "servicio", "servicio": "Almacenaje en frío", "capacidad": "1.200 pallets", "ubicacion": "Valparaíso"},
-            {"tipo": "servicio", "servicio": "Preenfriado", "capacidad": "8 túneles", "ubicacion": "Valparaíso"},
-        ]
-    },
-    {
-        "slug": "pack-smart",
-        "nombre": "PackSmart",
-        "rut": "78.987.654-3",
-        "rol": "Packing",
-        "perfil_tipo": "servicios",
-        "pais": "CL",
-        "breve": "Servicios de packing para exportación.",
-        "items": [
-            {"tipo": "servicio", "servicio": "Embalaje exportación", "capacidad": "30.000 cajas/día", "ubicacion": "R.M."}
+            {"tipo": "servicio", "servicio": "Almacenaje en frío", "capacidad": "1500 pallets", "ubicacion": "Valparaíso"},
+            {"tipo": "servicio", "servicio": "Preenfriado", "capacidad": "10 túneles", "ubicacion": "Valparaíso"},
         ]
     }
 ]
 
-# Carrito (demo, por sesión)
 def get_cart():
     return session.setdefault("cart", [])
+
+def login_required():
+    return "usuario" in session
 
 # ---------------------------
 # Rutas principales
@@ -83,12 +100,86 @@ def get_cart():
 def home():
     return render_template("landing.html", t=t)
 
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    error = None
+    if request.method == "POST":
+        username = request.form.get("username", "").strip()
+        password = request.form.get("password", "").strip()
+        user = USERS.get(username)
+        if user and user["password"] == password:
+            session["usuario"] = username
+            return redirect(url_for("dashboard"))
+        else:
+            error = t("Usuario o clave inválidos.", "Invalid user or password.")
+    return render_template("login.html", error=error, t=t)
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect(url_for("home"))
+
+@app.route("/register_router")
+def register_router():
+    return render_template("register_router.html", t=t)
+
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    error = None
+    nacionalidad = request.args.get("nac")
+    perfil_tipo = request.args.get("tipo")
+
+    if request.method == "POST":
+        username = request.form.get("username", "").strip()
+        password = request.form.get("password", "").strip()
+        email = request.form.get("email", "").strip()
+        telefono = request.form.get("phone", "").strip()
+        direccion = request.form.get("address", "").strip()
+        pais = request.form.get("pais", "CL").strip()
+        rol = request.form.get("rol", "").strip()
+        rut = request.form.get("rut", "").strip()
+        perfil_tipo = request.form.get("perfil_tipo", "").strip()
+
+        if not username or not password or not rol or not perfil_tipo:
+            error = t("Completa los campos obligatorios.", "Please complete required fields.")
+        elif username in USERS:
+            error = t("El usuario ya existe.", "User already exists.")
+        else:
+            USERS[username] = {"password": password, "rol": rol, "perfil_tipo": perfil_tipo, "pais": pais}
+            USER_PROFILES[username] = {
+                "empresa": username.capitalize(),
+                "pais": pais,
+                "rol": rol,
+                "perfil_tipo": perfil_tipo,
+                "email": email or f"{username}@mail.com",
+                "telefono": telefono,
+                "direccion": direccion,
+                "rut": rut or "11.111.111-1",
+                "descripcion": "Nuevo perfil.",
+                "items": []
+            }
+            session["usuario"] = username
+            return redirect(url_for("dashboard"))
+
+    return render_template("register.html", error=error, nacionalidad=nacionalidad, perfil_tipo=perfil_tipo,
+                           roles_cv=ROLES_COMPRA_VENTA, roles_srv=ROLES_SERVICIOS, t=t)
+
 @app.route("/dashboard")
 def dashboard():
-    return render_template("dashboard.html", data=COMPANIES, cart=get_cart(), t=t)
+    if not login_required():
+        return redirect(url_for("login"))
+    username = session["usuario"]
+    user = USERS.get(username)
+    my_company = USER_PROFILES.get(username, {})
+    return render_template("dashboard.html", usuario=username, rol=user["rol"], perfil_tipo=user["perfil_tipo"],
+                           my_company=my_company, cart=get_cart(), t=t)
 
+# ---------------------------
+# Vistas de detalle
+# ---------------------------
 @app.route("/detalles/<tipo>")
 def detalles(tipo):
+    tipo = tipo.lower()
     if tipo == "ventas":
         data = [c for c in COMPANIES if c["perfil_tipo"] == "compra_venta"]
         return render_template("detalle_ventas.html", data=data, t=t)
@@ -105,13 +196,15 @@ def detalles(tipo):
 def empresa(slug):
     comp = next((c for c in COMPANIES if c["slug"] == slug), None)
     if not comp:
-        abort(404)
-    return render_template("empresa.html", comp=comp, t=t)
+        prof = USER_PROFILES.get(slug)
+        if not prof:
+            abort(404)
+        return render_template("empresa.html", comp=prof, es_user=True, t=t)
+    return render_template("empresa.html", comp=comp, es_user=False, t=t)
 
-@app.route("/carrito")
-def carrito():
-    return render_template("carrito.html", cart=get_cart(), t=t)
-
+# ---------------------------
+# Carrito y ayuda
+# ---------------------------
 @app.route("/cart/add", methods=["POST"])
 def cart_add():
     item = request.form.to_dict()
@@ -120,40 +213,29 @@ def cart_add():
     session["cart"] = cart
     return redirect(request.referrer or url_for("dashboard"))
 
-@app.route("/perfil")
-def perfil():
-    usuario = {
-        "empresa": "Demo Export SPA",
-        "rut": "76.555.111-9",
-        "rol": "Exportador",
-        "pais": "CL",
-        "email": "contacto@demo.cl",
-        "telefono": "+56 9 5555 5555",
-        "direccion": "Santiago Centro",
-        "descripcion": "Empresa ficticia para demo.",
-        "items": [
-            {"tipo": "oferta", "producto": "Cerezas", "cantidad": "100 pallets", "origen": "VI Región", "precio": "A convenir"}
-        ]
-    }
-    return render_template("perfil.html", perfil=usuario, t=t)
+@app.route("/carrito")
+def carrito():
+    return render_template("carrito.html", cart=get_cart(), t=t)
 
 @app.route("/ayuda", methods=["GET", "POST"])
 def ayuda():
     msg = None
     if request.method == "POST":
-        msg = "✅ Gracias, hemos recibido tu solicitud."
+        correo = request.form.get("correo")
+        mensaje = request.form.get("mensaje")
+        msg = f"✅ Mensaje enviado. Te contactaremos a {correo}"
     return render_template("ayuda.html", mensaje=msg, t=t)
 
 # ---------------------------
-# Errores
+# Errores corregidos
 # ---------------------------
 @app.errorhandler(404)
 def not_found(e):
-    return render_template("error.html", code=404, message=t("No encontrado", "Not found"), t=t), 404
+    return render_template("error.html", code=404, message="Página no encontrada"), 404
 
 @app.errorhandler(500)
 def server_error(e):
-    return render_template("error.html", code=500, message=t("Error interno", "Internal server error"), t=t), 500
+    return render_template("error.html", code=500, message="Error interno"), 500
 
 # ---------------------------
 # Run local
