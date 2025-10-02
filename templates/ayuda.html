@@ -1,17 +1,14 @@
 {% extends "base.html" %}
+{% block title %}Centro de Ayuda - WS{% endblock %}
 {% block content %}
-<div class="card">
-  <h2>📩 {{ t("Centro de Ayuda", "Help Center") }}</h2>
-  {% if mensaje %}
-    <div class="flash mt-2">{{ mensaje }}</div>
-  {% endif %}
-  <form method="POST" class="mt-2">
-    <label>{{ t("Correo de contacto", "Contact email") }}</label>
-    <input type="email" name="correo" required>
-    <label>{{ t("Mensaje", "Message") }}</label>
-    <textarea name="mensaje" rows="4" required></textarea>
-    <input type="submit" value="{{ t('Enviar', 'Send') }}">
-  </form>
+<div class="container">
+    <h2>📩 Centro de Ayuda</h2>
+    <form method="post" action="{{ url_for('ayuda') }}">
+        <label>Email:</label><br>
+        <input type="email" name="email" required><br><br>
+        <label>Mensaje:</label><br>
+        <textarea name="mensaje" rows="4" required></textarea><br><br>
+        <button class="btn" type="submit">Enviar</button>
+    </form>
 </div>
-<a href="{{ url_for('dashboard') }}" class="btn mt-3">⬅️ {{ t("Volver", "Back") }}</a>
 {% endblock %}
