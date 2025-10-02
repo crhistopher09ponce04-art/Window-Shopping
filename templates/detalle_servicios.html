@@ -1,8 +1,14 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>🧰 {{ t("Servicios disponibles","Available services","可用服务") }}</h2>
+<h2>🧰 {{ t("Servicios disponibles","Available services","可用服務") }}</h2>
 
-<div class="grid">
+<form method="GET" class="mt-2">
+  <label>{{ t("Buscar", "Search", "搜尋") }}</label>
+  <input type="text" name="q" value="{{ q or '' }}" placeholder="{{ t('Servicio o empresa...', 'Service or company...', '服務或公司...') }}">
+  <button class="btn" type="submit">{{ t("Filtrar", "Filter", "篩選") }}</button>
+</form>
+
+<div class="grid mt-2">
   {% for c in data %}
   <div class="card">
     <h3><a href="{{ url_for('empresa', slug=c.slug) }}">{{ c.nombre }}</a></h3>
@@ -10,7 +16,7 @@
     <table class="table">
       <thead>
         <tr>
-          <th>{{ t("Servicio", "Service", "服务") }}</th>
+          <th>{{ t("Servicio", "Service", "服務") }}</th>
           <th>{{ t("Capacidad", "Capacity", "容量") }}</th>
           <th>{{ t("Ubicación", "Location", "位置") }}</th>
           <th></th>
