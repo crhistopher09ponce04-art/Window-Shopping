@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="card">
-  <h2>⚠️ {{ t("Ha ocurrido un problema", "A problem occurred", "出现问题") }}</h2>
-  <p class="mt-1">{{ t("Código", "Code", "代码") }}: {{ code }}</p>
-  <p class="mt-1">{{ message }}</p>
-  <a class="btn mt-2" href="{{ url_for('home') }}">🏠 {{ t("Ir al inicio", "Go home", "回到首页") }}</a>
+<div class="card center">
+  <h2>⚠️ {{ t("Error","Error","错误") }}</h2>
+  <p>{{ t("Código","Code","代码") }}: {{ code }}</p>
+  <p>{{ message }}</p>
+  <a href="{{ url_for('home') }}" class="btn">🏠 {{ t("Ir al inicio","Go home","返回首页") }}</a>
 </div>
 {% endblock %}
