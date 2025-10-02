@@ -1,34 +1,27 @@
 {% extends "base.html" %}
 {% block content %}
 <section class="card center">
-  <h1>🍇 {{ t("Plataforma Window Shopping", "Window Shopping Platform","Window Shopping 平台") }}</h1>
-  <p class="mt-2">{{ t("Conecta productores, servicios y exportadores en un solo lugar.",
-                       "Connect growers, service providers and exporters in one place.",
-                       "連結種植者、服務商與出口商於同一平台") }}</p>
+  <h1>🍇 {{ t("Plataforma Window Shopping","Window Shopping Platform","窗口购物平台") }}</h1>
+  <p class="mt-2">{{ t("Conecta productores, servicios y exportadores en un solo lugar.","Connect growers, service providers and exporters in one place.","连接生产商、服务商和出口商于一体") }}</p>
   <div class="mt-3">
-    <a href="{{ url_for('login') }}" class="btn">🔑 {{ t("Ingresar", "Login","登入") }}</a>
-    <a href="{{ url_for('register_router') }}" class="btn btn-secondary">📝 {{ t("Registrarse", "Register","註冊") }}</a>
+    <a href="{{ url_for('login') }}" class="btn">🔑 {{ t("Ingresar","Login","登录") }}</a>
+    <a href="{{ url_for('register_router') }}" class="btn btn-secondary">📝 {{ t("Registrarse","Register","注册") }}</a>
+    <a href="{{ url_for('ayuda') }}" class="btn btn-secondary">❓ {{ t("Centro de Ayuda","Help Center","帮助中心") }}</a>
   </div>
 </section>
 
 <section class="grid mt-3">
   <div class="card">
-    <h3>{{ t("Compra / Venta", "Buy / Sell","買 / 賣") }}</h3>
-    <p class="mt-1">{{ t("Publica ofertas y demandas de fruta.",
-                         "Post offers and demands for fruit.",
-                         "發布水果供應與需求") }}</p>
+    <h3>{{ t("Compra / Venta","Buy / Sell","买卖") }}</h3>
+    <p class="mt-1">{{ t("Publica ofertas y demandas de fruta.","Post offers and demands for fruit.","发布水果供需信息") }}</p>
   </div>
   <div class="card">
-    <h3>{{ t("Servicios", "Services","服務") }}</h3>
-    <p class="mt-1">{{ t("Packing, Frigorífico, Transporte, Agencia de Aduanas, Extraportuario.",
-                         "Packing, Cold storage, Transportation, Customs Agency, Extraport services.",
-                         "包裝、冷藏、運輸、報關代理、港外服務") }}</p>
+    <h3>{{ t("Servicios","Services","服务") }}</h3>
+    <p class="mt-1">{{ t("Packing, Frigorífico, Transporte, Agencia de Aduanas, Extraportuario.","Packing, Cold storage, Transport, Customs Agency, Extra-port.","包装、冷库、运输、报关、港外服务") }}</p>
   </div>
   <div class="card">
-    <h3>{{ t("Perfiles públicos", "Public profiles","公開檔案") }}</h3>
-    <p class="mt-1">{{ t("Consulta el perfil y agrega al carrito para contacto.",
-                         "Open profiles and add to cart for contact.",
-                         "查看檔案並加入購物車以便聯繫") }}</p>
+    <h3>{{ t("Perfiles públicos","Public profiles","公开资料") }}</h3>
+    <p class="mt-1">{{ t("Consulta el perfil y agrega al carrito para contacto.","View profiles and add to cart for contact.","查看资料并加入购物车以便联系") }}</p>
   </div>
 </section>
 {% endblock %}
