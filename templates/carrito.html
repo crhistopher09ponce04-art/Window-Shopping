@@ -1,19 +1,31 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>🛒 {{ t("Mi Carrito", "My Cart", "我的购物车") }}</h2>
+<div class="card">
+  <h2>🛒 {{ t("Mi Carrito", "My Cart", "我的购物车") }}</h2>
+  {% if cart and cart|length>0 %}
+    <table class="table mt-2">
+      <thead>
+      <tr>
+        <th>{{ t("Empresa","Company","公司") }}</th>
+        <th>{{ t("Tipo","Type","类型") }}</th>
+        <th>{{ t("Detalle","Detail","明细") }}</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for it in cart %}
+        <tr>
+          <td>{{ it.get('empresa','-') }}</td>
+          <td>{{ it.get('tipo','-') }}</td>
+          <td>{{ it.get('producto') or it.get('servicio') or '-' }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    <a class="btn btn-secondary mt-2" href="{{ url_for('cart_clear') }}">{{ t("Vaciar carrito","Clear cart","清空购物车") }}</a>
+  {% else %}
+    <p class="mt-1">{{ t("Tu carrito está vacío.", "Your cart is empty.", "你的购物车是空的。") }}</p>
+  {% endif %}
+</div>
 
-{% if items %}
-  <ul class="listado-items">
-    {% for item in items %}
-      <li>
-        <span>{{ item }}</span>
-        <a href="{{ url_for('remove_carrito', item=item) }}" class="btn btn-danger">❌ {{ t("Eliminar", "Remove", "删除") }}</a>
-      </li>
-    {% endfor %}
-  </ul>
-  <a href="{{ url_for('dashboard') }}" class="btn btn-primary mt-3">⬅️ {{ t("Volver al panel", "Back to dashboard", "返回面板") }}</a>
-{% else %}
-  <p>{{ t("Tu carrito está vacío.", "Your cart is empty.", "你的购物车是空的。") }}</p>
-  <a href="{{ url_for('dashboard') }}" class="btn btn-primary mt-3">⬅️ {{ t("Volver al panel", "Back to dashboard", "返回面板") }}</a>
-{% endif %}
+<a class="btn mt-2" href="{{ url_for('dashboard') }}">⬅️ {{ t("Volver", "Back", "返回") }}</a>
 {% endblock %}
