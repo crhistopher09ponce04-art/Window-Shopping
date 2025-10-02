@@ -1,43 +1,10 @@
 {% extends "base.html" %}
+{% block title %}Mi Perfil - WS{% endblock %}
 {% block content %}
 <div class="container">
-    <h2>👤 {{ t("Mi Perfil", "My Profile", "我的資料") }}</h2>
-    <div class="card">
-        <p><b>{{ t("Empresa", "Company", "公司") }}:</b> {{ perfil.empresa }}</p>
-        <p><b>RUT:</b> {{ perfil.rut or "-" }}</p>
-        <p><b>{{ t("Rol", "Role", "角色") }}:</b> {{ perfil.rol }}</p>
-        <p><b>{{ t("País", "Country", "國家") }}:</b> {{ perfil.pais }}</p>
-        <p><b>Email:</b> {{ perfil.email }}</p>
-        <p><b>{{ t("Teléfono", "Phone", "電話") }}:</b> {{ perfil.telefono }}</p>
-        <p><b>{{ t("Dirección", "Address", "地址") }}:</b> {{ perfil.direccion }}</p>
-        <p><b>{{ t("Descripción", "Description", "描述") }}:</b> {{ perfil.descripcion }}</p>
-    </div>
-
-    <h3 class="mt-2">{{ t("Mis Publicaciones", "My Listings", "我的發布") }}</h3>
-    {% if perfil.items and perfil.items|length > 0 %}
-    <table class="table mt-1">
-        <thead>
-            <tr>
-                <th>{{ t("Tipo", "Type", "類型") }}</th>
-                <th>{{ t("Producto/Servicio", "Product/Service", "產品/服務") }}</th>
-                <th>{{ t("Cantidad/Capacidad", "Quantity/Capacity", "數量/容量") }}</th>
-                <th>{{ t("Precio", "Price", "價格") }}</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in perfil.items %}
-            <tr>
-                <td>{{ item.tipo|capitalize }}</td>
-                <td>{{ item.producto or item.servicio }}</td>
-                <td>{{ item.cantidad or item.capacidad }}</td>
-                <td>{{ item.precio or "-" }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    {% else %}
-    <p>{{ t("No tienes publicaciones aún.", "You have no listings yet.", "你尚未發布任何資訊。") }}</p>
-    {% endif %}
+    <h2>👤 Mi Perfil</h2>
+    <p><b>Usuario:</b> {{ session['user'] }}</p>
+    <p><b>Rol:</b> {{ usuarios[session['user']]['rol'] }}</p>
+    <p><b>Perfil:</b> {{ usuarios[session['user']]['perfil'] }}</p>
 </div>
 {% endblock %}
-
