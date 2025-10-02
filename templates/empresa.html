@@ -1,17 +1,67 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="container">
-    <h2>{{ comp.nombre }}</h2>
-    <p><b>RUT:</b> {{ comp.rut }}</p>
-    <p><b>Rol:</b> {{ comp.rol }}</p>
-    <p><b>País:</b> {{ comp.pais }}</p>
-    <p><b>Descripción:</b> {{ comp.breve }}</p>
-
-    <h3>Items</h3>
-    <ul>
-        {% for item in comp.items %}
-            <li>{{ item.tipo|capitalize }} → {{ item.get("producto", item.get("servicio")) }}</li>
-        {% endfor %}
-    </ul>
+<div class="card">
+  <h2>{{ comp.nombre if not es_user else comp.empresa }}</h2>
+  <p class="mt-1">
+    <span class="badge">{{ comp.rol }}</span> • {{ comp.pais }} • RUT: {{ comp.rut or "N/A" }}
+  </p>
+  <p class="mt-1">{{ comp.breve if comp.breve else comp.descripcion }}</p>
+  <p class="mt-1">📧 {{ comp.email if comp.email else "-" }} | 📞 {{ comp.telefono if comp.telefono else "-" }}</p>
 </div>
+
+{% if comp.items and comp.items|length>0 %}
+<div class="card">
+  <h3>{{ t("Detalles", "Details") }}</h3>
+  <table class="table mt-2">
+    <thead>
+      <tr>
+        {% if comp.perfil_tipo=='servicios' %}
+          <th>{{ t("Servicio", "Service") }}</th>
+          <th>{{ t("Capacidad", "Capacity") }}</th>
+          <th>{{ t("Ubicación", "Location") }}</th>
+        {% else %}
+          <th>{{ t("Tipo", "Type") }}</th>
+          <th>{{ t("Producto", "Product") }}</th>
+          <th>{{ t("Cantidad", "Quantity") }}</th>
+          <th>{{ t("Origen", "Origin") }}</th>
+          <th>{{ t("Precio", "Price") }}</th>
+        {% endif %}
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for it in comp.items %}
+      <tr>
+        {% if comp.perfil_tipo=='servicios' %}
+          <td>{{ it.servicio }}</td>
+          <td>{{ it.capacidad }}</td>
+          <td>{{ it.ubicacion }}</td>
+        {% else %}
+          <td>{{ it.tipo }}</td>
+          <td>{{ it.producto }}</td>
+          <td>{{ it.cantidad }}</td>
+          <td>{{ it.origen }}</td>
+          <td>{{ it.precio or "-" }}</td>
+        {% endif %}
+        <td>
+          <form method="POST" action="{{ url_for('cart_add') }}">
+            <input type="hidden" name="empresa" value="{{ comp.nombre if not es_user else comp.empresa }}">
+            {% if comp.perfil_tipo=='servicios' %}
+              <input type="hidden" name="servicio" value="{{ it.servicio }}">
+              <input type="hidden" name="tipo" value="servicio">
+            {% else %}
+              <input type="hidden" name="producto" value="{{ it.producto }}">
+              <input type="hidden" name="tipo" value="{{ it.tipo }}">
+            {% endif %}
+            <button type="submit" class="btn">{{ t("Agregar", "Add") }}</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+<a class="btn mt-2" href="{{ url_for('dashboard') }}">⬅️ {{ t("Volver", "Back") }}</a>
 {% endblock %}
