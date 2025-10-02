@@ -1,19 +1,26 @@
 {% extends "base.html" %}
-{% block title %}Compras - WS{% endblock %}
 {% block content %}
-<div class="container">
-    <h2>📥 Demandas de Compras</h2>
-    <table>
-        <tr><th>Producto</th><th>Variedad</th><th>Cantidad</th><th>Empresa</th><th></th></tr>
-        {% for item in compras %}
-        <tr>
-            <td>{{ item.producto }}</td>
-            <td>{{ item.variedad }}</td>
-            <td>{{ item.cantidad }}</td>
-            <td><a href="{{ url_for('empresa', id=item.empresa_id) }}">{{ item.empresa }}</a></td>
-            <td><a class="btn" href="{{ url_for('carrito') }}">Agregar</a></td>
-        </tr>
-        {% endfor %}
-    </table>
+<div class="card">
+  <h2>🛒 {{ t("Compras / Demandas", "Purchases / Demands", "採購/需求") }}</h2>
+
+  <table>
+    <tr>
+      <th>{{ t("Producto", "Product", "產品") }}</th>
+      <th>{{ t("Variedad", "Variety", "品種") }}</th>
+      <th>{{ t("Cantidad", "Quantity", "數量") }}</th>
+      <th>{{ t("Acciones", "Actions", "操作") }}</th>
+    </tr>
+    {% for c in compras %}
+    <tr>
+      <td>{{ c.producto }}</td>
+      <td>{{ c.variedad }}</td>
+      <td>{{ c.cantidad }}</td>
+      <td>
+        <a href="{{ url_for('empresa', id=c.empresa_id) }}">🏢 {{ t("Ver Empresa", "View Company", "查看公司") }}</a> |
+        <a href="{{ url_for('agregar_carrito', id=c.id, tipo='compra') }}">🛒 {{ t("Agregar al Carrito", "Add to Cart", "加入購物車") }}</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
 </div>
 {% endblock %}
