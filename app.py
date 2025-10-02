@@ -17,85 +17,132 @@ def t(es, en, zh=None):
     return es
 
 # ---------------------------
-# Usuarios de prueba
+# Usuarios demo (login con username / password)
 # ---------------------------
 USERS = {
-    "productor_demo": {"password": "Demo1234", "rol": "Productor", "perfil_tipo": "compra_venta", "pais": "CL"},
-    "planta_demo": {"password": "Demo1234", "rol": "Planta", "perfil_tipo": "compra_venta", "pais": "CL"},
-    "packing_demo": {"password": "Demo1234", "rol": "Packing", "perfil_tipo": "servicios", "pais": "CL"},
-    "frigorifico_demo": {"password": "Demo1234", "rol": "Frigorífico", "perfil_tipo": "servicios", "pais": "CL"},
-    "exportador_demo": {"password": "Demo1234", "rol": "Exportador", "perfil_tipo": "compra_venta", "pais": "CL"},
-    "cliente_ex_demo": {"password": "Demo1234", "rol": "Cliente extranjero", "perfil_tipo": "compra_venta", "pais": "US"},
-    "transporte_demo": {"password": "Demo1234", "rol": "Transporte", "perfil_tipo": "servicios", "pais": "CL"},
-    "aduana_demo": {"password": "Demo1234", "rol": "Agencia de Aduanas", "perfil_tipo": "servicios", "pais": "CL"},
-    "extraport_demo": {"password": "Demo1234", "rol": "Extraportuario", "perfil_tipo": "servicios", "pais": "CL"},
-    "empresa_demo": {"password": "Demo1234", "rol": "Productor", "perfil_tipo": "compra_venta", "pais": "CL"},
+    "productor1": {"password": "1234", "rol": "Productor", "perfil_tipo": "compra_venta", "pais": "CL"},
+    "planta1": {"password": "1234", "rol": "Planta", "perfil_tipo": "compra_venta", "pais": "CL"},
+    "packing1": {"password": "1234", "rol": "Packing", "perfil_tipo": "servicios", "pais": "CL"},
+    "frigorifico1": {"password": "1234", "rol": "Frigorífico", "perfil_tipo": "servicios", "pais": "CL"},
+    "exportador1": {"password": "1234", "rol": "Exportador", "perfil_tipo": "compra_venta", "pais": "CL"},
+    "cliente1": {"password": "1234", "rol": "Cliente extranjero", "perfil_tipo": "compra_venta", "pais": "US"},
+    "transporte1": {"password": "1234", "rol": "Transporte", "perfil_tipo": "servicios", "pais": "CL"},
+    "aduana1": {"password": "1234", "rol": "Agencia de Aduanas", "perfil_tipo": "servicios", "pais": "CL"},
+    "extraportuario1": {"password": "1234", "rol": "Extraportuario", "perfil_tipo": "servicios", "pais": "CL"},
 }
 
 # ---------------------------
 # Perfiles ficticios
 # ---------------------------
 USER_PROFILES = {
-    "productor_demo": {
-        "empresa": "AgroDemo Productores SPA",
-        "rut": "76.123.456-7",
+    "productor1": {
+        "empresa": "Frutícola Los Andes",
+        "rut": "76.111.111-1",
         "rol": "Productor",
-        "email": "ventas@agrodemo.cl",
-        "telefono": "+56 9 6000 0001",
-        "direccion": "Camino Real 123, Vicuña",
-        "descripcion": "Productores de uva y berries.",
+        "email": "ventas@fruticoland.cl",
+        "telefono": "+56 9 7000 1111",
+        "direccion": "Camino Agrícola 45, San Felipe",
+        "descripcion": "Productores de uva de mesa y ciruelas.",
         "items": [
-            {"tipo": "oferta", "producto": "Uva Crimson", "cantidad": "120 pallets", "precio": "A convenir"},
-            {"tipo": "oferta", "producto": "Arándanos", "cantidad": "30 pallets", "precio": "USD 0.95/kg"},
+            {"tipo": "oferta", "producto": "Uva Red Globe", "cantidad": "150 pallets", "precio": "USD 2.1/kg", "origen": "Aconcagua"},
+            {"tipo": "oferta", "producto": "Ciruelas D'Agen", "cantidad": "200 pallets", "precio": "USD 1.8/kg", "origen": "San Felipe"},
         ],
     },
-    "packing_demo": {
-        "empresa": "PackDemo S.A.",
-        "rut": "78.345.678-9",
+    "planta1": {
+        "empresa": "AgroPlanta Chile Ltda.",
+        "rut": "77.222.222-2",
+        "rol": "Planta",
+        "email": "contacto@agroplanta.cl",
+        "telefono": "+56 9 7000 2222",
+        "direccion": "Ruta 5 Sur, Talca",
+        "descripcion": "Planta de procesamiento y clasificación de fruta fresca.",
+        "items": [
+            {"tipo": "oferta", "producto": "Manzanas Fuji", "cantidad": "500 pallets", "precio": "USD 1.5/kg", "origen": "Talca"},
+        ],
+    },
+    "packing1": {
+        "empresa": "PackingPro SPA",
+        "rut": "78.333.333-3",
         "rol": "Packing",
-        "email": "info@packdemo.cl",
-        "telefono": "+56 9 6000 0002",
-        "direccion": "Sector Industrial 12, Rancagua",
-        "descripcion": "Servicios de packing y embalaje.",
+        "email": "info@packingpro.cl",
+        "telefono": "+56 9 7000 3333",
+        "direccion": "Parque Industrial, Rancagua",
+        "descripcion": "Servicios de packing y embalaje para fruta fresca.",
         "items": [
-            {"tipo": "servicio", "servicio": "Embalaje y etiquetado", "capacidad": "25.000 cajas/día"},
+            {"tipo": "servicio", "servicio": "Packing exportación", "capacidad": "30.000 cajas/día", "ubicacion": "Rancagua"},
         ],
     },
-    "frigorifico_demo": {
-        "empresa": "FríoDemo Ltda.",
-        "rut": "79.456.789-0",
+    "frigorifico1": {
+        "empresa": "Frigorífico del Pacífico",
+        "rut": "79.444.444-4",
         "rol": "Frigorífico",
-        "email": "contacto@friodemo.cl",
-        "telefono": "+56 32 444 5555",
+        "email": "contacto@friopacifico.cl",
+        "telefono": "+56 9 7000 4444",
         "direccion": "Puerto Central, Valparaíso",
-        "descripcion": "Almacenaje refrigerado y logística.",
+        "descripcion": "Almacenamiento en frío para exportaciones.",
         "items": [
-            {"tipo": "servicio", "servicio": "Almacenaje en frío", "capacidad": "1.500 pallets"},
-            {"tipo": "servicio", "servicio": "Preenfriado", "capacidad": "6 túneles"},
+            {"tipo": "servicio", "servicio": "Almacenaje congelado", "capacidad": "2.000 pallets", "ubicacion": "Valparaíso"},
+            {"tipo": "servicio", "servicio": "Prefrío rápido", "capacidad": "10 túneles", "ubicacion": "Valparaíso"},
         ],
     },
-    "exportador_demo": {
-        "empresa": "OCExport Demo",
-        "rut": "80.567.890-1",
+    "exportador1": {
+        "empresa": "ChileFresh Export",
+        "rut": "80.555.555-5",
         "rol": "Exportador",
-        "email": "export@ocexport.cl",
-        "telefono": "+56 9 6000 0003",
-        "direccion": "Av. Exportadores 45, Santiago",
-        "descripcion": "Exportador con red en Europa y Asia.",
+        "email": "export@chilefresh.cl",
+        "telefono": "+56 9 7000 5555",
+        "direccion": "Av. Apoquindo 1234, Santiago",
+        "descripcion": "Exportador de fruta fresca con llegada a China y USA.",
         "items": [
-            {"tipo": "demanda", "producto": "Cerezas", "cantidad": "200 pallets", "precio": "A convenir"},
+            {"tipo": "demanda", "producto": "Arándanos", "cantidad": "100 pallets", "precio": "A convenir", "origen": "Chile"},
         ],
     },
-    "cliente_ex_demo": {
-        "empresa": "GlobalBuyer Co.",
+    "cliente1": {
+        "empresa": "Global Fruits Import LLC",
         "rut": None,
         "rol": "Cliente extranjero",
-        "email": "contact@globalbuyer.com",
-        "telefono": "+1 555 0100",
+        "email": "purchasing@globalfruits.com",
+        "telefono": "+1 305 123 4567",
         "direccion": "Miami, USA",
-        "descripcion": "Comprador mayorista en EEUU.",
+        "descripcion": "Importador de fruta latinoamericana en EEUU.",
         "items": [
-            {"tipo": "demanda", "producto": "Uva Thompson", "cantidad": "400 pallets", "precio": "A convenir"},
+            {"tipo": "demanda", "producto": "Cerezas", "cantidad": "300 pallets", "precio": "A convenir", "origen": "Chile"},
+        ],
+    },
+    "transporte1": {
+        "empresa": "TransAndes Logistics",
+        "rut": "81.666.666-6",
+        "rol": "Transporte",
+        "email": "logistica@transandes.cl",
+        "telefono": "+56 9 7000 6666",
+        "direccion": "Camino a Melipilla, Santiago",
+        "descripcion": "Servicios de transporte terrestre y portuario.",
+        "items": [
+            {"tipo": "servicio", "servicio": "Transporte terrestre", "capacidad": "50 camiones", "ubicacion": "Chile"},
+        ],
+    },
+    "aduana1": {
+        "empresa": "Agencia Aduanera Sur",
+        "rut": "82.777.777-7",
+        "rol": "Agencia de Aduanas",
+        "email": "aduana@aduanasur.cl",
+        "telefono": "+56 9 7000 7777",
+        "direccion": "Puerto San Antonio",
+        "descripcion": "Agencia de aduanas autorizada por el SAG.",
+        "items": [
+            {"tipo": "servicio", "servicio": "Gestión documental exportación", "capacidad": "300 operaciones/mes", "ubicacion": "San Antonio"},
+        ],
+    },
+    "extraportuario1": {
+        "empresa": "Depósitos Extraport",
+        "rut": "83.888.888-8",
+        "rol": "Extraportuario",
+        "email": "contacto@extraport.cl",
+        "telefono": "+56 9 7000 8888",
+        "direccion": "Camino Puerto 456, San Antonio",
+        "descripcion": "Depósitos extraportuarios para fruta de exportación.",
+        "items": [
+            {"tipo": "servicio", "servicio": "Almacenaje extraportuario", "capacidad": "800 pallets", "ubicacion": "San Antonio"},
         ],
     },
 }
@@ -143,8 +190,9 @@ def logout():
 def dashboard():
     if "user" not in session:
         return redirect(url_for("login"))
-    profile = USER_PROFILES.get(session["user"], {})
-    return render_template("dashboard.html", profile=profile, t=t)
+    user = session["user"]
+    profile = USER_PROFILES.get(user, {})
+    return render_template("dashboard.html", usuario=user, rol=USERS[user]["rol"], perfil_tipo=USERS[user]["perfil_tipo"], my_company=profile, cart=get_cart(), t=t)
 
 @app.route("/perfil")
 def perfil():
@@ -152,33 +200,57 @@ def perfil():
         return redirect(url_for("login"))
     user = session["user"]
     profile = USER_PROFILES.get(user)
-    return render_template("perfil.html", profile=profile, t=t)
+    return render_template("perfil.html", perfil=profile, t=t)
+
+@app.route("/empresa/<slug>")
+def empresa(slug):
+    profile = USER_PROFILES.get(slug)
+    if not profile:
+        return redirect(url_for("dashboard"))
+    return render_template("empresa.html", comp=profile, es_user=False, t=t)
 
 @app.route("/detalles/<tipo>")
 def detalles(tipo):
-    if tipo == "ventas":
-        items = [(u, p) for u, p in USER_PROFILES.items() for i in p["items"] if i.get("tipo") == "oferta"]
-    elif tipo == "compras":
-        items = [(u, p) for u, p in USER_PROFILES.items() for i in p["items"] if i.get("tipo") == "demanda"]
-    elif tipo == "servicios":
-        items = [(u, p) for u, p in USER_PROFILES.items() for i in p["items"] if i.get("tipo") == "servicio"]
-    else:
-        items = []
-    return render_template(f"detalle_{tipo}.html", items=items, t=t)
+    data = []
+    for slug, p in USER_PROFILES.items():
+        comp = {
+            "slug": slug,
+            "nombre": p.get("empresa"),
+            "rol": p.get("rol"),
+            "pais": USERS.get(slug, {}).get("pais", ""),
+            "rut": p.get("rut"),
+            "email": p.get("email"),
+            "telefono": p.get("telefono"),
+            "descripcion": p.get("descripcion"),
+            "items": p.get("items", []),
+        }
+        for it in comp["items"]:
+            if tipo == "ventas" and it.get("tipo") == "oferta":
+                data.append(comp)
+            elif tipo == "compras" and it.get("tipo") == "demanda":
+                data.append(comp)
+            elif tipo == "servicios" and it.get("tipo") == "servicio":
+                data.append(comp)
+    return render_template(f"detalle_{tipo}.html", data=data, t=t)
 
 @app.route("/carrito")
 def carrito():
     return render_template("carrito.html", cart=get_cart(), t=t)
 
-@app.route("/add_to_cart/<user>/<item>")
+@app.route("/add_to_cart/<user>/<int:item>")
 def add_item(user, item):
     profile = USER_PROFILES.get(user)
     if not profile:
         return redirect(url_for("dashboard"))
-    if 0 <= int(item) < len(profile["items"]):
-        add_to_cart(profile["items"][int(item)])
+    if 0 <= item < len(profile["items"]):
+        item_data = dict(profile["items"][item])
+        item_data["empresa"] = profile["empresa"]
+        add_to_cart(item_data)
     return redirect(url_for("carrito"))
 
+# ---------------------------
+# Manejo de errores
+# ---------------------------
 @app.errorhandler(HTTPException)
 def handle_http(e):
     return render_template("error.html", code=e.code, message=e.description, t=t), e.code
