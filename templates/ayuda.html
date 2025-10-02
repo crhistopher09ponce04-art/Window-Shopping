@@ -1,14 +1,13 @@
 {% extends "base.html" %}
-{% block title %}Centro de Ayuda - WS{% endblock %}
 {% block content %}
-<div class="container">
-    <h2>📩 Centro de Ayuda</h2>
-    <form method="post" action="{{ url_for('ayuda') }}">
-        <label>Email:</label><br>
-        <input type="email" name="email" required><br><br>
-        <label>Mensaje:</label><br>
-        <textarea name="mensaje" rows="4" required></textarea><br><br>
-        <button class="btn" type="submit">Enviar</button>
-    </form>
+<div class="card">
+  <h2>🆘 {{ t("Centro de Ayuda", "Help Center", "幫助中心") }}</h2>
+  <form method="POST">
+    <label>Email</label>
+    <input type="email" name="email" required>
+    <label>{{ t("Mensaje", "Message", "訊息") }}</label>
+    <textarea name="mensaje" required></textarea>
+    <input type="submit" value="📨 {{ t('Enviar', 'Send', '發送') }}">
+  </form>
 </div>
 {% endblock %}
