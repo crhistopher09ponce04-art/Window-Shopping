@@ -1,163 +1,30 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="card">
-  <h2>👤 {{ t("Mi Perfil", "My Profile", "個人資料") }}</h2>
-  {% if mensaje %}<div class="flash mt-2">{{ mensaje }}</div>{% endif %}
-  <form method="POST" class="mt-2">
-    <input type="hidden" name="action" value="save_profile">
-    <div class="grid-3">
-      <div>
-        <label>{{ t("Nombre empresa", "Company name", "公司名稱") }}</label>
-        <input type="text" name="empresa" value="{{ perfil.empresa }}">
-      </div>
-      <div>
-        <label>RUT</label>
-        <input type="text" name="rut" value="{{ perfil.rut }}">
-      </div>
-      <div>
-        <label>Email</label>
-        <input type="email" name="email" value="{{ perfil.email }}">
-      </div>
-    </div>
-    <div class="grid-3">
-      <div>
-        <label>{{ t("Teléfono", "Phone", "電話") }}</label>
-        <input type="text" name="telefono" value="{{ perfil.telefono }}">
-      </div>
-      <div>
-        <label>{{ t("Dirección", "Address", "地址") }}</label>
-        <input type="text" name="direccion" value="{{ perfil.direccion }}">
-      </div>
-      <div>
-        <label>{{ t("Rol", "Role", "角色") }}</label>
-        <input type="text" value="{{ perfil.rol }}" disabled>
-      </div>
+<div class="container">
+    <h2>Mi Perfil</h2>
+    <div class="card">
+        <p><b>Empresa:</b> {{ perfil.empresa }}</p>
+        <p><b>RUT:</b> {{ perfil.rut }}</p>
+        <p><b>Rol:</b> {{ perfil.rol }}</p>
+        <p><b>País:</b> {{ perfil.pais }}</p>
+        <p><b>Email:</b> {{ perfil.email }}</p>
+        <p><b>Teléfono:</b> {{ perfil.telefono }}</p>
+        <p><b>Dirección:</b> {{ perfil.direccion }}</p>
+        <p><b>Descripción:</b> {{ perfil.descripcion }}</p>
     </div>
 
-    <label>{{ t("Descripción", "Description", "描述") }}</label>
-    <textarea name="descripcion" rows="3">{{ perfil.descripcion }}</textarea>
-
-    <input type="submit" class="mt-2" value="{{ t('Guardar', 'Save', '儲存') }}">
-  </form>
-</div>
-
-<div class="grid">
-  <div class="card">
-    {% if perfil.perfil_tipo=='servicios' %}
-      <h3>➕ {{ t("Agregar servicio", "Add service", "新增服務") }}</h3>
-      <form method="POST" class="mt-2">
-        <input type="hidden" name="action" value="add_item">
-        <div class="grid-3">
-          <div>
-            <label>{{ t("Servicio", "Service", "服務") }}</label>
-            <input type="text" name="servicio" placeholder="Almacenaje en frío">
-          </div>
-          <div>
-            <label>{{ t("Capacidad", "Capacity", "容量") }}</label>
-            <input type="text" name="capacidad" placeholder="1.000 pallets">
-          </div>
-          <div>
-            <label>{{ t("Ubicación", "Location", "位置") }}</label>
-            <input type="text" name="ubicacion" placeholder="Valparaíso">
-          </div>
-        </div>
-        <input type="submit" value="{{ t('Agregar', 'Add', '新增') }}">
-      </form>
-    {% else %}
-      <h3>➕ {{ t("Agregar oferta/demanda", "Add offer/demand", "新增供給/需求") }}</h3>
-      <form method="POST" class="mt-2">
-        <input type="hidden" name="action" value="add_item">
-        <div class="grid-4">
-          <div>
-            <label>{{ t("Tipo", "Type", "類型") }}</label>
-            <select name="subtipo">
-              <option value="oferta">{{ t("Oferta", "Offer", "供給") }}</option>
-              <option value="demanda">{{ t("Demanda", "Demand", "需求") }}</option>
-            </select>
-          </div>
-          <div>
-            <label>{{ t("Producto", "Product", "產品") }}</label>
-            <input type="text" name="producto" placeholder="Uva, cereza, etc.">
-          </div>
-          <div>
-            <label>{{ t("Variedad", "Variety", "品種") }}</label>
-            <input type="text" name="variedad" placeholder="Crimson, Santina...">
-          </div>
-          <div>
-            <label>{{ t("Calibre", "Size", "規格") }}</label>
-            <input type="text" name="calibre" placeholder="28+, L, etc.">
-          </div>
-        </div>
-        <div class="grid-3">
-          <div>
-            <label>{{ t("Cantidad", "Quantity", "數量") }}</label>
-            <input type="text" name="cantidad" placeholder="100 pallets">
-          </div>
-          <div>
-            <label>{{ t("Origen", "Origin", "產地") }}</label>
-            <input type="text" name="origen" placeholder="VI Región">
-          </div>
-          <div>
-            <label>{{ t("Precio", "Price", "價格") }}</label>
-            <input type="text" name="precio" placeholder="{{ t('A convenir', 'To agree', '另議') }}">
-          </div>
-        </div>
-        <input type="submit" value="{{ t('Agregar', 'Add', '新增') }}">
-      </form>
-    {% endif %}
-  </div>
-
-  <div class="card">
-    <h3>{{ t("Mis ítems", "My items", "我的項目") }}</h3>
-    {% if perfil.items and perfil.items|length>0 %}
-      <table class="table mt-2" id="mis-items">
-        <thead>
+    <h3>Mis Publicaciones</h3>
+    <table>
+        <tr><th>Tipo</th><th>Producto</th><th>Cantidad</th><th>Origen</th><th>Precio</th></tr>
+        {% for item in perfil.items %}
         <tr>
-          {% if perfil.perfil_tipo=='servicios' %}
-            <th>{{ t("Servicio", "Service", "服務") }}</th>
-            <th>{{ t("Capacidad", "Capacity", "容量") }}</th>
-            <th>{{ t("Ubicación", "Location", "位置") }}</th>
-            <th>{{ t("Eliminar (vista)", "Remove (view)", "刪除(視圖)") }}</th>
-          {% else %}
-            <th>{{ t("Tipo", "Type", "類型") }}</th>
-            <th>{{ t("Producto", "Product", "產品") }}</th>
-            <th>{{ t("Variedad", "Variety", "品種") }}</th>
-            <th>{{ t("Calibre", "Size", "規格") }}</th>
-            <th>{{ t("Cantidad", "Quantity", "數量") }}</th>
-            <th>{{ t("Origen", "Origin", "產地") }}</th>
-            <th>{{ t("Precio", "Price", "價格") }}</th>
-            <th>{{ t("Eliminar (vista)", "Remove (view)", "刪除(視圖)") }}</th>
-          {% endif %}
+            <td>{{ item.tipo|capitalize }}</td>
+            <td>{{ item.producto }}</td>
+            <td>{{ item.cantidad }}</td>
+            <td>{{ item.origen }}</td>
+            <td>{{ item.precio }}</td>
         </tr>
-        </thead>
-        <tbody>
-        {% for it in perfil.items %}
-          <tr>
-            {% if perfil.perfil_tipo=='servicios' %}
-              <td>{{ it.servicio }}</td>
-              <td>{{ it.capacidad }}</td>
-              <td>{{ it.ubicacion }}</td>
-              <td><button class="btn btn-secondary" type="button" onclick="this.closest('tr').remove();">{{ t('Eliminar','Remove','刪除') }}</button></td>
-            {% else %}
-              <td>{{ it.tipo }}</td>
-              <td>{{ it.producto }}</td>
-              <td>{{ it.variedad or '-' }}</td>
-              <td>{{ it.calibre or '-' }}</td>
-              <td>{{ it.cantidad }}</td>
-              <td>{{ it.origen }}</td>
-              <td>{{ it.precio or '-' }}</td>
-              <td><button class="btn btn-secondary" type="button" onclick="this.closest('tr').remove();">{{ t('Eliminar','Remove','刪除') }}</button></td>
-            {% endif %}
-          </tr>
         {% endfor %}
-        </tbody>
-      </table>
-      <p class="mt-1" style="opacity:.8;">{{ t("Nota: esta eliminación es solo visual; al recargar, los ítems reaparecen.",
-                                                 "Note: this removal is only visual; items reappear on refresh.",
-                                                 "注意：此刪除僅為視覺效果，重新整理後會恢復。") }}</p>
-    {% else %}
-      <p class="mt-1">{{ t("Aún no has agregado ítems.", "You haven't added items yet.", "尚未新增任何項目") }}</p>
-    {% endif %}
-  </div>
+    </table>
 </div>
 {% endblock %}
