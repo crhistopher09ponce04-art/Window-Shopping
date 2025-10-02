@@ -6,7 +6,7 @@ body, h1, h2, h3, p, ul, li, a, input, button, select, textarea, label {
   font-family: "Segoe UI", Roboto, Arial, sans-serif;
 }
 
-/* Fondo oscuro elegante */
+/* Fondo con degradado elegante */
 body {
   background: linear-gradient(135deg, #0d1b2a, #1b263b);
   color: #fff;
@@ -21,7 +21,7 @@ main {
   padding: 0 20px;
 }
 
-/* Header fijo */
+/* Header */
 header {
   display: flex;
   justify-content: space-between;
@@ -36,7 +36,7 @@ header {
   z-index: 100;
 }
 
-/* Branding */
+/* Logo */
 .logo {
   text-decoration: none;
   color: #00d4ff;
@@ -78,7 +78,7 @@ footer {
   font-size: 0.9rem;
 }
 
-/* Cards con hover flotante */
+/* Cards */
 .card {
   background: rgba(27, 38, 59, 0.96);
   border: 1px solid rgba(255,255,255,0.08);
@@ -103,7 +103,7 @@ footer {
 .grid-3 { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
 .grid-4 { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
 
-/* Tile */
+/* Tiles */
 .tile {
   display: block;
   background: rgba(255,255,255,0.04);
@@ -146,7 +146,7 @@ footer {
   background: linear-gradient(180deg, #415a77, #2f3e52);
 }
 
-/* Inputs / Selects / Textareas */
+/* Inputs */
 label { display: block; margin: 8px 0 4px; color: #e7f6ff; font-weight: 600; }
 input, select, textarea {
   width: 100%;
@@ -174,7 +174,7 @@ ul li {
   margin: 8px 0;
 }
 
-/* Badges / etiquetas */
+/* Badges */
 .badge {
   display: inline-block;
   padding: 6px 10px;
@@ -185,7 +185,7 @@ ul li {
   color: #fff;
 }
 
-/* Tabla básica */
+/* Tabla */
 .table {
   width: 100%;
   border-collapse: collapse;
@@ -200,7 +200,7 @@ ul li {
   text-align: left;
 }
 
-/* Mensajes */
+/* Flash */
 .flash {
   background: rgba(0, 180, 216, 0.14);
   border-left: 4px solid #00d4ff;
@@ -221,5 +221,3 @@ a:hover { color: #b7f3ff; }
 .mt-4 { margin-top: 24px; }
 .me-2 { margin-right: 12px; }
 .center { text-align: center; }
-.right { text-align: right; }
-.w-100 { width: 100%; }
