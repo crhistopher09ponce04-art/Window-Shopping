@@ -2,71 +2,7 @@
 {% block content %}
 <div class="card">
   <h2>{{ comp.nombre }}</h2>
-  <p class="mt-1">
-    <span class="badge">{{ comp.rol }}</span> • {{ comp.pais }}
-    {% if comp.perfil_tipo=='servicios' %}
-      • {{ t("Servicios", "Services","服務") }}
-    {% else %}
-      • {{ t("Compra/Venta", "Buy/Sell","買/賣") }}
-    {% endif %}
-  </p>
-  <p class="mt-1">{{ comp.descripcion }}</p>
+  <p><span class="badge">{{ comp.rol }}</span> • {{ comp.pais }}</p>
+  <p>{{ comp.descripcion or comp.breve }}</p>
 </div>
-
-{% if comp.items and comp.items|length>0 %}
-  <div class="card">
-    <h3>{{ t("Detalles", "Details","詳情") }}</h3>
-    <table class="table mt-2">
-      <thead>
-        <tr>
-          {% if comp.perfil_tipo=='servicios' %}
-            <th>{{ t("Servicio", "Service","服務") }}</th>
-            <th>{{ t("Capacidad", "Capacity","產能") }}</th>
-            <th>{{ t("Ubicación", "Location","位置") }}</th>
-            <th></th>
-          {% else %}
-            <th>{{ t("Tipo", "Type","類別") }}</th>
-            <th>{{ t("Producto", "Product","產品") }}</th>
-            <th>{{ t("Cantidad", "Quantity","數量") }}</th>
-            <th>{{ t("Origen", "Origin","來源") }}</th>
-            <th>{{ t("Precio", "Price","價格") }}</th>
-            <th></th>
-          {% endif %}
-        </tr>
-      </thead>
-      <tbody>
-        {% for it in comp.items %}
-        <tr>
-          {% if comp.perfil_tipo=='servicios' %}
-            <td>{{ it.servicio }}</td>
-            <td>{{ it.capacidad }}</td>
-            <td>{{ it.ubicacion }}</td>
-          {% else %}
-            <td>{{ it.tipo }}</td>
-            <td>{{ it.producto }}</td>
-            <td>{{ it.cantidad }}</td>
-            <td>{{ it.origen }}</td>
-            <td>{{ it.precio or '-' }}</td>
-          {% endif %}
-          <td style="width:1%;white-space:nowrap;">
-            <form method="POST" action="{{ url_for('cart_add') }}">
-              <input type="hidden" name="empresa" value="{{ comp.nombre }}">
-              {% if comp.perfil_tipo=='servicios' %}
-                <input type="hidden" name="servicio" value="{{ it.servicio }}">
-                <input type="hidden" name="tipo" value="servicio">
-              {% else %}
-                <input type="hidden" name="producto" value="{{ it.producto }}">
-                <input type="hidden" name="tipo" value="{{ it.tipo }}">
-              {% endif %}
-              <button type="submit" class="btn">{{ t("Agregar", "Add","加入") }}</button>
-            </form>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-{% endif %}
-
-<a class="btn mt-2" href="{{ url_for('dashboard') }}">⬅️ {{ t("Volver", "Back","返回") }}</a>
 {% endblock %}
