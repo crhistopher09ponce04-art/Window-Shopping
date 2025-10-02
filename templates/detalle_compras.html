@@ -1,54 +1,25 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>📥 {{ t("Demandas/Compras", "Purchases/Demands", "需求/採購") }}</h2>
-
-<form method="GET" class="mt-2">
-  <label>{{ t("Buscar", "Search", "搜尋") }}</label>
-  <input type="text" name="q" value="{{ q or '' }}" placeholder="{{ t('Producto, variedad o empresa...', 'Product, variety or company...', '產品、品種或公司...') }}">
-  <button class="btn" type="submit">{{ t("Filtrar", "Filter", "篩選") }}</button>
-</form>
-
-<div class="grid mt-2">
-  {% for c in data %}
-  <div class="card">
-    <h3><a href="{{ url_for('empresa', slug=c.slug) }}">{{ c.nombre }}</a></h3>
-    <p><span class="badge">{{ c.rol }}</span> • {{ c.pais }}</p>
-    <table class="table">
-      <thead>
-        <tr>
-          <th>{{ t("Producto", "Product", "產品") }}</th>
-          <th>{{ t("Variedad", "Variety", "品種") }}</th>
-          <th>{{ t("Calibre", "Size", "規格") }}</th>
-          <th>{{ t("Cantidad", "Quantity", "數量") }}</th>
-          <th>{{ t("Origen", "Origin", "產地") }}</th>
-          <th>{{ t("Precio", "Price", "價格") }}</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for it in c.items %}
-        <tr>
-          <td>{{ it.producto }}</td>
-          <td>{{ it.variedad or '-' }}</td>
-          <td>{{ it.calibre or '-' }}</td>
-          <td>{{ it.cantidad }}</td>
-          <td>{{ it.origen }}</td>
-          <td>{{ it.precio or '-' }}</td>
-          <td>
-            <form method="POST" action="{{ url_for('cart_add') }}">
-              <input type="hidden" name="empresa" value="{{ c.nombre }}">
-              <input type="hidden" name="producto" value="{{ it.producto }}">
-              <input type="hidden" name="tipo" value="demanda">
-              <button type="submit" class="btn">➕ {{ t("Agregar","Add","添加") }}</button>
-            </form>
-          </td>
-        </tr>
+<div class="container">
+    <h2>Demandas Publicadas</h2>
+    <table>
+        <tr><th>Empresa</th><th>Producto</th><th>Cantidad</th><th>Origen</th><th>Acción</th></tr>
+        {% for comp in data %}
+            {% for item in comp.items if item.tipo == "demanda" %}
+                <tr>
+                    <td><a href="{{ url_for('empresa', slug=comp.slug) }}">{{ comp.nombre }}</a></td>
+                    <td>{{ item.producto }}</td>
+                    <td>{{ item.cantidad }}</td>
+                    <td>{{ item.origen }}</td>
+                    <td>
+                        <form method="post" action="{{ url_for('cart_add') }}">
+                            <input type="hidden" name="producto" value="{{ item.producto }}">
+                            <button type="submit">Agregar al carrito</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
         {% endfor %}
-      </tbody>
     </table>
-  </div>
-  {% endfor %}
 </div>
-
-<a href="{{ url_for('dashboard') }}" class="btn mt-3">⬅️ {{ t("Volver","Back","返回") }}</a>
 {% endblock %}
