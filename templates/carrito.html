@@ -1,31 +1,16 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="card">
-  <h2>🛒 {{ t("Mi Carrito", "My Cart", "我的购物车") }}</h2>
-  {% if cart and cart|length>0 %}
-    <table class="table mt-2">
-      <thead>
-      <tr>
-        <th>{{ t("Empresa","Company","公司") }}</th>
-        <th>{{ t("Tipo","Type","类型") }}</th>
-        <th>{{ t("Detalle","Detail","明细") }}</th>
-      </tr>
-      </thead>
-      <tbody>
-      {% for it in cart %}
-        <tr>
-          <td>{{ it.get('empresa','-') }}</td>
-          <td>{{ it.get('tipo','-') }}</td>
-          <td>{{ it.get('producto') or it.get('servicio') or '-' }}</td>
-        </tr>
-      {% endfor %}
-      </tbody>
-    </table>
-    <a class="btn btn-secondary mt-2" href="{{ url_for('cart_clear') }}">{{ t("Vaciar carrito","Clear cart","清空购物车") }}</a>
+  <h2>🛒 {{ t("Mi Carrito","My Cart","购物车") }}</h2>
+  {% if cart %}
+  <ul>
+    {% for it in cart %}
+      <li>{{ it.empresa }} — {{ it.producto or it.servicio }}</li>
+    {% endfor %}
+  </ul>
   {% else %}
-    <p class="mt-1">{{ t("Tu carrito está vacío.", "Your cart is empty.", "你的购物车是空的。") }}</p>
+  <p>{{ t("No hay ítems.","No items.","没有项目") }}</p>
   {% endif %}
+  <a href="{{ url_for('dashboard') }}" class="btn mt-2">⬅️ {{ t("Volver","Back","返回") }}</a>
 </div>
-
-<a class="btn mt-2" href="{{ url_for('dashboard') }}">⬅️ {{ t("Volver", "Back", "返回") }}</a>
 {% endblock %}
