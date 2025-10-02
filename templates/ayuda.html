@@ -1,13 +1,21 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="card" style="max-width:600px;margin:0 auto;">
-  <h2>❓ {{ t("Centro de Ayuda","Help Center","帮助中心") }}</h2>
-  <form method="POST">
+<div class="card" style="max-width:700px;margin:0 auto;">
+  <h2>🆘 {{ t("Centro de Ayuda", "Help Center", "客服中心") }}</h2>
+  {% if enviado %}
+    <div class="flash mt-2">{{ t("Tu solicitud fue enviada. Te contactaremos.",
+                                 "Your request has been sent. We'll contact you.",
+                                 "您的請求已送出，我們將儘快回覆。") }}</div>
+  {% endif %}
+
+  <form method="POST" class="mt-2">
     <label>Email</label>
-    <input type="email" name="email" required>
-    <label>{{ t("Mensaje","Message","信息") }}</label>
-    <textarea name="mensaje" rows="4"></textarea>
-    <input type="submit" value="{{ t("Enviar","Send","发送") }}">
+    <input type="email" name="email" required placeholder="tu@email.com">
+    <label>{{ t("Asunto", "Subject", "主旨") }}</label>
+    <input type="text" name="asunto" placeholder="{{ t('Consulta general', 'General inquiry', '一般諮詢') }}">
+    <label>{{ t("Mensaje", "Message", "訊息") }}</label>
+    <textarea name="mensaje" rows="4" placeholder="{{ t('Describe tu requerimiento...', 'Describe your request...', '請描述您的需求...') }}"></textarea>
+    <input type="submit" value="{{ t('Enviar','Send','送出') }}">
   </form>
 </div>
 {% endblock %}
