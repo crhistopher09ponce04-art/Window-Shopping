@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="{{ session.get('lang','es') }}">
 <head>
     <meta charset="UTF-8">
     <title>Error {{ code }}</title>
@@ -34,10 +34,10 @@
 </head>
 <body>
     <div class="card">
-        <h2>⚠ Ha ocurrido un problema</h2>
-        <p><b>Código:</b> {{ code }}</p>
+        <h2>⚠ {{ t("Ha ocurrido un problema", "An error has occurred", "發生錯誤") }}</h2>
+        <p><b>{{ t("Código", "Code", "代碼") }}:</b> {{ code }}</p>
         <p>{{ message }}</p>
-        <a href="{{ url_for('home') }}">🏠 Ir al inicio</a>
+        <a href="{{ url_for('home') }}">🏠 {{ t("Ir al inicio", "Go home", "回到首頁") }}</a>
     </div>
 </body>
 </html>
