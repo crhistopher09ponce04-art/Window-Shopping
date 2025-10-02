@@ -1,39 +1,13 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="card">
-  <h2>🆘 {{ t("Centro de Ayuda", "Help Center", "帮助中心") }}</h2>
-  {% if enviado %}
-    <div class="flash mt-2">{{ t("Tu mensaje fue enviado (simulado). Te contactaremos pronto.", "Your message was sent (simulated). We'll contact you soon.", "你的信息已发送（模拟）。我们将尽快联系你。") }}</div>
-  {% endif %}
-  <form class="mt-2" method="POST">
-    <div class="grid-3">
-      <div>
-        <label>{{ t("Nombre", "Name", "姓名") }}</label>
-        <input name="nombre" required>
-      </div>
-      <div>
-        <label>{{ t("Correo", "Email", "邮箱") }}</label>
-        <input type="email" name="correo" required>
-      </div>
-      <div>
-        <label>{{ t("Asunto", "Subject", "主题") }}</label>
-        <input name="asunto" required>
-      </div>
-    </div>
-    <label>{{ t("Mensaje", "Message", "留言") }}</label>
-    <textarea name="mensaje" rows="4" required></textarea>
-    <button class="btn mt-2" type="submit">{{ t("Enviar", "Send", "发送") }}</button>
+<div class="card" style="max-width:600px;margin:0 auto;">
+  <h2>❓ {{ t("Centro de Ayuda","Help Center","帮助中心") }}</h2>
+  <form method="POST">
+    <label>Email</label>
+    <input type="email" name="email" required>
+    <label>{{ t("Mensaje","Message","信息") }}</label>
+    <textarea name="mensaje" rows="4"></textarea>
+    <input type="submit" value="{{ t("Enviar","Send","发送") }}">
   </form>
 </div>
-
-{% if history and history|length>0 %}
-  <div class="card">
-    <h3>{{ t("Tus últimos mensajes", "Your recent messages", "你的近期留言") }}</h3>
-    <ul class="mt-1">
-      {% for h in history|reverse %}
-        <li><strong>{{ h.nombre }}</strong> — {{ h.asunto }} — {{ h.correo }}</li>
-      {% endfor %}
-    </ul>
-  </div>
-{% endif %}
 {% endblock %}
