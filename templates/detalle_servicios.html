@@ -1,18 +1,24 @@
 {% extends "base.html" %}
-{% block title %}Servicios - WS{% endblock %}
 {% block content %}
-<div class="container">
-    <h2>💼 Servicios disponibles</h2>
-    <table>
-        <tr><th>Servicio</th><th>Descripción</th><th>Empresa</th><th></th></tr>
-        {% for item in servicios %}
-        <tr>
-            <td>{{ item.nombre }}</td>
-            <td>{{ item.descripcion }}</td>
-            <td><a href="{{ url_for('empresa', id=item.empresa_id) }}">{{ item.empresa }}</a></td>
-            <td><a class="btn" href="{{ url_for('carrito') }}">Agregar</a></td>
-        </tr>
-        {% endfor %}
-    </table>
+<div class="card">
+  <h2>🔧 {{ t("Servicios", "Services", "服務") }}</h2>
+
+  <table>
+    <tr>
+      <th>{{ t("Servicio", "Service", "服務") }}</th>
+      <th>{{ t("Descripción", "Description", "描述") }}</th>
+      <th>{{ t("Acciones", "Actions", "操作") }}</th>
+    </tr>
+    {% for s in servicios %}
+    <tr>
+      <td>{{ s.nombre }}</td>
+      <td>{{ s.descripcion }}</td>
+      <td>
+        <a href="{{ url_for('empresa', id=s.empresa_id) }}">🏢 {{ t("Ver Empresa", "View Company", "查看公司") }}</a> |
+        <a href="{{ url_for('agregar_carrito', id=s.id, tipo='servicio') }}">🛒 {{ t("Agregar al Carrito", "Add to Cart", "加入購物車") }}</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
 </div>
 {% endblock %}
