@@ -1,13 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="card">
-  <h2>🆘 {{ t("Centro de Ayuda", "Help Center", "幫助中心") }}</h2>
-  <form method="POST">
-    <label>Email</label>
-    <input type="email" name="email" required>
-    <label>{{ t("Mensaje", "Message", "訊息") }}</label>
-    <textarea name="mensaje" required></textarea>
-    <input type="submit" value="📨 {{ t('Enviar', 'Send', '發送') }}">
-  </form>
+<div class="card error">
+  <h2>⚠ {{ t("Ha ocurrido un problema", "An error has occurred", "發生錯誤") }}</h2>
+  <p>{{ message }}</p>
+  <a href="{{ url_for('home') }}" class="btn">🏠 {{ t("Volver al inicio", "Return home", "回到首頁") }}</a>
 </div>
 {% endblock %}
+
