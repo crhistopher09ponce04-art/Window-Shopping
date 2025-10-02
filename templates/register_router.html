@@ -1,14 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="card">
-  <h2>📝 {{ t("Crear cuenta", "Create account", "创建账户") }}</h2>
-  <p>{{ t("Selecciona tu tipo de cuenta:", "Choose your account type:", "请选择账户类型：") }}</p>
-
+  <h2>📝 {{ t("Crear cuenta","Create account","创建账户") }}</h2>
+  <p>{{ t("Selecciona tu tipo de cuenta:","Choose your account type:","选择你的账户类型：") }}</p>
   <div class="grid-3 mt-2">
-    <a class="tile" href="{{ url_for('register', nac='nacional') }}">{{ t("Nacional", "National", "本国") }}</a>
-    <a class="tile" href="{{ url_for('register', nac='extranjero') }}">{{ t("Extranjero", "Foreign", "国外") }}</a>
-    <a class="tile" href="#">{{ t("Ver ayuda de registro (pronto)", "See registration help (soon)", "注册帮助（即将上线）") }}</a>
+    <a class="tile" href="{{ url_for('register', nac='nacional') }}">{{ t("Nacional","National","国内") }}</a>
+    <a class="tile" href="{{ url_for('register', nac='extranjero') }}">{{ t("Extranjero","Foreign","国外") }}</a>
+    <a class="tile" href="{{ url_for('ayuda') }}">{{ t("Ver ayuda de registro","See registration help","查看注册帮助") }}</a>
   </div>
-  <p class="mt-2" style="opacity:.8;">* {{ t("Demo: usa usuarios de prueba desde la pantalla de ingreso.", "Demo: use demo users from login screen.", "演示：可使用登录页的示例用户。") }}</p>
 </div>
 {% endblock %}
