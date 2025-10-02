@@ -1,25 +1,46 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="container">
-    <h2>Ofertas y Demandas</h2>
-    <table>
-        <tr><th>Empresa</th><th>Producto</th><th>Cantidad</th><th>Origen</th><th>Acción</th></tr>
-        {% for comp in data %}
-            {% for item in comp.items %}
-                <tr>
-                    <td><a href="{{ url_for('empresa', slug=comp.slug) }}">{{ comp.nombre }}</a></td>
-                    <td>{{ item.producto }}</td>
-                    <td>{{ item.cantidad }}</td>
-                    <td>{{ item.origen }}</td>
-                    <td>
-                        <form method="post" action="{{ url_for('cart_add') }}">
-                            <input type="hidden" name="producto" value="{{ item.producto }}">
-                            <button type="submit">Agregar al carrito</button>
-                        </form>
-                    </td>
-                </tr>
-            {% endfor %}
+<div class="card">
+  <h2>🛒 {{ t("Ofertas de Venta", "Sales Offers") }}</h2>
+  {% if data and data|length > 0 %}
+    <table class="table mt-2">
+      <thead>
+        <tr>
+          <th>{{ t("Empresa", "Company") }}</th>
+          <th>{{ t("Producto", "Product") }}</th>
+          <th>{{ t("Cantidad", "Quantity") }}</th>
+          <th>{{ t("Origen", "Origin") }}</th>
+          <th>{{ t("Precio", "Price") }}</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in data %}
+          {% for it in c.items %}
+            {% if it.tipo == "oferta" %}
+              <tr>
+                <td><a href="{{ url_for('empresa', slug=c.slug) }}">{{ c.nombre }}</a></td>
+                <td>{{ it.producto }}</td>
+                <td>{{ it.cantidad }}</td>
+                <td>{{ it.origen }}</td>
+                <td>{{ it.precio }}</td>
+                <td>
+                  <form method="POST" action="{{ url_for('cart_add') }}">
+                    <input type="hidden" name="empresa" value="{{ c.nombre }}">
+                    <input type="hidden" name="producto" value="{{ it.producto }}">
+                    <input type="hidden" name="tipo" value="oferta">
+                    <button type="submit" class="btn">{{ t("Agregar", "Add") }}</button>
+                  </form>
+                </td>
+              </tr>
+            {% endif %}
+          {% endfor %}
         {% endfor %}
+      </tbody>
     </table>
+  {% else %}
+    <p>{{ t("No hay ofertas disponibles.", "No sales available.") }}</p>
+  {% endif %}
 </div>
+<a href="{{ url_for('dashboard') }}" class="btn mt-3">⬅️ {{ t("Volver", "Back") }}</a>
 {% endblock %}
