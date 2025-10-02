@@ -1,19 +1,9 @@
-<!DOCTYPE html>
-<html lang="{{ session.get('lang','es') }}">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Error</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-  <main>
-    <div class="card">
-      <h2>⚠️ {{ t("Ha ocurrido un problema", "A problem occurred","出現問題") }}</h2>
-      <p class="mt-1">{{ t("Código","Code","代碼") }}: {{ code }}</p>
-      <p class="mt-1">{{ message }}</p>
-      <a class="btn mt-2" href="{{ url_for('home') }}">🏠 {{ t("Ir al inicio","Go home","回到首頁") }}</a>
-    </div>
-  </main>
-</body>
-</html>
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+  <h2>⚠️ {{ t("Ha ocurrido un problema", "A problem occurred", "出现问题") }}</h2>
+  <p class="mt-1">{{ t("Código", "Code", "代码") }}: {{ code }}</p>
+  <p class="mt-1">{{ message }}</p>
+  <a class="btn mt-2" href="{{ url_for('home') }}">🏠 {{ t("Ir al inicio", "Go home", "回到首页") }}</a>
+</div>
+{% endblock %}
