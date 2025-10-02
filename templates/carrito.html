@@ -1,23 +1,16 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="container">
-    <h2>Mi Carrito</h2>
-
-    {% if cart and cart|length > 0 %}
-        <table>
-            <tr><th>Item</th><th>Acción</th></tr>
-            {% for item in cart %}
-                <tr>
-                    <td>{{ item.producto or item.servicio }}</td>
-                    <td><button disabled>En desarrollo</button></td>
-                </tr>
-            {% endfor %}
-        </table>
-    {% else %}
-        <p>🚫 Tu carrito está vacío.</p>
-    {% endif %}
-
-    <br>
-    <a href="{{ url_for('dashboard') }}" class="btn">⬅ Volver</a>
+<div class="card">
+  <h2>🛒 {{ t("Mi Carrito", "My Cart") }}</h2>
+  {% if cart and cart|length>0 %}
+    <ul class="mt-2">
+      {% for it in cart %}
+        <li>{{ it.get('empresa','?') }} — {{ it.get('producto') or it.get('servicio') or it.get('tipo') }}</li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>{{ t("Tu carrito está vacío.", "Your cart is empty.") }}</p>
+  {% endif %}
 </div>
+<a href="{{ url_for('dashboard') }}" class="btn mt-3">⬅️ {{ t("Volver", "Back") }}</a>
 {% endblock %}
