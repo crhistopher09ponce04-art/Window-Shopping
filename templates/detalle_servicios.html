@@ -10,26 +10,19 @@
           <th>{{ t("Servicio", "Service") }}</th>
           <th>{{ t("Capacidad", "Capacity") }}</th>
           <th>{{ t("Ubicación", "Location") }}</th>
-          <th></th>
         </tr>
       </thead>
       <tbody>
         {% for c in data %}
           {% for it in c.items %}
-            <tr>
-              <td><a href="{{ url_for('empresa', slug=c.slug) }}">{{ c.nombre }}</a></td>
-              <td>{{ it.servicio }}</td>
-              <td>{{ it.capacidad }}</td>
-              <td>{{ it.ubicacion }}</td>
-              <td>
-                <form method="POST" action="{{ url_for('cart_add') }}">
-                  <input type="hidden" name="empresa" value="{{ c.nombre }}">
-                  <input type="hidden" name="servicio" value="{{ it.servicio }}">
-                  <input type="hidden" name="tipo" value="servicio">
-                  <button type="submit" class="btn">{{ t("Agregar", "Add") }}</button>
-                </form>
-              </td>
-            </tr>
+            {% if it.tipo == "servicio" %}
+              <tr>
+                <td><a href="{{ url_for('empresa', slug=c.slug) }}">{{ c.nombre }}</a></td>
+                <td>{{ it.servicio }}</td>
+                <td>{{ it.capacidad }}</td>
+                <td>{{ it.ubicacion }}</td>
+              </tr>
+            {% endif %}
           {% endfor %}
         {% endfor %}
       </tbody>
