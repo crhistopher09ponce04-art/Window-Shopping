@@ -1,11 +1,43 @@
-{% extends "base.html" %}
-{% block content %}
-<div class="container">
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Error {{ code }}</title>
+    <style>
+        body {
+            background: #0d1117;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding-top: 10%;
+        }
+        .card {
+            background: #161b22;
+            display: inline-block;
+            padding: 20px 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+        }
+        a {
+            display: inline-block;
+            margin-top: 15px;
+            background: #0099ff;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+        a:hover {
+            background: #0077cc;
+        }
+    </style>
+</head>
+<body>
     <div class="card">
         <h2>⚠ Ha ocurrido un problema</h2>
         <p><b>Código:</b> {{ code }}</p>
         <p>{{ message }}</p>
-        <a href="{{ url_for('home') }}" class="btn">🏠 Ir al inicio</a>
+        <a href="{{ url_for('home') }}">🏠 Ir al inicio</a>
     </div>
-</div>
-{% endblock %}
+</body>
+</html>
