@@ -15,16 +15,3 @@
     </div>
 </div>
 {% endblock %}
-
-Login
-
-{% extends "base.html" %}
-{% block content %}
-<h2>{{ t("Ingresar","Login") }}</h2>
-<form method="post">
-    <input type="text" name="username" placeholder="Email">
-    <input type="password" name="password" placeholder="Contraseña">
-    <button type="submit">{{ t("Entrar","Login") }}</button>
-</form>
-{% if error %}<div class="flash error">{{ error }}</div>{% endif %}
-{% endblock %}
