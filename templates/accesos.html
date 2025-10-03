@@ -1,12 +1,26 @@
 {% extends "base.html" %}
 {% block content %}
-  <h2>{{ t("Accesos", "Access") }}: {{ tipo|capitalize }}</h2>
-  <div class="grid">
-    {% for c in data %}
-      <a href="{{ url_for('empresa', slug=c.slug) }}" class="card">
-        <h3>{{ c.nombre }}</h3>
-        <p>{{ c.breve }}</p>
-      </a>
-    {% endfor %}
+<h2>
+  {% if tipo == "ventas" %}
+    {{ t("Acceso a Ofertas de Venta","Access to Sales Offers") }}
+  {% elif tipo == "compras" %}
+    {{ t("Acceso a Demandas de Compra","Access to Purchase Demands") }}
+  {% else %}
+    {{ t("Acceso a Servicios","Access to Services") }}
+  {% endif %}
+</h2>
+
+{% if data %}
+  {% for c in data %}
+  <div class="card">
+    <h3><a href="{{ url_for('empresa', slug=c.slug) }}">{{ c.nombre }}</a></h3>
+    <p>{{ c.breve or c.descripcion }}</p>
+    <a class="btn" href="{{ url_for('detalles', tipo=tipo) }}">
+      {{ t("Ver detalles","See details") }}
+    </a>
   </div>
+  {% endfor %}
+{% else %}
+  <p>{{ t("No hay registros disponibles.","No records available.") }}</p>
+{% endif %}
 {% endblock %}
