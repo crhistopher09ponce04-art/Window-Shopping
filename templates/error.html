@@ -1,14 +1,5 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Error {{ code }}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-<div class="container">
-    <h1>⚠ {{ message }}</h1>
-    <a href="{{ url_for('home') }}">{{ t("Volver al inicio","Back to Home") }}</a>
-</div>
-</body>
-</html>
+{% extends "base.html" %}
+{% block content %}
+<h2>Error {{ code }}</h2>
+<p>{{ message }}</p>
+{% endblock %}
