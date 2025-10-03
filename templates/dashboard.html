@@ -1,13 +1,15 @@
 {% extends "base.html" %}
 {% block content %}
-  <h2>{{ t("Panel de Control", "Dashboard") }}</h2>
-  <p>{{ t("Bienvenido", "Welcome") }} <b>{{ usuario }}</b> ({{ rol }})</p>
+<h2>{{ t("Panel de Control","Dashboard") }}</h2>
+<p>{{ t("Bienvenido","Welcome") }} <b>{{ usuario }}</b></p>
+<p>{{ t("Rol","Role") }}: {{ rol }} | {{ t("Tipo de perfil","Profile type") }}: {{ perfil_tipo }}</p>
 
-  <div class="grid-3">
-    <a href="{{ url_for('accesos', tipo='ventas') }}" class="tile">{{ t("Acceso a Ventas", "Sales Access") }}</a>
-    <a href="{{ url_for('accesos', tipo='compras') }}" class="tile">{{ t("Acceso a Compras", "Purchase Access") }}</a>
-    <a href="{{ url_for('accesos', tipo='servicios') }}" class="tile">{{ t("Acceso a Servicios", "Services Access") }}</a>
-    <a href="{{ url_for('carrito') }}" class="tile">{{ t("Mi Carrito", "My Cart") }}</a>
-    <a href="{{ url_for('perfil') }}" class="tile">{{ t("Mi Perfil", "My Profile") }}</a>
-  </div>
+<div class="grid">
+    <div class="card"><a href="{{ url_for('detalles', tipo='ventas') }}">{{ t("Ofertas de Fruta","Fruit Offers") }}</a></div>
+    <div class="card"><a href="{{ url_for('detalles', tipo='compras') }}">{{ t("Demandas de Fruta","Fruit Demands") }}</a></div>
+    <div class="card"><a href="{{ url_for('detalles', tipo='servicios') }}">{{ t("Servicios","Services") }}</a></div>
+    <div class="card"><a href="{{ url_for('perfil') }}">{{ t("Mi Perfil","My Profile") }}</a></div>
+    <div class="card"><a href="{{ url_for('carrito') }}">{{ t("Carrito","Cart") }}</a></div>
+    <div class="card"><a href="{{ url_for('ayuda') }}">{{ t("Ayuda","Help") }}</a></div>
+</div>
 {% endblock %}
