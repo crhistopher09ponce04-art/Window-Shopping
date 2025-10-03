@@ -1,12 +1,14 @@
 {% extends "base.html" %}
 {% block content %}
-  <h2>{{ t("Ingresar", "Login") }}</h2>
-  {% if error %}<div class="flash">{{ error }}</div>{% endif %}
-  <form method="POST">
-    <label>{{ t("Usuario", "Username") }}</label>
-    <input type="text" name="username">
-    <label>{{ t("Contraseña", "Password") }}</label>
-    <input type="password" name="password">
-    <input type="submit" class="btn" value="{{ t('Ingresar', 'Login') }}">
-  </form>
+<h2>Login</h2>
+<form method="post">
+  <label>Email</label>
+  <input type="text" name="username" required>
+  <label>Password</label>
+  <input type="password" name="password" required>
+  <button type="submit">Entrar</button>
+</form>
+{% if error %}
+  <div class="alert alert-error">{{ error }}</div>
+{% endif %}
 {% endblock %}
