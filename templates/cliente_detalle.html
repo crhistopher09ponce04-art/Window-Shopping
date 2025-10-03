@@ -1,15 +1,14 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>{{ cliente.nombre }}</h2>
-<p><b>País:</b> {{ cliente.pais }}</p>
-<p><b>Email:</b> {{ cliente.email }}</p>
-<p><b>Teléfono:</b> {{ cliente.telefono }}</p>
-<p><b>Dirección:</b> {{ cliente.direccion }}</p>
-<p><b>Descripción:</b> {{ cliente.descripcion }}</p>
+<h2>{{ comp.nombre or comp.empresa }}</h2>
+<p><b>Email:</b> {{ comp.email }}</p>
+<p><b>Teléfono:</b> {{ comp.telefono }}</p>
+<p><b>Dirección:</b> {{ comp.direccion }}</p>
+<p><b>Descripción:</b> {{ comp.descripcion }}</p>
 
 <h3>Items</h3>
 <ul>
-  {% for it in cliente.items %}
+  {% for it in comp.items %}
     <li>{{ it }}</li>
   {% endfor %}
 </ul>
