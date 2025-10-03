@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>{{ cliente.nombre }}</h2>
+<p><b>País:</b> {{ cliente.pais }}</p>
+<p><b>Email:</b> {{ cliente.email }}</p>
+<p><b>Teléfono:</b> {{ cliente.telefono }}</p>
+<p><b>Dirección:</b> {{ cliente.direccion }}</p>
+<p><b>Descripción:</b> {{ cliente.descripcion }}</p>
+
+<h3>Items</h3>
+<ul>
+  {% for it in cliente.items %}
+    <li>{{ it }}</li>
+  {% endfor %}
+</ul>
+{% endblock %}
