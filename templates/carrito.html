@@ -1,27 +1,28 @@
 {% extends "base.html" %}
 {% block content %}
-  <h2>{{ t("Carrito de Negociación", "Negotiation Cart") }}</h2>
-  {% if cart %}
-    <ul class="list-group">
-      {% for i in cart %}
-        <li class="list-group-item">
-          {% if i.tipo == "servicio" %}
-            {{ i.servicio }} ({{ i.empresa }})
-          {% else %}
-            {{ i.producto }} ({{ i.empresa }})
-          {% endif %}
-          <form method="POST" style="display:inline">
-            <button type="submit" name="action" value="remove:{{ loop.index0 }}" class="btn btn-danger">
-              {{ t("Eliminar", "Remove") }}
-            </button>
-          </form>
-        </li>
-      {% endfor %}
-    </ul>
-    <form method="POST">
-      <button type="submit" name="action" value="clear" class="btn btn-warning">{{ t("Vaciar Carrito","Clear Cart") }}</button>
-    </form>
-  {% else %}
-    <p>{{ t("Carrito vacío", "Cart empty") }}</p>
-  {% endif %}
+<h2>{{ t("Carrito","Cart") }}</h2>
+
+{% if cart %}
+<ul>
+  {% for item in cart %}
+    <li>
+      {{ item.empresa }} - {{ item.get("producto", item.get("servicio")) }}
+      - {{ item.get("cantidad", item.get("capacidad","")) }} {{ item.get("precio","") }}
+
+      <!-- Botón para eliminar este ítem -->
+      <form method="post" style="display:inline;">
+        <button type="submit" name="action" value="remove:{{ loop.index0 }}">
+          ❌ {{ t("Eliminar","Remove") }}
+        </button>
+      </form>
+    </li>
+  {% endfor %}
+</ul>
+
+<form method="post">
+  <button type="submit" name="action" value="clear">{{ t("Vaciar Carrito","Clear Cart") }}</button>
+</form>
+{% else %}
+  <p>{{ t("Tu carrito está vacío.","Your cart is empty.") }}</p>
+{% endif %}
 {% endblock %}
