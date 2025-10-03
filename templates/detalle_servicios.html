@@ -1,20 +1,14 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>{{ t("Servicios Disponibles","Available Services") }}</h2>
+<h2>Servicios</h2>
 {% for c in data %}
-<div class="card">
-    <h3><a href="{{ url_for('empresa', slug=c.slug) }}">{{ c.nombre }}</a></h3>
+  <div class="card">
+    <h3>{{ c.nombre }}</h3>
     <ul>
-        {% for i in c.items if i.tipo == "servicio" %}
-        <li>{{ i.servicio }} - {{ i.capacidad }} ({{ i.ubicacion }})</li>
-        <form method="post" action="{{ url_for('cart_add') }}">
-            <input type="hidden" name="empresa" value="{{ c.nombre }}">
-            <input type="hidden" name="servicio" value="{{ i.servicio }}">
-            <input type="hidden" name="capacidad" value="{{ i.capacidad }}">
-            <button type="submit">{{ t("Agregar al carrito","Add to Cart") }}</button>
-        </form>
-        {% endfor %}
+      {% for i in c.items if i.tipo == "servicio" %}
+        <li>{{ i.servicio }} - {{ i.capacidad }} - {{ i.ubicacion }}</li>
+      {% endfor %}
     </ul>
-</div>
+  </div>
 {% endfor %}
 {% endblock %}
