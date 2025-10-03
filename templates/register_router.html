@@ -1,14 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="card">
-  <h2>📝 {{ t("Crear cuenta", "Create account", "建立帳號") }}</h2>
-  <p>{{ t("Selecciona tu tipo de cuenta:", "Choose your account type:", "請選擇帳號類型：") }}</p>
-
-  <div class="grid-3 mt-2">
-    <a class="tile" href="{{ url_for('register', nac='nacional') }}">{{ t("Nacional", "National", "本國") }}</a>
-    <a class="tile" href="{{ url_for('register', nac='extranjero') }}">{{ t("Extranjero", "Foreign", "外籍") }}</a>
-    <a class="tile" href="{{ url_for('ayuda') }}">{{ t("Ver ayuda de registro", "See registration help", "查看註冊說明") }}</a>
+  <h2>{{ t("Registro - Paso 1", "Register - Step 1") }}</h2>
+  <div class="grid-2">
+    <a class="tile" href="{{ url_for('register', nac='nacional', tipo='compra_venta') }}">
+      {{ t("Soy Nacional (Productor, Packing, etc.)", "I'm National (Producer, Packing, etc.)") }}
+    </a>
+    <a class="tile" href="{{ url_for('register', nac='extranjero', tipo='compra_venta') }}">
+      {{ t("Soy Extranjero (Cliente)", "I'm Foreign (Buyer)") }}
+    </a>
   </div>
-  <p class="mt-2" style="opacity:.8;">* {{ t("Demo: usa usuarios de prueba desde la pantalla de ingreso.", "Demo: use demo users from login screen.", "示範：可使用登入頁示範帳號。") }}</p>
-</div>
 {% endblock %}
