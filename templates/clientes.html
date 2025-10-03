@@ -2,9 +2,9 @@
 {% block content %}
 <h2>Clientes</h2>
 <ul>
-  {% for c in data %}
+  {% for c in clientes %}
     <li>
-      <a href="{{ url_for('cliente_detalle', cliente_id=c.id) }}">{{ c.nombre }}</a> ({{ c.pais }})
+      <a href="{{ url_for('cliente_detalle', username=c.username) }}">{{ c.empresa }}</a> ({{ c.pais }})
     </li>
   {% endfor %}
 </ul>
