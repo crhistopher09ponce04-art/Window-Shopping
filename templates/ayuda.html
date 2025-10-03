@@ -1,10 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>{{ t("Centro de Ayuda","Help Center") }}</h2>
+<h2>Ayuda</h2>
 <form method="post">
-    <input type="text" name="correo" placeholder="Tu email">
-    <textarea name="mensaje" placeholder="Escribe tu mensaje"></textarea>
-    <button type="submit">{{ t("Enviar","Send") }}</button>
+  <label>Email</label>
+  <input type="email" name="correo">
+  <label>Mensaje</label>
+  <textarea name="mensaje"></textarea>
+  <button type="submit">Enviar</button>
 </form>
-{% if mensaje %}<div class="flash success">{{ mensaje }}</div>{% endif %}
+{% if mensaje %}<div class="alert alert-success">{{ mensaje }}</div>{% endif %}
 {% endblock %}
