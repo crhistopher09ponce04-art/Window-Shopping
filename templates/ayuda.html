@@ -1,12 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Ayuda</h2>
+<h2>{{ t("Ayuda","Help","幫助") }}</h2>
+{% if mensaje %}<div class="mensaje">{{ mensaje }}</div>{% endif %}
 <form method="post">
-  <label>Email</label>
-  <input type="email" name="correo">
-  <label>Mensaje</label>
-  <textarea name="mensaje"></textarea>
-  <button type="submit">Enviar</button>
+    <input type="text" name="correo" placeholder="Email">
+    <textarea name="mensaje" placeholder="{{ t('Tu mensaje','Your message','你的訊息') }}"></textarea>
+    <button type="submit">{{ t("Enviar","Send","發送") }}</button>
 </form>
-{% if mensaje %}<div class="alert alert-success">{{ mensaje }}</div>{% endif %}
 {% endblock %}
