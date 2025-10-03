@@ -1,77 +1,183 @@
+/* ===========================
+   General Reset & Layout
+=========================== */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f7f7f7;
     margin: 0;
     padding: 0;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #0d1b2a, #1b263b, #415a77);
+    color: #f1f1f1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
-header, nav, footer {
-    background: #004080;
-    color: white;
-    padding: 10px;
-    text-align: center;
+/* ===========================
+   Header / Navbar
+=========================== */
+header {
+    background: #0d1b2a;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: #fff;
 }
 
-nav a {
-    color: white;
-    margin: 0 10px;
+header img.logo {
+    height: 45px;
+    width: auto;
+}
+
+nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 20px;
+}
+
+nav ul li {
+    display: inline;
+}
+
+nav ul li a {
+    color: #f1f1f1;
     text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
 }
 
-h1, h2, h3 {
-    color: #004080;
+nav ul li a:hover {
+    color: #00b4d8;
 }
 
+/* ===========================
+   Container & Sections
+=========================== */
 .container {
     width: 90%;
-    margin: auto;
-    background: white;
+    max-width: 1200px;
+    margin: 20px auto;
+    background: rgba(255, 255, 255, 0.05);
     padding: 20px;
-    margin-top: 20px;
-    border-radius: 8px;
+    border-radius: 10px;
 }
 
+/* ===========================
+   Forms
+=========================== */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+input, select, textarea, button {
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+input, select, textarea {
+    background: rgba(255,255,255,0.1);
+    color: #f1f1f1;
+}
+
+button {
+    background: #00b4d8;
+    color: #fff;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+button:hover {
+    background: #0096c7;
+}
+
+/* ===========================
+   Tables
+=========================== */
 table {
-    border-collapse: collapse;
     width: 100%;
-    margin: 10px 0;
-}
-
-table, th, td {
-    border: 1px solid #ddd;
+    border-collapse: collapse;
+    margin-top: 15px;
 }
 
 th, td {
-    padding: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 10px;
     text-align: left;
 }
 
 th {
-    background-color: #004080;
+    background: rgba(0, 180, 216, 0.3);
+    font-weight: bold;
+}
+
+tr:nth-child(even) {
+    background: rgba(255,255,255,0.05);
+}
+
+/* Botones dentro de tablas */
+.table-btn {
+    padding: 5px 10px;
+    background: #00b4d8;
     color: white;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 13px;
+}
+.table-btn:hover {
+    background: #0096c7;
 }
 
-button, .table-btn {
-    padding: 6px 12px;
-    background: #004080;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+/* ===========================
+   Messages / Alerts
+=========================== */
+.flash {
+    background: #ffb703;
+    color: #000;
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    font-weight: bold;
 }
 
-button:hover, .table-btn:hover {
-    background: #0066cc;
+/* ===========================
+   Footer
+=========================== */
+footer {
+    margin-top: auto;
+    background: #0d1b2a;
+    color: #bbb;
+    text-align: center;
+    padding: 15px 0;
+    font-size: 14px;
 }
 
-.add-btn {
-    background: #28a745;
+/* ===========================
+   Specific Components
+=========================== */
+.profile-summary, .cliente-detalle {
+    background: rgba(255,255,255,0.08);
+    padding: 15px;
+    border-radius: 8px;
+    margin: 10px 0;
 }
 
-.add-btn:hover {
-    background: #218838;
+h1, h2, h3 {
+    color: #f1f1f1;
+    margin-bottom: 10px;
 }
 
-.error {
-    color: red;
+/* ===========================
+   Logo in header
+=========================== */
+header .logo {
+    height: 50px;
+    width: auto;
+    border-radius: 5px;
 }
