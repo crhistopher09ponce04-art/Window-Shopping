@@ -1,17 +1,17 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="card">
-  <h2>🏢 {{ empresa.nombre }}</h2>
-  <p><strong>RUT:</strong> {{ empresa.rut }}</p>
-  <p><strong>Email:</strong> {{ empresa.email }}</p>
-  <p><strong>{{ t("Teléfono", "Phone", "電話") }}:</strong> {{ empresa.phone }}</p>
-  <p><strong>{{ t("Rol", "Role", "角色") }}:</strong> {{ empresa.rol }}</p>
-  <p><strong>{{ t("Dirección", "Address", "地址") }}:</strong> {{ empresa.address }}</p>
-
-  <form method="POST" action="{{ url_for('enviar_mensaje', id=empresa.id) }}">
-    <label>{{ t("Mensaje", "Message", "訊息") }}</label>
-    <textarea name="mensaje" required></textarea>
-    <button type="submit" class="btn">📨 {{ t("Enviar Mensaje", "Send Message", "發送訊息") }}</button>
-  </form>
-</div>
+  <h2>{{ comp.empresa or comp.nombre }}</h2>
+  <p>{{ comp.descripcion or comp.breve }}</p>
+  <h3>{{ t("Items", "Items") }}</h3>
+  <ul>
+    {% for i in comp.items %}
+      <li>
+        {% if i.tipo == "servicio" %}
+          {{ i.servicio }} - {{ i.capacidad }} - {{ i.ubicacion }}
+        {% else %}
+          {{ i.producto }} - {{ i.cantidad }} - {{ i.origen }}
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
 {% endblock %}
