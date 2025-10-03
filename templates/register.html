@@ -1,74 +1,43 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="card">
-  <h2>📝 {{ t("Crear Cuenta", "Create Account", "建立帳號") }}</h2>
+  <h2>{{ t("Registro - Paso 2", "Register - Step 2") }}</h2>
+  {% if error %}<div class="flash">{{ error }}</div>{% endif %}
+  <form method="POST">
+    <label>{{ t("Usuario", "Username") }}</label>
+    <input type="text" name="username">
+    <label>{{ t("Contraseña", "Password") }}</label>
+    <input type="password" name="password">
+    <label>Email</label>
+    <input type="email" name="email">
+    <label>{{ t("Teléfono", "Phone") }}</label>
+    <input type="text" name="phone">
+    <label>{{ t("Dirección", "Address") }}</label>
+    <input type="text" name="address">
+    <label>{{ t("País", "Country") }}</label>
+    <input type="text" name="pais">
+    <label>RUT / ID</label>
+    <input type="text" name="rut">
 
-  {% if error %}
-    <div class="flash"><p>{{ error }}</p></div>
-  {% endif %}
+    <label>{{ t("Rol", "Role") }}</label>
+    <select name="rol">
+      {% for r in roles_cv + roles_srv %}
+        <option>{{ r }}</option>
+      {% endfor %}
+    </select>
 
-  <form method="POST" action="{{ url_for('register') }}">
-    <div class="grid-3">
-      <div>
-        <label>{{ t("Nacionalidad", "Nationality", "國籍") }}</label>
-        <select name="nacionalidad" required>
-          <option value="nacional" {% if nacionalidad=='nacional' %}selected{% endif %}>{{ t("Nacional", "National", "本國") }}</option>
-          <option value="extranjero" {% if nacionalidad=='extranjero' %}selected{% endif %}>{{ t("Extranjero", "Foreign", "外籍") }}</option>
-        </select>
-      </div>
-      <div>
-        <label>{{ t("Tipo de perfil", "Profile type", "檔案類型") }}</label>
-        <select name="perfil_tipo" required>
-          <option value="compra_venta" {% if perfil_tipo=='compra_venta' %}selected{% endif %}>{{ t("Compra/Venta", "Buy/Sell", "買賣") }}</option>
-          <option value="servicios" {% if perfil_tipo=='servicios' %}selected{% endif %}>{{ t("Servicios", "Services", "服務") }}</option>
-        </select>
-      </div>
-      <div>
-        <label>{{ t("Rol", "Role", "角色") }}</label>
-        <select name="rol" required>
-          {% if perfil_tipo=='servicios' %}
-            {% for r in roles_srv %}<option value="{{ r }}">{{ r }}</option>{% endfor %}
-          {% else %}
-            {% for r in roles_cv %}<option value="{{ r }}">{{ r }}</option>{% endfor %}
-          {% endif %}
-        </select>
-      </div>
-    </div>
+    <label>{{ t("Tipo de perfil", "Profile type") }}</label>
+    <select name="perfil_tipo">
+      <option value="compra_venta">{{ t("Compra/Venta", "Trade") }}</option>
+      <option value="servicios">{{ t("Servicios", "Services") }}</option>
+      <option value="dual">{{ t("Dual (Packing/Frigorífico)", "Dual") }}</option>
+    </select>
 
-    <div class="grid-3">
-      <div>
-        <label>{{ t("Usuario", "Username", "使用者") }}</label>
-        <input type="text" name="username" required>
-      </div>
-      <div>
-        <label>{{ t("Contraseña", "Password", "密碼") }}</label>
-        <input type="password" name="password" required>
-      </div>
-      <div>
-        <label>{{ t("País (código ISO)", "Country (ISO code)", "國家(ISO)") }}</label>
-        <input type="text" name="pais" placeholder="CL">
-      </div>
-    </div>
+    <label>{{ t("Nacionalidad", "Nationality") }}</label>
+    <select name="nacionalidad">
+      <option value="nacional">{{ t("Nacional", "National") }}</option>
+      <option value="extranjero">{{ t("Extranjero", "Foreign") }}</option>
+    </select>
 
-    <div class="grid-3">
-      <div>
-        <label>RUT</label>
-        <input type="text" name="rut" placeholder="76.123.456-7">
-      </div>
-      <div>
-        <label>Email</label>
-        <input type="email" name="email">
-      </div>
-      <div>
-        <label>{{ t("Teléfono", "Phone", "電話") }}</label>
-        <input type="text" name="phone">
-      </div>
-    </div>
-
-    <label>{{ t("Dirección", "Address", "地址") }}</label>
-    <input type="text" name="address" placeholder="Calle, número, ciudad">
-
-    <input type="submit" value="{{ t('Crear Cuenta', 'Create Account', '建立帳號') }}">
+    <input type="submit" value="{{ t('Registrar', 'Register') }}" class="btn">
   </form>
-</div>
 {% endblock %}
