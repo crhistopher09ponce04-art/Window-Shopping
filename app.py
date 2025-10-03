@@ -79,7 +79,7 @@ USER_PROFILES = {
         "direccion": "Parcela 21, Vicuña",
         "descripcion": "Productores de uva de mesa, ciruela y arándano.",
         "items": [
-            {"tipo": "oferta", "producto": "Uva Crimson",   "cantidad": "120 pallets", "origen": "IV Región", "precio": "A convenir"},
+            {"tipo": "oferta", "producto": "Uva Crimson",    "cantidad": "120 pallets", "origen": "IV Región", "precio": "A convenir"},
             {"tipo": "oferta", "producto": "Ciruela D’Agen", "cantidad": "80 pallets",  "origen": "VI Región", "precio": "USD 12/caja"},
         ],
         # IDs extranjeros (no aplica)
@@ -339,15 +339,15 @@ COMPANIES = [
 # WRAPPER para evitar conflicto Jinja: dict.items (método) vs campo 'items' (lista)
 # =========================================================
 class ViewObj:
-    """Convierte un dict en objeto con atributos. Asegura que .items sea la LISTA de ítems."""
+    """Convierte un dict en objeto con atributos. Asegura que .items (y listas anidadas) sean listas de objetos."""
     def __init__(self, data: dict):
         for k, v in data.items():
-            setattr(self, k, v)
-        # Garantiza que 'items' sea una lista (si existe)
-        if hasattr(self, "items") and not isinstance(getattr(self, "items"), list):
-            # Si por alguna razón viene como método/otro, intenta tomar del dict original
-            real_list = data.get("items", [])
-            setattr(self, "items", real_list)
+            if isinstance(v, list):
+                setattr(self, k, [ViewObj(i) if isinstance(i, dict) else i for i in v])
+            elif isinstance(v, dict):
+                setattr(self, k, ViewObj(v))
+            else:
+                setattr(self, k, v)
 
 def wrap_list(dict_list):
     return [ViewObj(d) for d in dict_list]
@@ -658,6 +658,7 @@ def cliente_detalle(username):
         "direccion": prof.get("direccion"),
         "descripcion": prof.get("descripcion"),
         "items": prof.get("items", []),
+        "pais": prof.get("pais"),
     }
     return render_template("cliente_detalle.html", comp=ViewObj(comp), username=username)
 
