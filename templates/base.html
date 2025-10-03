@@ -11,7 +11,9 @@
     <nav>
       <a href="{{ url_for('home') }}">{{ t("Inicio", "Home", "首頁") }}</a>
       <a href="{{ url_for('clientes') }}">Clientes</a>
-      <a href="{{ url_for('accesos') }}">Accesos</a>
+      <a href="{{ url_for('accesos', tipo='ventas') }}">Accesos Ventas</a>
+      <a href="{{ url_for('accesos', tipo='compras') }}">Accesos Compras</a>
+      <a href="{{ url_for('accesos', tipo='servicios') }}">Accesos Servicios</a>
       <a href="{{ url_for('carrito') }}">Carrito</a>
       {% if session.get("user") %}
         <a href="{{ url_for('perfil') }}">Perfil</a>
