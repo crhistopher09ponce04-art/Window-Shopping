@@ -1,33 +1,40 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>WS</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <meta charset="UTF-8">
+  <title>{{ title if title else "Window Shopping" }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <!-- Barra de navegación -->
+  <header>
+    <h1>Window Shopping</h1>
     <nav>
-        <div class="brand">
-            <div class="logo-ws">WS</div>
-        </div>
-        <div>
-            <a href="{{ url_for('home') }}">{{ t("Inicio", "Home", "首頁") }}</a>
-            {% if session.get("user") %}
-                <a href="{{ url_for('dashboard') }}">{{ t("Panel", "Dashboard", "面板") }}</a>
-                <a href="{{ url_for('perfil') }}">{{ t("Mi Perfil", "My Profile", "我的資料") }}</a>
-                <a href="{{ url_for('carrito') }}">{{ t("Carrito", "Cart", "購物車") }}</a>
-                <a href="{{ url_for('ayuda') }}">{{ t("Ayuda", "Help", "幫助") }}</a>
-                <a href="{{ url_for('logout') }}">{{ t("Salir", "Logout", "退出") }}</a>
-            {% else %}
-                <a href="{{ url_for('login') }}">{{ t("Ingresar", "Login", "登入") }}</a>
-                <a href="{{ url_for('register_router') }}">{{ t("Registrarse", "Register", "註冊") }}</a>
-            {% endif %}
-        </div>
+      <a href="{{ url_for('home') }}">{{ t("Inicio", "Home", "首頁") }}</a>
+      <a href="{{ url_for('clientes') }}">Clientes</a>
+      <a href="{{ url_for('accesos') }}">Accesos</a>
+      <a href="{{ url_for('carrito') }}">Carrito</a>
+      {% if session.get("user") %}
+        <a href="{{ url_for('perfil') }}">Perfil</a>
+        <a href="{{ url_for('logout') }}">Salir</a>
+      {% else %}
+        <a href="{{ url_for('login') }}">Login</a>
+      {% endif %}
+      <a href="{{ url_for('ayuda') }}">Ayuda</a>
     </nav>
+  </header>
 
-    <main>
-        {% block content %}{% endblock %}
-    </main>
+  <div class="container">
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="alert alert-success">
+          {% for msg in messages %}
+            <p>{{ msg }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </div>
 </body>
 </html>
