@@ -1,6 +1,5 @@
 # app.py
 import os
-import re
 import uuid
 from datetime import timedelta
 from werkzeug.utils import secure_filename
@@ -25,31 +24,38 @@ def allowed_file(filename: str) -> bool:
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXT
 
 # =========================================================
-# Utilidades (moneda)
+# Utilidades de formato
 # =========================================================
-_money_clean_re = re.compile(r"[^\d,.\-]")
-
-def money(val: str | None) -> str:
+def normaliza_moneda(valor: str) -> str:
+    """Devuelve siempre un precio con símbolo $ y separadores mínimos.
+    Acepta '1000', '$1000', '1.000,50', '1000.50', etc.
     """
-    Normaliza cualquier entrada de precio a formato con $.
-    Acepta '1000', '1.000', '1,000.50', 'USD 30', '$25' -> '$25' etc.
-    No hace conversión de moneda, solo limpieza.
-    """
-    if not val:
-        return ""
-    s = str(val).strip()
-    # Si ya empieza con $ y tiene dígitos, lo dejamos tal cual
-    if s.startswith("$") and re.search(r"\d", s):
-        return s
-    # Limpieza básica de símbolos no numéricos (guardamos ., , y -)
-    s = _money_clean_re.sub("", s)
-    s = s.strip()
-    if not s:
-        return ""
-    # Reemplazos suaves: si hay coma y punto, asumimos formato intl. No tocamos.
-    # Si solo hay comas, las cambiamos por puntos al final si parecen decimales.
-    # Para mantenerlo simple, solo anteponemos $.
-    return f"${s}"
+    if not valor:
+        return "-"
+    v = str(valor).strip()
+    v = v.replace(" ", "").replace(",", ".")
+    # quitar símbolos que no sean dígitos o punto
+    v = ''.join(ch for ch in v if ch.isdigit() or ch == '.')
+    if v == "" or v == ".":
+        return "-"
+    # si hay más de un punto, nos quedamos con el primero y juntamos lo demás
+    parts = v.split(".")
+    if len(parts) > 2:
+        v = parts[0] + "." + "".join(parts[1:])
+    # Si termina en punto, quítalo
+    if v.endswith("."):
+        v = v[:-1]
+    try:
+        n = float(v)
+    except Exception:
+        return "-"
+    # Formato sin forzar decimales si es entero
+    if abs(n - int(n)) < 1e-9:
+        return f"${int(n):,}".replace(",", ".")
+    else:
+        # dos decimales
+        entero, dec = f"{n:.2f}".split(".")
+        return f"${int(entero):,}.{dec}".replace(",", ".")
 
 # =========================================================
 # i18n simple
@@ -82,7 +88,7 @@ def set_lang(lang):
 # =========================================================
 USERS = {
     # Compra/Venta
-    "frutera@demo.cl":     {"password": "1234", "rol": "Productor",           "perfil_tipo": "compra_venta", "pais": "CL"},
+    "frutera@demo.cl":     {"password": "1234", "rol": "Productor",          "perfil_tipo": "compra_venta", "pais": "CL"},
     "planta@demo.cl":      {"password": "1234", "rol": "Planta",              "perfil_tipo": "compra_venta", "pais": "CL"},
     "exportador@demo.cl":  {"password": "1234", "rol": "Exportador",          "perfil_tipo": "compra_venta", "pais": "CL"},
     "cliente@usa.com":     {"password": "1234", "rol": "Cliente extranjero",  "perfil_tipo": "compra_venta", "pais": "US"},
@@ -107,10 +113,8 @@ USER_PROFILES = {
         "direccion": "Parcela 21, Vicuña",
         "descripcion": "Productores de uva de mesa, ciruela y arándano.",
         "items": [
-            {"tipo": "oferta", "producto": "Uva Crimson",   "variedad": "", "bulto": "pallets",
-             "cantidad": "120", "origen": "IV Región", "precio": money("A convenir"), "precio_caja": "", "precio_kilo": ""},
-            {"tipo": "oferta", "producto": "Ciruela D’Agen", "variedad": "", "bulto": "pallets",
-             "cantidad": "80",  "origen": "VI Región", "precio": money("USD 12/caja"), "precio_caja": money("12"), "precio_kilo": ""},
+            {"tipo": "oferta", "producto": "Uva Crimson",   "variedad": "-", "cantidad": "120 pallets", "tipo_bulto": "pallets", "origen": "IV Región", "precio_caja": "-", "precio_kg": "-", "precio": "A convenir"},
+            {"tipo": "oferta", "producto": "Ciruela D’Agen", "variedad": "-", "cantidad": "80 pallets",  "tipo_bulto": "pallets", "origen": "VI Región", "precio_caja": "$12", "precio_kg": "-", "precio": "USD 12/caja"},
         ],
         # IDs extranjeros (no aplica)
         "usci": None, "eori": None, "tax_id": None, "otros_id": None
@@ -127,8 +131,7 @@ USER_PROFILES = {
         "direccion": "Km 5 Camino Interior, Rengo",
         "descripcion": "Recepción y proceso de fruta fresca.",
         "items": [
-            {"tipo": "demanda", "producto": "Cajas plásticas 10kg", "variedad": "", "bulto": "unidades",
-             "cantidad": "20000", "origen": "CL", "precio": money("Ofertar"), "precio_caja": "", "precio_kilo": ""},
+            {"tipo": "demanda", "producto": "Cajas plásticas 10kg", "variedad": "-", "cantidad": "20.000", "tipo_bulto": "unidades", "origen": "CL", "precio": "Ofertar"},
         ],
         "usci": None, "eori": None, "tax_id": None, "otros_id": None
     },
@@ -144,8 +147,7 @@ USER_PROFILES = {
         "direccion": "Av. Apoquindo 1234, Las Condes",
         "descripcion": "Exportador multiproducto a EEUU/EU/Asia.",
         "items": [
-            {"tipo": "demanda", "producto": "Cereza", "variedad": "Santina", "bulto": "pallets",
-             "cantidad": "150", "origen": "VI-VII", "precio": money("A convenir"), "precio_caja": "", "precio_kilo": ""},
+            {"tipo": "demanda", "producto": "Cereza", "variedad": "Santina", "cantidad": "150", "tipo_bulto": "pallets", "origen": "VI-VII", "precio": "A convenir"},
         ],
         "usci": None, "eori": None, "tax_id": None, "otros_id": None
     },
@@ -160,8 +162,7 @@ USER_PROFILES = {
         "direccion": "Miami, FL",
         "descripcion": "Mayorista importador en EEUU.",
         "items": [
-            {"tipo": "demanda", "producto": "Uva", "variedad": "Thompson", "bulto": "pallets",
-             "cantidad": "400", "origen": "CL", "precio": money("A convenir"), "precio_caja": "", "precio_kilo": ""},
+            {"tipo": "demanda", "producto": "Uva", "variedad": "Thompson", "cantidad": "400", "tipo_bulto": "pallets", "origen": "CL", "precio": "A convenir"},
         ],
         # IDs extranjeros
         "usci": "US-9988-XY",
@@ -181,8 +182,7 @@ USER_PROFILES = {
         "descripcion": "Servicios de packing, etiquetado y QA.",
         "items": [
             {"tipo": "servicio", "servicio": "Embalaje exportación", "capacidad": "30.000 cajas/día", "ubicacion": "Rancagua"},
-            {"tipo": "oferta",   "producto": "Ciruela", "variedad": "Angeleno", "bulto": "pallets",
-             "cantidad": "60", "origen": "R.M.", "precio": money("USD 10/caja"), "precio_caja": money("10"), "precio_kilo": ""},
+            {"tipo": "oferta",   "producto": "Ciruela", "variedad": "Angeleno", "cantidad": "60", "tipo_bulto": "pallets", "origen": "R.M.", "precio_caja": "$10", "precio_kg": "-", "precio": "USD 10/caja"},
         ],
         "usci": None, "eori": None, "tax_id": None, "otros_id": None
     },
@@ -198,9 +198,8 @@ USER_PROFILES = {
         "descripcion": "Almacenaje en frío y logística de puerto.",
         "items": [
             {"tipo": "servicio", "servicio": "Almacenaje en frío", "capacidad": "1.500 pallets", "ubicacion": "Valparaíso"},
-            {"tipo": "servicio", "servicio": "Preenfriado",        "capacidad": "6 túneles",     "ubicacion": "Valparaíso"},
-            {"tipo": "oferta",   "producto": "Uva", "variedad": "Red Globe", "bulto": "pallets",
-             "cantidad": "40", "origen": "V Región",  "precio": money("USD 9/caja"), "precio_caja": money("9"), "precio_kilo": ""},
+            {"tipo": "servicio", "servicio": "Preenfriado",         "capacidad": "6 túneles",     "ubicacion": "Valparaíso"},
+            {"tipo": "oferta",   "producto": "Uva", "variedad": "Red Globe", "cantidad": "40", "tipo_bulto": "pallets", "origen": "V Región",  "precio_caja": "$9", "precio_kg": "-", "precio": "USD 9/caja"},
         ],
         "usci": None, "eori": None, "tax_id": None, "otros_id": None
     },
@@ -264,10 +263,8 @@ COMPANIES = [
         "telefono": "+56 9 6000 0001",
         "direccion": "Parcela 21, Vicuña",
         "items": [
-            {"tipo": "oferta", "producto": "Uva", "variedad": "Crimson", "bulto": "pallets",
-             "cantidad": "120", "origen": "IV Región", "precio": money("A convenir"), "precio_caja": "", "precio_kilo": ""},
-            {"tipo": "oferta", "producto": "Ciruela", "variedad": "D’Agen", "bulto": "pallets",
-             "cantidad": "80",  "origen": "VI Región", "precio": money("USD 12/caja"), "precio_caja": money("12"), "precio_kilo": ""},
+            {"tipo": "oferta", "producto": "Uva", "variedad": "Crimson", "cantidad": "120", "tipo_bulto": "pallets", "origen": "IV Región", "precio_caja": "-", "precio_kg": "-", "precio": "A convenir"},
+            {"tipo": "oferta", "producto": "Ciruela", "variedad": "D’Agen", "cantidad": "80", "tipo_bulto": "pallets", "origen": "VI Región", "precio_caja": "$12", "precio_kg": "-", "precio": "USD 12/caja"},
         ],
         "descripcion": "Productores de uva, ciruela y berries."
     },
@@ -284,8 +281,7 @@ COMPANIES = [
         "direccion": "Ruta 5 km 185, Rancagua",
         "items": [
             {"tipo": "servicio", "servicio": "Embalaje exportación", "capacidad": "30.000 cajas/día", "ubicacion": "Rancagua"},
-            {"tipo": "oferta",   "producto": "Ciruela", "variedad": "Angeleno", "bulto": "pallets",
-             "cantidad": "60",  "origen": "R.M.", "precio": money("USD 10/caja"), "precio_caja": money("10"), "precio_kilo": ""},
+            {"tipo": "oferta",   "producto": "Ciruela", "variedad": "Angeleno", "cantidad": "60", "tipo_bulto": "pallets", "origen": "R.M.", "precio_caja": "$10", "precio_kg": "-", "precio": "USD 10/caja"},
         ],
         "descripcion": "Servicios de packing, QA y etiquetado."
     },
@@ -302,9 +298,8 @@ COMPANIES = [
         "direccion": "Puerto Central, Valparaíso",
         "items": [
             {"tipo": "servicio", "servicio": "Almacenaje en frío", "capacidad": "1.500 pallets", "ubicacion": "Valparaíso"},
-            {"tipo": "servicio", "servicio": "Preenfriado",        "capacidad": "6 túneles",     "ubicacion": "Valparaíso"},
-            {"tipo": "oferta",   "producto": "Uva", "variedad": "Red Globe", "bulto": "pallets",
-             "cantidad": "40", "origen": "V Región",  "precio": money("USD 9/caja"), "precio_caja": money("9"), "precio_kilo": ""},
+            {"tipo": "servicio", "servicio": "Preenfriado",         "capacidad": "6 túneles",     "ubicacion": "Valparaíso"},
+            {"tipo": "oferta",   "producto": "Uva", "variedad": "Red Globe", "cantidad": "40", "tipo_bulto": "pallets", "origen": "V Región",  "precio_caja": "$9", "precio_kg": "-", "precio": "USD 9/caja"},
         ],
         "descripcion": "Frigorífico con logística en puerto."
     },
@@ -320,8 +315,7 @@ COMPANIES = [
         "telefono": "+56 2 2345 6789",
         "direccion": "Av. Apoquindo 1234, Las Condes",
         "items": [
-            {"tipo": "demanda", "producto": "Cereza", "variedad": "Santina", "bulto": "pallets",
-             "cantidad": "150", "origen": "VI-VII", "precio": money("A convenir"), "precio_caja": "", "precio_kilo": ""},
+            {"tipo": "demanda", "producto": "Cereza", "variedad": "Santina", "cantidad": "150", "tipo_bulto": "pallets", "origen": "VI-VII", "precio": "A convenir"},
         ],
         "descripcion": "Exportador multiproducto."
     },
@@ -381,6 +375,7 @@ COMPANIES = [
 class ViewObj:
     """Convierte un dict en objeto con atributos. Asegura que .items sea la LISTA de ítems."""
     def __init__(self, data: dict):
+        # Copia directa de claves
         for k, v in data.items():
             setattr(self, k, v)
         # Garantiza que 'items' sea una lista (si existe)
@@ -454,7 +449,7 @@ def login():
 
 @app.route("/forgot", methods=["GET", "POST"])
 def forgot():
-    """Recuperar contraseña (dummy)."""
+    """Recuperar contraseña (demo)."""
     msg = None
     if request.method == "POST":
         email = request.form.get("email", "").strip().lower()
@@ -528,7 +523,7 @@ def register():
             f = request.files["rut_file"]
             if f and f.filename and allowed_file(f.filename):
                 fname = secure_filename(f.filename)
-                fname = f"{uuid.uuid4().hex}_{fname}"
+                fname = f"{uuid.uuid4().hex}_{fname}"  # Evita colisiones
                 f.save(os.path.join(UPLOAD_FOLDER, fname))
                 rut_file_path = f"uploads/{fname}"
 
@@ -608,12 +603,15 @@ def dashboard():
         cart=get_cart(),
     )
 
-# ---------- Accesos (listado simple) ----------
+# ---------- Accesos (listado simple con “filtro” por rol exportador) ----------
 @app.route("/accesos/<tipo>")
 def accesos(tipo):
     tipo = tipo.lower()
     if tipo not in ("ventas", "compras", "servicios"):
         abort(404)
+
+    usuario = session.get("user")
+    rol_usuario = USERS.get(usuario, {}).get("rol") if usuario else None
 
     if tipo == "servicios":
         data = []
@@ -625,6 +623,14 @@ def accesos(tipo):
         tag = "oferta" if tipo == "ventas" else "demanda"
         data = []
         for c in COMPANIES:
+            # Heurística: si usuario es Exportador y está en ventas → prioriza clientes extranjeros;
+            # si está en compras → prioriza productores/planta/packing/frigorífico/exportador.
+            if rol_usuario == "Exportador":
+                if tipo == "ventas":
+                    # clientes extranjeros vivirán más en USER_PROFILES/Clientes (pero mantenemos companies de compra_venta)
+                    pass  # mostramos lo normal de companies y el módulo de clientes está aparte
+                else:
+                    pass  # dejamos el set estándar y en 'detalles' se verán por tag
             if c["perfil_tipo"] == "compra_venta" or c["rol"] in ("Packing", "Frigorífico"):
                 if any(it.get("tipo") == tag for it in c.get("items", [])):
                     data.append(c)
@@ -675,10 +681,18 @@ def clientes():
         if "cliente" in (prof.get("rol") or "").lower():
             item = prof.copy()
             item["username"] = uname
+            # agregamos un pequeño “resumen” del primer ítem para tabla
+            items = item.get("items", [])
+            if items:
+                it0 = items[0]
+                item["resumen_item"] = f"{it0.get('tipo','-')} {it0.get('producto','')} {it0.get('variedad','')}".strip()
+            else:
+                item["resumen_item"] = "-"
             lista.append(item)
     if not lista and "cliente@usa.com" in USER_PROFILES:
         item = USER_PROFILES["cliente@usa.com"].copy()
         item["username"] = "cliente@usa.com"
+        item["resumen_item"] = "-"
         lista.append(item)
     return render_template("clientes.html", clientes=wrap_list(lista))
 
@@ -695,10 +709,11 @@ def cliente_detalle(username):
         "direccion": prof.get("direccion"),
         "descripcion": prof.get("descripcion"),
         "items": prof.get("items", []),
+        "pais": prof.get("pais", ""),
     }
     return render_template("cliente_detalle.html", comp=ViewObj(comp), username=username)
 
-# ---------- Mi Perfil (edición + agregar ítems) ----------
+# ---------- Mi Perfil (edición + agregar ítems con más campos) ----------
 @app.route("/perfil", methods=["GET", "POST"])
 def perfil():
     if not is_logged():
@@ -717,7 +732,7 @@ def perfil():
             prof["direccion"] = request.form.get("direccion", prof.get("direccion", "")).strip()
             prof["descripcion"] = request.form.get("descripcion", prof.get("descripcion", "")).strip()
 
-            # Manejo de RUT y archivo (solo si envían)
+            # Manejo de RUT y archivo (solo nacionales)
             if request.form.get("rut") is not None:
                 rut_in = request.form.get("rut").strip()
                 prof["rut"] = rut_in if rut_in else prof.get("rut")
@@ -737,6 +752,7 @@ def perfil():
             mensaje = t("Perfil actualizado.", "Profile updated.")
         elif action == "add_item":
             perfil_tipo = prof.get("perfil_tipo")
+            tipo_item = request.form.get("subtipo", "oferta").strip()  # oferta | demanda
             if perfil_tipo == "servicios":
                 servicio = request.form.get("servicio", "").strip()
                 capacidad = request.form.get("capacidad", "").strip()
@@ -750,38 +766,32 @@ def perfil():
                     })
                     mensaje = t("Servicio agregado.", "Service added.")
             else:
-                # Compra/Venta — campos extendidos
-                subtipo    = request.form.get("subtipo", "oferta").strip()   # 'oferta' o 'demanda'
+                # compra_venta → oferta/demanda con campos extendidos
                 producto   = request.form.get("producto", "").strip()
                 variedad   = request.form.get("variedad", "").strip()
                 cantidad   = request.form.get("cantidad", "").strip()
-                bulto      = request.form.get("bulto", "").strip()           # cajas/kilos/toneladas/pallets/etc
+                tipo_bulto = request.form.get("tipo_bulto", "").strip()
                 origen     = request.form.get("origen", "").strip()
-                precio_caja= money(request.form.get("precio_caja", "").strip())
-                precio_kilo= money(request.form.get("precio_kilo", "").strip())
-                # Para compatibilidad con templates actuales: seguimos rellenando 'precio'
-                precio_txt = ""
-                if precio_caja:
-                    precio_txt = f"{precio_caja}/caja"
-                if precio_kilo:
-                    precio_txt = f"{precio_txt} " if precio_txt else ""
-                    precio_txt = f"{precio_txt}{precio_kilo}/kg"
-                if not precio_txt:
-                    # Si no dieron precios específicos, usamos el campo libre 'precio' si vino
-                    precio_txt = money(request.form.get("precio", "").strip()) or ""
+                precio_caja = request.form.get("precio_caja", "").strip()
+                precio_kg   = request.form.get("precio_kg", "").strip()
 
                 if producto:
-                    prof.setdefault("items", []).append({
-                        "tipo": subtipo,
+                    item = {
+                        "tipo": tipo_item,  # oferta/demanda
                         "producto": producto,
-                        "variedad": variedad,
-                        "cantidad": cantidad,
-                        "bulto": bulto,
-                        "origen": origen,
-                        "precio": precio_txt,
-                        "precio_caja": precio_caja,
-                        "precio_kilo": precio_kilo
-                    })
+                        "variedad": variedad or "-",
+                        "cantidad": cantidad or "-",
+                        "tipo_bulto": tipo_bulto or "-",
+                        "origen": origen or "-",
+                    }
+                    # Solo en oferta mostramos/preparamos precios
+                    if tipo_item == "oferta":
+                        item["precio_caja"] = normaliza_moneda(precio_caja) if precio_caja else "-"
+                        item["precio_kg"]   = normaliza_moneda(precio_kg) if precio_kg else "-"
+                        # Por compatibilidad con plantillas que usan 'precio'
+                        item["precio"] = item["precio_caja"] if item["precio_caja"] != "-" else (item["precio_kg"] or "-")
+
+                    prof.setdefault("items", []).append(item)
                     mensaje = t("Ítem agregado.", "Item added.")
 
     return render_template("perfil.html", perfil=ViewObj(prof), mensaje=mensaje)
@@ -793,10 +803,11 @@ def cart_add():
     item = request.form.to_dict()
     if "empresa" not in item:
         item["empresa"] = "?"
-    # Normalizamos precios si vienen
-    for k in ("precio", "precio_caja", "precio_kilo"):
-        if k in item and item[k]:
-            item[k] = money(item[k])
+    # Normalizamos precios si vienen en formulario
+    if "precio_caja" in item:
+        item["precio_caja"] = normaliza_moneda(item.get("precio_caja"))
+    if "precio_kg" in item:
+        item["precio_kg"] = normaliza_moneda(item.get("precio_kg"))
     add_to_cart(item)
     flash(t("Agregado al carrito", "Added to cart"))
     return redirect(request.referrer or url_for("carrito"))
