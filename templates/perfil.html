@@ -1,13 +1,17 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="card">
-  <h2>👤 {{ t("Mi Perfil", "My Profile", "我的資料") }}</h2>
-  <p><strong>{{ t("Usuario", "Username", "使用者") }}:</strong> {{ user.username }}</p>
-  <p><strong>RUT:</strong> {{ user.rut }}</p>
-  <p><strong>Email:</strong> {{ user.email }}</p>
-  <p><strong>{{ t("Rol", "Role", "角色") }}:</strong> {{ user.rol }}</p>
-  <p><strong>{{ t("País", "Country", "國家") }}:</strong> {{ user.pais }}</p>
-  <p><strong>{{ t("Teléfono", "Phone", "電話") }}:</strong> {{ user.phone }}</p>
-  <p><strong>{{ t("Dirección", "Address", "地址") }}:</strong> {{ user.address }}</p>
-</div>
+  <h2>{{ t("Mi Perfil", "My Profile") }}</h2>
+  <p><b>{{ my_company.empresa }}</b></p>
+  <p>{{ my_company.descripcion }}</p>
+  <ul>
+    {% for i in my_company.items %}
+      <li>
+        {% if i.tipo == "servicio" %}
+          {{ i.servicio }} - {{ i.capacidad }} - {{ i.ubicacion }}
+        {% else %}
+          {{ i.producto }} - {{ i.cantidad }} - {{ i.origen }}
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
 {% endblock %}
