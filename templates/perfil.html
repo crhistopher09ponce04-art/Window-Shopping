@@ -1,20 +1,48 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>{{ comp.nombre }}</h2>
-<p><b>RUT:</b> {{ comp.rut }} | <b>Email:</b> {{ comp.email }}</p>
-<p><b>Tel:</b> {{ comp.telefono }} | <b>{{ t("Dirección","Address") }}:</b> {{ comp.direccion }}</p>
-<p><b>{{ t("Descripción","Description") }}:</b> {{ comp.descripcion or comp.breve }}</p>
+<h2>Perfil</h2>
+<form method="post">
+  <input type="hidden" name="action" value="save_profile">
+  <label>Empresa</label>
+  <input type="text" name="empresa" value="{{ perfil.empresa }}">
+  <label>Email</label>
+  <input type="text" name="email" value="{{ perfil.email }}">
+  <label>Teléfono</label>
+  <input type="text" name="telefono" value="{{ perfil.telefono }}">
+  <label>Dirección</label>
+  <input type="text" name="direccion" value="{{ perfil.direccion }}">
+  <label>Descripción</label>
+  <textarea name="descripcion">{{ perfil.descripcion }}</textarea>
+  <label>RUT</label>
+  <input type="text" name="rut" value="{{ perfil.rut }}">
+  <button type="submit">Guardar</button>
+</form>
 
-<h3>{{ t("Ítems","Items") }}</h3>
+<h3>Items</h3>
 <ul>
-{% for i in comp.items %}
-  {% if i.tipo == "oferta" %}
-    <li>📦 {{ i.producto }} - {{ i.cantidad }} - {{ i.precio }}</li>
-  {% elif i.tipo == "demanda" %}
-    <li>📥 {{ i.producto }} - {{ i.cantidad }}</li>
-  {% elif i.tipo == "servicio" %}
-    <li>⚙ {{ i.servicio }} - {{ i.capacidad }}</li>
-  {% endif %}
-{% endfor %}
+  {% for i in perfil.items %}
+    <li>{{ i }}</li>
+  {% endfor %}
 </ul>
+
+<h4>Agregar Item</h4>
+<form method="post">
+  <input type="hidden" name="action" value="add_item">
+  {% if perfil.perfil_tipo == "servicios" %}
+    <input type="text" name="servicio" placeholder="Servicio">
+    <input type="text" name="capacidad" placeholder="Capacidad">
+    <input type="text" name="ubicacion" placeholder="Ubicación">
+  {% else %}
+    <select name="subtipo">
+      <option value="oferta">Oferta</option>
+      <option value="demanda">Demanda</option>
+    </select>
+    <input type="text" name="producto" placeholder="Producto">
+    <input type="text" name="cantidad" placeholder="Cantidad">
+    <input type="text" name="origen" placeholder="Origen">
+    <input type="text" name="precio" placeholder="Precio">
+  {% endif %}
+  <button type="submit">Agregar</button>
+</form>
+{% if mensaje %}<div class="alert alert-success">{{ mensaje }}</div>{% endif %}
 {% endblock %}
