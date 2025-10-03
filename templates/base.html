@@ -1,44 +1,33 @@
 <!DOCTYPE html>
-<html lang="{{ get_lang() }}">
+<html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>WS Marketplace</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta charset="UTF-8">
+    <title>WS</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-  <header>
-    <a href="{{ url_for('home') }}" class="logo">
-      <div class="ws-logo"></div>
-    </a>
+    <!-- Barra de navegación -->
     <nav>
-      {% if session.get("usuario") %}
-        <a href="{{ url_for('dashboard') }}">{{ t("Inicio", "Home") }}</a>
-        <a href="{{ url_for('carrito') }}">{{ t("Carrito", "Cart") }}</a>
-        <a href="{{ url_for('ayuda') }}">{{ t("Ayuda", "Help") }}</a>
-        <a href="{{ url_for('logout') }}">{{ t("Salir", "Logout") }}</a>
-      {% else %}
-        <a href="{{ url_for('login') }}">{{ t("Ingresar", "Login") }}</a>
-        <a href="{{ url_for('register_router') }}">{{ t("Registro", "Register") }}</a>
-      {% endif %}
+        <div class="brand">
+            <div class="logo-ws">WS</div>
+        </div>
+        <div>
+            <a href="{{ url_for('home') }}">{{ t("Inicio", "Home", "首頁") }}</a>
+            {% if session.get("user") %}
+                <a href="{{ url_for('dashboard') }}">{{ t("Panel", "Dashboard", "面板") }}</a>
+                <a href="{{ url_for('perfil') }}">{{ t("Mi Perfil", "My Profile", "我的資料") }}</a>
+                <a href="{{ url_for('carrito') }}">{{ t("Carrito", "Cart", "購物車") }}</a>
+                <a href="{{ url_for('ayuda') }}">{{ t("Ayuda", "Help", "幫助") }}</a>
+                <a href="{{ url_for('logout') }}">{{ t("Salir", "Logout", "退出") }}</a>
+            {% else %}
+                <a href="{{ url_for('login') }}">{{ t("Ingresar", "Login", "登入") }}</a>
+                <a href="{{ url_for('register_router') }}">{{ t("Registrarse", "Register", "註冊") }}</a>
+            {% endif %}
+        </div>
     </nav>
-    <div class="lang-switch">
-      <a href="{{ url_for('set_lang', lang='es') }}" class="{{ 'active' if get_lang() == 'es' else '' }}">ES</a> |
-      <a href="{{ url_for('set_lang', lang='en') }}" class="{{ 'active' if get_lang() == 'en' else '' }}">EN</a> |
-      <a href="{{ url_for('set_lang', lang='zh') }}" class="{{ 'active' if get_lang() == 'zh' else '' }}">中文</a>
-    </div>
-  </header>
-  <main>
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        {% for msg in messages %}
-          <div class="flash">{{ msg }}</div>
-        {% endfor %}
-      {% endif %}
-    {% endwith %}
-    {% block content %}{% endblock %}
-  </main>
-  <footer>
-    © 2025 WS Marketplace. {{ t("Todos los derechos reservados.", "All rights reserved.") }}
-  </footer>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
 </body>
 </html>
