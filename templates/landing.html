@@ -1,17 +1,12 @@
 {% extends "base.html" %}
-
 {% block content %}
-<div style="text-align:center;">
-    <div class="logo-ws big">WS</div>
-    <h1>{{ t("Bienvenido a Window Shopping", "Welcome to Window Shopping", "歡迎來到 Window Shopping") }}</h1>
+<h2>{{ t("Bienvenido a Window Shopping", "Welcome to Window Shopping", "歡迎來到Window Shopping") }}</h2>
+<p>{{ t("Plataforma de conexión entre productores, exportadores y clientes internacionales.", 
+         "Platform connecting producers, exporters and international buyers.",
+         "連接生產商、出口商和國際買家的平台") }}</p>
 
-    <p>{{ t("Tu plataforma de exportación e importación confiable.", 
-             "Your reliable export and import platform.", 
-             "您可靠的進出口平台") }}</p>
-
-    <div style="margin-top:20px;">
-        <a href="{{ url_for('login') }}" class="btn">🔑 {{ t("Ingresar", "Login", "登入") }}</a>
-        <a href="{{ url_for('register_router') }}" class="btn">📝 {{ t("Crear cuenta", "Register", "註冊") }}</a>
-    </div>
+<div style="margin-top:20px;">
+  <a class="btn" href="{{ url_for('login') }}">Iniciar Sesión</a>
+  <a class="btn" href="{{ url_for('register_router') }}">Registrarse</a>
 </div>
 {% endblock %}
