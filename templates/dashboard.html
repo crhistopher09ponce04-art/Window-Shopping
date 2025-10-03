@@ -1,15 +1,17 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>{{ t("Panel de Control","Dashboard") }}</h2>
-<p>{{ t("Bienvenido","Welcome") }} <b>{{ usuario }}</b></p>
-<p>{{ t("Rol","Role") }}: {{ rol }} | {{ t("Tipo de perfil","Profile type") }}: {{ perfil_tipo }}</p>
+<h2>Dashboard</h2>
+<p><b>Usuario:</b> {{ usuario }}</p>
+<p><b>Rol:</b> {{ rol }}</p>
+<p><b>Tipo Perfil:</b> {{ perfil_tipo }}</p>
 
-<div class="grid">
-    <div class="card"><a href="{{ url_for('detalles', tipo='ventas') }}">{{ t("Ofertas de Fruta","Fruit Offers") }}</a></div>
-    <div class="card"><a href="{{ url_for('detalles', tipo='compras') }}">{{ t("Demandas de Fruta","Fruit Demands") }}</a></div>
-    <div class="card"><a href="{{ url_for('detalles', tipo='servicios') }}">{{ t("Servicios","Services") }}</a></div>
-    <div class="card"><a href="{{ url_for('perfil') }}">{{ t("Mi Perfil","My Profile") }}</a></div>
-    <div class="card"><a href="{{ url_for('carrito') }}">{{ t("Carrito","Cart") }}</a></div>
-    <div class="card"><a href="{{ url_for('ayuda') }}">{{ t("Ayuda","Help") }}</a></div>
-</div>
+<h3>Mi Empresa</h3>
+{% if my_company %}
+  <p><b>{{ my_company.empresa }}</b> - {{ my_company.descripcion }}</p>
+  <ul>
+    {% for i in my_company.items %}
+      <li>{{ i }}</li>
+    {% endfor %}
+  </ul>
+{% endif %}
 {% endblock %}
