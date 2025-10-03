@@ -1,12 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
-  <h2>{{ t("Registro - Paso 1", "Register - Step 1") }}</h2>
-  <div class="grid-2">
-    <a class="tile" href="{{ url_for('register', nac='nacional', tipo='compra_venta') }}">
-      {{ t("Soy Nacional (Productor, Packing, etc.)", "I'm National (Producer, Packing, etc.)") }}
-    </a>
-    <a class="tile" href="{{ url_for('register', nac='extranjero', tipo='compra_venta') }}">
-      {{ t("Soy Extranjero (Cliente)", "I'm Foreign (Buyer)") }}
-    </a>
-  </div>
+<h2>{{ t("Elige tu tipo de registro","Choose your registration type") }}</h2>
+<a href="{{ url_for('register', nac='nacional', tipo='compra_venta') }}">🇨🇱 {{ t("Nacional - Compra/Venta","National - Buy/Sell") }}</a><br>
+<a href="{{ url_for('register', nac='nacional', tipo='servicios') }}">🇨🇱 {{ t("Nacional - Servicios","National - Services") }}</a><br>
+<a href="{{ url_for('register', nac='extranjero', tipo='compra_venta') }}">🌎 {{ t("Extranjero - Cliente","Foreign - Client") }}</a>
 {% endblock %}
