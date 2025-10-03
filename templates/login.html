@@ -1,24 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="card" style="max-width:520px;margin:0 auto;">
-  <h2>🔑 {{ t("Ingresar", "Login", "登入") }}</h2>
-
-  {% if error %}
-    <div class="flash">{{ error }}</div>
-  {% endif %}
-
-  <form method="POST" class="mt-2">
-    <label for="username">{{ t("Usuario", "Username", "使用者") }}</label>
-    <input type="text" id="username" name="username" required>
-
-    <label for="password">{{ t("Contraseña", "Password", "密碼") }}</label>
-    <input type="password" id="password" name="password" required>
-
-    <input type="submit" value="{{ t('Entrar', 'Sign in', '登入') }}">
+  <h2>{{ t("Ingresar", "Login") }}</h2>
+  {% if error %}<div class="flash">{{ error }}</div>{% endif %}
+  <form method="POST">
+    <label>{{ t("Usuario", "Username") }}</label>
+    <input type="text" name="username">
+    <label>{{ t("Contraseña", "Password") }}</label>
+    <input type="password" name="password">
+    <input type="submit" class="btn" value="{{ t('Ingresar', 'Login') }}">
   </form>
-
-  <p class="mt-2">{{ t("¿No tienes cuenta?", "Don't have an account?", "還沒有帳號？") }}
-    <a href="{{ url_for('register_router') }}">📝 {{ t("Regístrate aquí", "Register here", "點此註冊") }}</a>
-  </p>
-</div>
 {% endblock %}
