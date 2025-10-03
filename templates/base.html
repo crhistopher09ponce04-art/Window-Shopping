@@ -1,50 +1,83 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Window Shopping</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <meta charset="UTF-8">
+  <title>WS - Window Shopping</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
 <header>
-    <h1>Window Shopping</h1>
-    <nav>
-        <a href="{{ url_for('home') }}">{{ t("Inicio", "Home", "首頁") }}</a>
-        {% if session.get('user') %}
-            <a href="{{ url_for('dashboard') }}">{{ t("Dashboard", "Dashboard", "儀表板") }}</a>
-            <a href="{{ url_for('perfil') }}">{{ t("Mi Perfil", "My Profile", "我的資料") }}</a>
-            <a href="{{ url_for('carrito') }}">{{ t("Carrito", "Cart", "購物車") }}</a>
-            <a href="{{ url_for('clientes') }}">{{ t("Clientes", "Clients", "客戶") }}</a>
-            <a href="{{ url_for('logout') }}">{{ t("Cerrar Sesión", "Logout", "登出") }}</a>
-        {% else %}
-            <a href="{{ url_for('login') }}">{{ t("Login", "Login", "登入") }}</a>
-            <a href="{{ url_for('register_router') }}">{{ t("Registro", "Register", "註冊") }}</a>
-        {% endif %}
-        <a href="{{ url_for('ayuda') }}">{{ t("Ayuda", "Help", "幫助") }}</a>
-    </nav>
-    <div>
-        <a href="{{ url_for('set_lang', lang='es') }}">ES</a> |
-        <a href="{{ url_for('set_lang', lang='en') }}">EN</a> |
-        <a href="{{ url_for('set_lang', lang='zh') }}">中文</a>
-    </div>
+  <div class="brand">
+    <div class="ws">WS</div>
+  </div>
+  <nav>
+    <a href="{{ url_for('home') }}">{{ t("Inicio","Home","首頁") }}</a>
+    {% if session.get("user") %}
+      <a href="{{ url_for('dashboard') }}">{{ t("Mi Panel","Dashboard","控制台") }}</a>
+      <a href="{{ url_for('perfil') }}">{{ t("Perfil","Profile","個人資料") }}</a>
+      <a href="{{ url_for('carrito') }}">{{ t("Carrito","Cart","購物車") }}</a>
+      <a href="{{ url_for('logout') }}">{{ t("Salir","Logout","登出") }}</a>
+    {% else %}
+      <a href="{{ url_for('login') }}">{{ t("Ingresar","Login","登入") }}</a>
+      <a href="{{ url_for('register_router') }}">{{ t("Registrarse","Register","註冊") }}</a>
+    {% endif %}
+    <a href="{{ url_for('clientes') }}">{{ t("Clientes","Clients","客戶") }}</a>
+    <a href="{{ url_for('ayuda') }}">{{ t("Ayuda","Help","幫助") }}</a>
+  </nav>
+  <div class="lang-select">
+    <a href="{{ url_for('set_lang','es') }}">ES</a> |
+    <a href="{{ url_for('set_lang','en') }}">EN</a> |
+    <a href="{{ url_for('set_lang','zh') }}">中文</a>
+  </div>
 </header>
 
 <div class="container">
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            <ul>
-                {% for m in messages %}
-                    <li>{{ m }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
-    {% endwith %}
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <div class="flash">{{ messages[0] }}</div>
+    {% endif %}
+  {% endwith %}
 
-    {% block content %}{% endblock %}
+  {% block content %}{% endblock %}
 </div>
 
-<footer>
-    <p>&copy; 2025 Window Shopping - Demo</p>
-</footer>
+<footer>&copy; 2025 WS - Window Shopping</footer>
+
+<script>
+/* ====== Formateo simple de moneda para inputs con class="money" ======
+   - Muestra $ y separadores mientras escribes
+   - Envía solo números limpios en otro hidden input si existe data-target
+*/
+function normMoney(str){
+  if(!str) return "";
+  // quitar todo menos dígitos y coma/punto
+  let s = (""+str).replace(/[^\d.,]/g,"").replace(",",".");
+  // permitir un solo punto decimal
+  const parts = s.split(".");
+  if (parts.length > 2) { s = parts[0] + "." + parts.slice(1).join(""); }
+  return s;
+}
+function prettyMoney(numStr){
+  if(!numStr) return "";
+  const n = Number(numStr);
+  if(isNaN(n)) return "";
+  return "$ " + n.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2});
+}
+
+document.addEventListener("input", (e)=>{
+  const el = e.target;
+  if (el.classList && el.classList.contains("money")) {
+    const raw = normMoney(el.value);
+    const pretty = prettyMoney(raw);
+    el.value = pretty || (raw ? "$ "+raw : "");
+    const targetId = el.dataset.target;
+    if (targetId) {
+      const hidden = document.getElementById(targetId);
+      if (hidden) hidden.value = raw;
+    }
+  }
+});
+</script>
 </body>
 </html>
