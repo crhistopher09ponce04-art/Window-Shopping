@@ -1,24 +1,32 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>{{ t("Registro de Usuario","User Registration") }}</h2>
+<h2>Formulario de Registro</h2>
 <form method="post">
-    <input type="text" name="username" placeholder="Usuario/email">
-    <input type="password" name="password" placeholder="Contraseña">
-    <input type="text" name="rut" placeholder="RUT (si aplica)">
-    <input type="text" name="email" placeholder="Email de contacto">
-    <input type="text" name="phone" placeholder="Teléfono">
-    <input type="text" name="address" placeholder="Dirección">
-    <select name="rol">
-        {% for r in roles_cv if perfil_tipo=='compra_venta' %}
-            <option value="{{ r }}">{{ r }}</option>
-        {% endfor %}
-        {% for r in roles_srv if perfil_tipo=='servicios' %}
-            <option value="{{ r }}">{{ r }}</option>
-        {% endfor %}
-    </select>
-    <input type="hidden" name="perfil_tipo" value="{{ perfil_tipo }}">
-    <input type="hidden" name="nacionalidad" value="{{ nacionalidad }}">
-    <button type="submit">{{ t("Registrar","Register") }}</button>
+  <label>Usuario (email)</label>
+  <input type="email" name="username" required>
+  <label>Password</label>
+  <input type="password" name="password" required>
+  <label>Email contacto</label>
+  <input type="email" name="email">
+  <label>Teléfono</label>
+  <input type="text" name="phone">
+  <label>Dirección</label>
+  <input type="text" name="address">
+  <label>País</label>
+  <input type="text" name="pais" value="{{ nacionalidad == 'nacional' and 'CL' or '' }}">
+  <label>Rol</label>
+  <select name="rol">
+    {% if perfil_tipo == "compra_venta" %}
+      {% for r in roles_cv %}<option>{{ r }}</option>{% endfor %}
+    {% else %}
+      {% for r in roles_srv %}<option>{{ r }}</option>{% endfor %}
+    {% endif %}
+  </select>
+  <input type="hidden" name="perfil_tipo" value="{{ perfil_tipo }}">
+  <input type="hidden" name="nacionalidad" value="{{ nacionalidad }}">
+  <label>RUT (si aplica)</label>
+  <input type="text" name="rut">
+  <button type="submit">Registrar</button>
 </form>
-{% if error %}<div class="flash error">{{ error }}</div>{% endif %}
+{% if error %}<div class="alert alert-error">{{ error }}</div>{% endif %}
 {% endblock %}
