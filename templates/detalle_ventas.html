@@ -1,21 +1,14 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>{{ t("Ofertas de Venta","Sales Offers") }}</h2>
+<h2>Ofertas de Ventas</h2>
 {% for c in data %}
-<div class="card">
-    <h3><a href="{{ url_for('empresa', slug=c.slug) }}">{{ c.nombre }}</a></h3>
+  <div class="card">
+    <h3>{{ c.nombre }}</h3>
     <ul>
-        {% for i in c.items if i.tipo == "oferta" %}
-        <li>{{ i.producto }} - {{ i.cantidad }} - {{ i.precio }} ({{ i.origen }})</li>
-        <form method="post" action="{{ url_for('cart_add') }}">
-            <input type="hidden" name="empresa" value="{{ c.nombre }}">
-            <input type="hidden" name="producto" value="{{ i.producto }}">
-            <input type="hidden" name="cantidad" value="{{ i.cantidad }}">
-            <input type="hidden" name="precio" value="{{ i.precio }}">
-            <button type="submit">{{ t("Agregar al carrito","Add to Cart") }}</button>
-        </form>
-        {% endfor %}
+      {% for i in c.items if i.tipo == "oferta" %}
+        <li>{{ i.producto }} - {{ i.cantidad }} - {{ i.precio }}</li>
+      {% endfor %}
     </ul>
-</div>
+  </div>
 {% endfor %}
 {% endblock %}
