@@ -1,9 +1,26 @@
 {% extends "base.html" %}
 {% block content %}
-  <section class="center">
-    <div class="ws-logo" style="margin:auto;"></div>
-    <h1 class="mt-3">WS Marketplace</h1>
-    <p>{{ t("Tu puerta al comercio exportador chileno.", "Your gateway to Chilean export trade.") }}</p>
-    <a href="{{ url_for('login') }}" class="btn mt-3">{{ t("Comenzar", "Get Started") }}</a>
-  </section>
+<div class="landing-container">
+  <div class="hero">
+    <h1>🌍 Window Shopping</h1>
+    <p>La plataforma que conecta productores, exportadores, clientes extranjeros y servicios en un solo lugar.</p>
+    <a href="{{ url_for('login') }}" class="btn btn-primary">Iniciar Sesión</a>
+    <a href="{{ url_for('register_router') }}" class="btn btn-secondary">Crear Cuenta</a>
+  </div>
+
+  <div class="features">
+    <div class="feature">
+      <h3>🍇 Compra y Venta</h3>
+      <p>Accede a la red de productores, packing, frigoríficos y exportadores.</p>
+    </div>
+    <div class="feature">
+      <h3>⚙️ Servicios</h3>
+      <p>Encuentra transporte, frigoríficos, packing y agencias de aduana.</p>
+    </div>
+    <div class="feature">
+      <h3>📦 Carrito</h3>
+      <p>Agrega ofertas, demandas o servicios y gestiona tus compras.</p>
+    </div>
+  </div>
+</div>
 {% endblock %}
