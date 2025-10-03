@@ -1,26 +1,30 @@
 {% extends "base.html" %}
-{% block content %}
-<div class="landing-container">
-  <div class="hero">
-    <h1>🌍 Window Shopping</h1>
-    <p>La plataforma que conecta productores, exportadores, clientes extranjeros y servicios en un solo lugar.</p>
-    <a href="{{ url_for('login') }}" class="btn btn-primary">Iniciar Sesión</a>
-    <a href="{{ url_for('register_router') }}" class="btn btn-secondary">Crear Cuenta</a>
-  </div>
 
-  <div class="features">
-    <div class="feature">
-      <h3>🍇 Compra y Venta</h3>
-      <p>Accede a la red de productores, packing, frigoríficos y exportadores.</p>
+{% block content %}
+<div style="text-align:center;">
+    <div class="logo-ws big">WS</div>
+    <h1>{{ t("Bienvenido a Window Shopping", "Welcome to Window Shopping", "歡迎來到 Window Shopping") }}</h1>
+
+    <p>{{ t("Tu plataforma de exportación e importación confiable.", 
+             "Your reliable export and import platform.", 
+             "您可靠的進出口平台") }}</p>
+
+    <div style="margin-top:20px;">
+        <a href="{{ url_for('login') }}" class="btn">🔑 {{ t("Ingresar", "Login", "登入") }}</a>
+        <a href="{{ url_for('register_router') }}" class="btn">📝 {{ t("Crear cuenta", "Register", "註冊") }}</a>
     </div>
-    <div class="feature">
-      <h3>⚙️ Servicios</h3>
-      <p>Encuentra transporte, frigoríficos, packing y agencias de aduana.</p>
-    </div>
-    <div class="feature">
-      <h3>📦 Carrito</h3>
-      <p>Agrega ofertas, demandas o servicios y gestiona tus compras.</p>
-    </div>
-  </div>
 </div>
+{% endblock %}
+
+Login
+
+{% extends "base.html" %}
+{% block content %}
+<h2>{{ t("Ingresar","Login") }}</h2>
+<form method="post">
+    <input type="text" name="username" placeholder="Email">
+    <input type="password" name="password" placeholder="Contraseña">
+    <button type="submit">{{ t("Entrar","Login") }}</button>
+</form>
+{% if error %}<div class="flash error">{{ error }}</div>{% endif %}
 {% endblock %}
