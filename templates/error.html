@@ -1,9 +1,5 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="card error">
-  <h2>⚠ {{ t("Ha ocurrido un problema", "An error has occurred", "發生錯誤") }}</h2>
-  <p>{{ message }}</p>
-  <a href="{{ url_for('home') }}" class="btn">🏠 {{ t("Volver al inicio", "Return home", "回到首頁") }}</a>
-</div>
+  <h2>⚠ {{ message }}</h2>
+  <p>{{ t("Código", "Code") }}: {{ code }}</p>
 {% endblock %}
-
