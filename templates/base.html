@@ -1,42 +1,50 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>{{ title if title else "Window Shopping" }}</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta charset="UTF-8">
+    <title>Window Shopping</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-  <header>
+<header>
     <h1>Window Shopping</h1>
     <nav>
-      <a href="{{ url_for('home') }}">{{ t("Inicio", "Home", "首頁") }}</a>
-      <a href="{{ url_for('clientes') }}">Clientes</a>
-      <a href="{{ url_for('accesos', tipo='ventas') }}">Accesos Ventas</a>
-      <a href="{{ url_for('accesos', tipo='compras') }}">Accesos Compras</a>
-      <a href="{{ url_for('accesos', tipo='servicios') }}">Accesos Servicios</a>
-      <a href="{{ url_for('carrito') }}">Carrito</a>
-      {% if session.get("user") %}
-        <a href="{{ url_for('perfil') }}">Perfil</a>
-        <a href="{{ url_for('logout') }}">Salir</a>
-      {% else %}
-        <a href="{{ url_for('login') }}">Login</a>
-      {% endif %}
-      <a href="{{ url_for('ayuda') }}">Ayuda</a>
+        <a href="{{ url_for('home') }}">{{ t("Inicio", "Home", "首頁") }}</a>
+        {% if session.get('user') %}
+            <a href="{{ url_for('dashboard') }}">{{ t("Dashboard", "Dashboard", "儀表板") }}</a>
+            <a href="{{ url_for('perfil') }}">{{ t("Mi Perfil", "My Profile", "我的資料") }}</a>
+            <a href="{{ url_for('carrito') }}">{{ t("Carrito", "Cart", "購物車") }}</a>
+            <a href="{{ url_for('clientes') }}">{{ t("Clientes", "Clients", "客戶") }}</a>
+            <a href="{{ url_for('logout') }}">{{ t("Cerrar Sesión", "Logout", "登出") }}</a>
+        {% else %}
+            <a href="{{ url_for('login') }}">{{ t("Login", "Login", "登入") }}</a>
+            <a href="{{ url_for('register_router') }}">{{ t("Registro", "Register", "註冊") }}</a>
+        {% endif %}
+        <a href="{{ url_for('ayuda') }}">{{ t("Ayuda", "Help", "幫助") }}</a>
     </nav>
-  </header>
+    <div>
+        <a href="{{ url_for('set_lang', lang='es') }}">ES</a> |
+        <a href="{{ url_for('set_lang', lang='en') }}">EN</a> |
+        <a href="{{ url_for('set_lang', lang='zh') }}">中文</a>
+    </div>
+</header>
 
-  <div class="container">
+<div class="container">
     {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <div class="alert alert-success">
-          {% for msg in messages %}
-            <p>{{ msg }}</p>
-          {% endfor %}
-        </div>
-      {% endif %}
+        {% if messages %}
+            <ul>
+                {% for m in messages %}
+                    <li>{{ m }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
     {% endwith %}
 
     {% block content %}{% endblock %}
-  </div>
+</div>
+
+<footer>
+    <p>&copy; 2025 Window Shopping - Demo</p>
+</footer>
 </body>
 </html>
