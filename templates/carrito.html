@@ -1,24 +1,27 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="card">
-  <h2>🛒 {{ t("Carrito", "Cart", "購物車") }}</h2>
-  {% if carrito %}
-  <table>
-    <tr>
-      <th>{{ t("Tipo", "Type", "類型") }}</th>
-      <th>{{ t("Detalle", "Detail", "詳細資料") }}</th>
-    </tr>
-    {% for item in carrito %}
-    <tr>
-      <td>{{ item.tipo }}</td>
-      <td>{{ item.detalle }}</td>
-    </tr>
-    {% endfor %}
-  </table>
+  <h2>{{ t("Carrito de Negociación", "Negotiation Cart") }}</h2>
+  {% if cart %}
+    <ul class="list-group">
+      {% for i in cart %}
+        <li class="list-group-item">
+          {% if i.tipo == "servicio" %}
+            {{ i.servicio }} ({{ i.empresa }})
+          {% else %}
+            {{ i.producto }} ({{ i.empresa }})
+          {% endif %}
+          <form method="POST" style="display:inline">
+            <button type="submit" name="action" value="remove:{{ loop.index0 }}" class="btn btn-danger">
+              {{ t("Eliminar", "Remove") }}
+            </button>
+          </form>
+        </li>
+      {% endfor %}
+    </ul>
+    <form method="POST">
+      <button type="submit" name="action" value="clear" class="btn btn-warning">{{ t("Vaciar Carrito","Clear Cart") }}</button>
+    </form>
   {% else %}
-  <p>{{ t("Tu carrito está vacío.", "Your cart is empty.", "你的購物車是空的。") }}</p>
+    <p>{{ t("Carrito vacío", "Cart empty") }}</p>
   {% endif %}
-
-  <a class="btn" href="{{ url_for('dashboard') }}">⬅ {{ t("Volver al Panel", "Back to Dashboard", "返回面板") }}</a>
-</div>
 {% endblock %}
