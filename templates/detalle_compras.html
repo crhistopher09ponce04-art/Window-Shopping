@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
+<div class="card">
 <h2>{{ t("Demandas de Compras","Purchase Demands","採購需求") }}</h2>
 
 {% for c in data %}
@@ -7,17 +8,23 @@
 <table>
 <tr>
   <th>{{ t("Producto","Product","產品") }}</th>
+  <th>{{ t("Variedad","Variety","品種") }}</th>
   <th>{{ t("Cantidad","Quantity","數量") }}</th>
+  <th>{{ t("Bulto","Package","包裝") }}</th>
   <th>{{ t("Origen","Origin","來源") }}</th>
-  <th>{{ t("Precio","Price","價格") }}</th>
+  <th>{{ t("Precio caja","Box price","每箱") }}</th>
+  <th>{{ t("Precio kg","Kg price","每公斤") }}</th>
   <th></th>
 </tr>
 {% for it in c.items if it.tipo=='demanda' %}
 <tr>
   <td>{{ it.producto }}</td>
-  <td>{{ it.cantidad }}</td>
-  <td>{{ it.origen }}</td>
-  <td>{{ it.precio }}</td>
+  <td>{{ it.variedad or "-" }}</td>
+  <td>{{ it.cantidad or "-" }}</td>
+  <td>{{ it.bulto or "-" }}</td>
+  <td>{{ it.origen or "-" }}</td>
+  <td>{{ it.precio_caja_fmt or it.precio or "-" }}</td>
+  <td>{{ it.precio_kg_fmt or "-" }}</td>
   <td>
     <form method="post" action="{{ url_for('cart_add') }}">
         <input type="hidden" name="empresa" value="{{ c.nombre }}">
@@ -29,5 +36,5 @@
 {% endfor %}
 </table>
 {% endfor %}
-
+</div>
 {% endblock %}
