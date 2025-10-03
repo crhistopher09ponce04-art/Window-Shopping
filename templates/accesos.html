@@ -1,26 +1,26 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>
-  {% if tipo == "ventas" %}
-    {{ t("Acceso a Ofertas de Venta","Access to Sales Offers") }}
-  {% elif tipo == "compras" %}
-    {{ t("Acceso a Demandas de Compra","Access to Purchase Demands") }}
-  {% else %}
-    {{ t("Acceso a Servicios","Access to Services") }}
-  {% endif %}
-</h2>
-
-{% if data %}
-  {% for c in data %}
-  <div class="card">
-    <h3><a href="{{ url_for('empresa', slug=c.slug) }}">{{ c.nombre }}</a></h3>
-    <p>{{ c.breve or c.descripcion }}</p>
-    <a class="btn" href="{{ url_for('detalles', tipo=tipo) }}">
-      {{ t("Ver detalles","See details") }}
-    </a>
+<div class="card">
+  <div class="subnav">
+    <a href="{{ url_for('accesos','compras') }}" class="{{ 'active' if tipo=='compras' else '' }}">{{ t("Compras","Purchases","採購") }}</a>
+    <a href="{{ url_for('accesos','ventas') }}" class="{{ 'active' if tipo=='ventas' else '' }}">{{ t("Ventas","Sales","銷售") }}</a>
+    <a href="{{ url_for('accesos','servicios') }}" class="{{ 'active' if tipo=='servicios' else '' }}">{{ t("Servicios","Services","服務") }}</a>
   </div>
-  {% endfor %}
-{% else %}
-  <p>{{ t("No hay registros disponibles.","No records available.") }}</p>
-{% endif %}
+
+  <h2>{{ t("Accesos","Access","訪問") }} - {{ tipo|capitalize }}</h2>
+  <table>
+    <tr>
+      <th>{{ t("Empresa","Company","公司") }}</th>
+      <th>{{ t("Rol","Role","角色") }}</th>
+      <th>{{ t("Acción","Action","操作") }}</th>
+    </tr>
+    {% for c in data %}
+    <tr>
+      <td>{{ c.nombre }}</td>
+      <td>{{ c.rol }}</td>
+      <td><a class="btn" href="{{ url_for('empresa', slug=c.slug) }}">{{ t("Ver","View","查看") }}</a></td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
 {% endblock %}
