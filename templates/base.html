@@ -1,48 +1,44 @@
-
 <!DOCTYPE html>
-<html lang="{{ session.get('lang','es') }}">
+<html lang="{{ get_lang() }}">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Window Shopping</title>
+  <meta charset="UTF-8">
+  <title>WS Marketplace</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-<header>
-  <a class="logo" href="{{ url_for('home') }}">WS • Window Shopping</a>
-  <nav>
-    <a href="{{ url_for('home') }}">{{ t("Inicio", "Home", "首頁") }}</a>
-    {% if session.get('usuario') %}
-      <a href="{{ url_for('dashboard') }}">📊 {{ t("Panel", "Dashboard", "主頁") }}</a>
-      <a href="{{ url_for('perfil') }}">👤 {{ t("Mi Perfil", "My Profile", "個人資料") }}</a>
-      <a href="{{ url_for('carrito') }}">🛒 {{ t("Carrito", "Cart", "購物車") }}</a>
-      <a href="{{ url_for('ayuda') }}">🆘 {{ t("Ayuda", "Help", "幫助") }}</a>
-      <a href="{{ url_for('logout') }}">{{ t("Salir", "Logout", "登出") }}</a>
-    {% else %}
-      <a href="{{ url_for('login') }}">🔑 {{ t("Ingresar", "Login", "登入") }}</a>
-      <a href="{{ url_for('register_router') }}">📝 {{ t("Registro", "Register", "註冊") }}</a>
-    {% endif %}
-    <span class="lang-switch">
-      <a href="{{ url_for('set_lang', lang='es') }}" class="{% if session.get('lang','es')=='es' %}active{% endif %}">ES</a> |
-      <a href="{{ url_for('set_lang', lang='en') }}" class="{% if session.get('lang','es')=='en' %}active{% endif %}">EN</a> |
-      <a href="{{ url_for('set_lang', lang='zh') }}" class="{% if session.get('lang','es')=='zh' %}active{% endif %}">中文</a>
-    </span>
-  </nav>
-</header>
-
-<main>
-  {% with messages = get_flashed_messages() %}
-    {% if messages %}
-      <div class="flash">
-        {% for m in messages %}<p>{{ m }}</p>{% endfor %}
-      </div>
-    {% endif %}
-  {% endwith %}
-  {% block content %}{% endblock %}
-</main>
-
-<footer>
-  © {{ t("2025 Plataforma Window Shopping — Demo", "2025 Window Shopping Platform — Demo", "2025 Window Shopping 平台 — 示範") }}
-</footer>
+  <header>
+    <a href="{{ url_for('home') }}" class="logo">
+      <div class="ws-logo"></div>
+    </a>
+    <nav>
+      {% if session.get("usuario") %}
+        <a href="{{ url_for('dashboard') }}">{{ t("Inicio", "Home") }}</a>
+        <a href="{{ url_for('carrito') }}">{{ t("Carrito", "Cart") }}</a>
+        <a href="{{ url_for('ayuda') }}">{{ t("Ayuda", "Help") }}</a>
+        <a href="{{ url_for('logout') }}">{{ t("Salir", "Logout") }}</a>
+      {% else %}
+        <a href="{{ url_for('login') }}">{{ t("Ingresar", "Login") }}</a>
+        <a href="{{ url_for('register_router') }}">{{ t("Registro", "Register") }}</a>
+      {% endif %}
+    </nav>
+    <div class="lang-switch">
+      <a href="{{ url_for('set_lang', lang='es') }}" class="{{ 'active' if get_lang() == 'es' else '' }}">ES</a> |
+      <a href="{{ url_for('set_lang', lang='en') }}" class="{{ 'active' if get_lang() == 'en' else '' }}">EN</a> |
+      <a href="{{ url_for('set_lang', lang='zh') }}" class="{{ 'active' if get_lang() == 'zh' else '' }}">中文</a>
+    </div>
+  </header>
+  <main>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for msg in messages %}
+          <div class="flash">{{ msg }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+  <footer>
+    © 2025 WS Marketplace. {{ t("Todos los derechos reservados.", "All rights reserved.") }}
+  </footer>
 </body>
 </html>
