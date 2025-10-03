@@ -1,28 +1,17 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>{{ t("Carrito","Cart") }}</h2>
-
+<h2>Carrito</h2>
 {% if cart %}
-<ul>
-  {% for item in cart %}
-    <li>
-      {{ item.empresa }} - {{ item.get("producto", item.get("servicio")) }}
-      - {{ item.get("cantidad", item.get("capacidad","")) }} {{ item.get("precio","") }}
-
-      <!-- Botón para eliminar este ítem -->
-      <form method="post" style="display:inline;">
-        <button type="submit" name="action" value="remove:{{ loop.index0 }}">
-          ❌ {{ t("Eliminar","Remove") }}
-        </button>
-      </form>
-    </li>
-  {% endfor %}
-</ul>
-
-<form method="post">
-  <button type="submit" name="action" value="clear">{{ t("Vaciar Carrito","Clear Cart") }}</button>
-</form>
+  <ul>
+    {% for i in cart %}
+      <li>{{ i }}</li>
+    {% endfor %}
+  </ul>
+  <form method="post">
+    <input type="hidden" name="action" value="clear">
+    <button type="submit">Vaciar Carrito</button>
+  </form>
 {% else %}
-  <p>{{ t("Tu carrito está vacío.","Your cart is empty.") }}</p>
+  <p>No hay items en el carrito.</p>
 {% endif %}
 {% endblock %}
