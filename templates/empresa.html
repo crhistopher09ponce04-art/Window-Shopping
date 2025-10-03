@@ -1,20 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>{{ comp.nombre }}</h2>
-<p><b>RUT:</b> {{ comp.rut }} | <b>Email:</b> {{ comp.email }}</p>
-<p><b>Tel:</b> {{ comp.telefono }} | <b>{{ t("Dirección","Address") }}:</b> {{ comp.direccion }}</p>
-<p><b>{{ t("Descripción","Description") }}:</b> {{ comp.descripcion or comp.breve }}</p>
-
-<h3>{{ t("Ítems","Items") }}</h3>
+<h2>{{ comp.nombre or comp.empresa }}</h2>
+<p>{{ comp.descripcion }}</p>
 <ul>
-{% for i in comp.items %}
-  {% if i.tipo == "oferta" %}
-    <li>📦 {{ i.producto }} - {{ i.cantidad }} - {{ i.precio }}</li>
-  {% elif i.tipo == "demanda" %}
-    <li>📥 {{ i.producto }} - {{ i.cantidad }}</li>
-  {% elif i.tipo == "servicio" %}
-    <li>⚙ {{ i.servicio }} - {{ i.capacidad }}</li>
-  {% endif %}
-{% endfor %}
+  {% for i in comp.items %}
+    <li>{{ i }}</li>
+  {% endfor %}
 </ul>
 {% endblock %}
