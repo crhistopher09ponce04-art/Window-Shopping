@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="card">
-  <h2>📊 {{ t("Panel de Control", "Dashboard", "控制面板") }}</h2>
-  <p>{{ t("Bienvenido", "Welcome", "歡迎") }} {{ session['usuario']['username'] }} 👋</p>
+  <h2>{{ t("Panel de Control", "Dashboard") }}</h2>
+  <p>{{ t("Bienvenido", "Welcome") }} <b>{{ usuario }}</b> ({{ rol }})</p>
 
-  <div class="grid mt-2">
-    <a class="btn" href="{{ url_for('detalle_ventas') }}">🍇 {{ t("Ventas / Ofertas", "Sales / Offers", "銷售/供應") }}</a>
-    <a class="btn" href="{{ url_for('detalle_compras') }}">🛒 {{ t("Compras / Demandas", "Purchases / Demands", "採購/需求") }}</a>
-    <a class="btn" href="{{ url_for('detalle_servicios') }}">🔧 {{ t("Servicios", "Services", "服務") }}</a>
+  <div class="grid-3">
+    <a href="{{ url_for('accesos', tipo='ventas') }}" class="tile">{{ t("Acceso a Ventas", "Sales Access") }}</a>
+    <a href="{{ url_for('accesos', tipo='compras') }}" class="tile">{{ t("Acceso a Compras", "Purchase Access") }}</a>
+    <a href="{{ url_for('accesos', tipo='servicios') }}" class="tile">{{ t("Acceso a Servicios", "Services Access") }}</a>
+    <a href="{{ url_for('carrito') }}" class="tile">{{ t("Mi Carrito", "My Cart") }}</a>
+    <a href="{{ url_for('perfil') }}" class="tile">{{ t("Mi Perfil", "My Profile") }}</a>
   </div>
-</div>
 {% endblock %}
