@@ -1,17 +1,20 @@
 {% extends "base.html" %}
 {% block content %}
-  <h2>{{ t("Mi Perfil", "My Profile") }}</h2>
-  <p><b>{{ my_company.empresa }}</b></p>
-  <p>{{ my_company.descripcion }}</p>
-  <ul>
-    {% for i in my_company.items %}
-      <li>
-        {% if i.tipo == "servicio" %}
-          {{ i.servicio }} - {{ i.capacidad }} - {{ i.ubicacion }}
-        {% else %}
-          {{ i.producto }} - {{ i.cantidad }} - {{ i.origen }}
-        {% endif %}
-      </li>
-    {% endfor %}
-  </ul>
+<h2>{{ comp.nombre }}</h2>
+<p><b>RUT:</b> {{ comp.rut }} | <b>Email:</b> {{ comp.email }}</p>
+<p><b>Tel:</b> {{ comp.telefono }} | <b>{{ t("Dirección","Address") }}:</b> {{ comp.direccion }}</p>
+<p><b>{{ t("Descripción","Description") }}:</b> {{ comp.descripcion or comp.breve }}</p>
+
+<h3>{{ t("Ítems","Items") }}</h3>
+<ul>
+{% for i in comp.items %}
+  {% if i.tipo == "oferta" %}
+    <li>📦 {{ i.producto }} - {{ i.cantidad }} - {{ i.precio }}</li>
+  {% elif i.tipo == "demanda" %}
+    <li>📥 {{ i.producto }} - {{ i.cantidad }}</li>
+  {% elif i.tipo == "servicio" %}
+    <li>⚙ {{ i.servicio }} - {{ i.capacidad }}</li>
+  {% endif %}
+{% endfor %}
+</ul>
 {% endblock %}
