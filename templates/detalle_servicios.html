@@ -1,24 +1,22 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="card">
-  <h2>🔧 {{ t("Servicios", "Services", "服務") }}</h2>
-
-  <table>
-    <tr>
-      <th>{{ t("Servicio", "Service", "服務") }}</th>
-      <th>{{ t("Descripción", "Description", "描述") }}</th>
-      <th>{{ t("Acciones", "Actions", "操作") }}</th>
-    </tr>
-    {% for s in servicios %}
-    <tr>
-      <td>{{ s.nombre }}</td>
-      <td>{{ s.descripcion }}</td>
-      <td>
-        <a href="{{ url_for('empresa', id=s.empresa_id) }}">🏢 {{ t("Ver Empresa", "View Company", "查看公司") }}</a> |
-        <a href="{{ url_for('agregar_carrito', id=s.id, tipo='servicio') }}">🛒 {{ t("Agregar al Carrito", "Add to Cart", "加入購物車") }}</a>
-      </td>
-    </tr>
-    {% endfor %}
-  </table>
-</div>
+  <h2>{{ t("Servicios Disponibles", "Available Services") }}</h2>
+  {% for c in data %}
+    <div class="card">
+      <h3>{{ c.nombre }}</h3>
+      <ul>
+        {% for i in c.items if i.tipo == "servicio" %}
+          <li>
+            {{ i.servicio }} - {{ i.capacidad }} - {{ i.ubicacion }}
+            <form method="POST" action="{{ url_for('cart_add') }}">
+              <input type="hidden" name="empresa" value="{{ c.nombre }}">
+              <input type="hidden" name="servicio" value="{{ i.servicio }}">
+              <input type="hidden" name="tipo" value="servicio">
+              <input type="submit" value="{{ t('Agregar al carrito','Add to cart') }}" class="btn">
+            </form>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endfor %}
 {% endblock %}
