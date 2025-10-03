@@ -9,12 +9,18 @@ app.secret_key = os.environ.get("SECRET_KEY", "dev-secret-key")
 # i18n simple
 # =========================================================
 def t(es, en, zh=None):
+    """Traductor mínimo por sesión."""
     lang = session.get("lang", "es")
     if lang == "en":
         return en
     if lang == "zh" and zh:
         return zh
     return es
+
+@app.context_processor
+def inject_t():
+    """Inyecta 't' en TODAS las plantillas (incluidas de error)."""
+    return dict(t=t)
 
 @app.route("/set_lang/<lang>")
 @app.route("/lang/<lang>")
@@ -24,10 +30,7 @@ def set_lang(lang):
 
 # =========================================================
 # Datos DEMO (Usuarios / Perfiles / Empresas públicas)
-#  - Packing y Frigorífico aparecen en Servicios y también en Compra/Venta.
-#  - Al menos 2 ofertas con Ciruela (Ciruela D’Agen, Ciruela Angeleno)
 # =========================================================
-
 USERS = {
     # Compra/Venta
     "frutera@demo.cl":     {"password": "1234", "rol": "Productor",          "perfil_tipo": "compra_venta", "pais": "CL"},
@@ -54,8 +57,8 @@ USER_PROFILES = {
         "direccion": "Parcela 21, Vicuña",
         "descripcion": "Productores de uva de mesa, ciruela y arándano.",
         "items": [
-            {"tipo": "oferta", "producto": "Uva Crimson",      "cantidad": "120 pallets", "origen": "IV Región", "precio": "A convenir"},
-            {"tipo": "oferta", "producto": "Ciruela D’Agen",   "cantidad": "80 pallets",  "origen": "VI Región", "precio": "USD 12/caja"},
+            {"tipo": "oferta", "producto": "Uva Crimson",   "cantidad": "120 pallets", "origen": "IV Región", "precio": "A convenir"},
+            {"tipo": "oferta", "producto": "Ciruela D’Agen", "cantidad": "80 pallets",  "origen": "VI Región", "precio": "USD 12/caja"},
         ],
     },
     "planta@demo.cl": {
@@ -112,7 +115,7 @@ USER_PROFILES = {
         "descripcion": "Servicios de packing, etiquetado y QA.",
         "items": [
             {"tipo": "servicio", "servicio": "Embalaje exportación", "capacidad": "30.000 cajas/día", "ubicacion": "Rancagua"},
-            {"tipo": "oferta",   "producto": "Ciruela Angeleno",     "cantidad": "60 pallets",        "origen": "R.M.", "precio": "USD 10/caja"},
+            {"tipo": "oferta",   "producto": "Ciruela Angeleno",     "cantidad": "60 pallets",       "origen": "R.M.", "precio": "USD 10/caja"},
         ],
     },
     "frigorifico@demo.cl": {
@@ -128,7 +131,7 @@ USER_PROFILES = {
         "items": [
             {"tipo": "servicio", "servicio": "Almacenaje en frío", "capacidad": "1.500 pallets", "ubicacion": "Valparaíso"},
             {"tipo": "servicio", "servicio": "Preenfriado",        "capacidad": "6 túneles",     "ubicacion": "Valparaíso"},
-            {"tipo": "oferta",   "producto": "Uva Red Globe",      "cantidad": "40 pallets",     "origen": "V Región", "precio": "USD 9/caja"},
+            {"tipo": "oferta",   "producto": "Uva Red Globe",      "cantidad": "40 pallets",     "origen": "V Región",  "precio": "USD 9/caja"},
         ],
     },
     "transporte@demo.cl": {
@@ -175,7 +178,6 @@ USER_PROFILES = {
     },
 }
 
-# Empresas públicas (perfiles visibles por slug) para /empresa/<slug> y vistas de detalle
 COMPANIES = [
     {
         "slug": "agro-el-valle",
@@ -223,7 +225,7 @@ COMPANIES = [
         "items": [
             {"tipo": "servicio", "servicio": "Almacenaje en frío", "capacidad": "1.500 pallets", "ubicacion": "Valparaíso"},
             {"tipo": "servicio", "servicio": "Preenfriado",        "capacidad": "6 túneles",     "ubicacion": "Valparaíso"},
-            {"tipo": "oferta",   "producto": "Uva Red Globe",      "cantidad": "40 pallets",     "origen": "V Región", "precio": "USD 9/caja"},
+            {"tipo": "oferta",   "producto": "Uva Red Globe",      "cantidad": "40 pallets",     "origen": "V Región",  "precio": "USD 9/caja"},
         ],
     },
     {
@@ -326,7 +328,11 @@ def remove_from_cart(index):
 # =========================================================
 @app.route("/")
 def home():
-    return render_template("landing.html", t=t)
+    return render_template("landing.html")
+
+@app.route("/favicon.ico")
+def favicon():
+    return ("", 204)
 
 # ---------- Auth ----------
 @app.route("/login", methods=["GET", "POST"])
@@ -338,60 +344,71 @@ def login():
         udata = USERS.get(user)
         if udata and udata["password"] == pwd:
             session["user"] = user
-            session["usuario"] = user  # compatibilidad con templates antiguos
+            session["usuario"] = user
             flash(t("Bienvenido/a", "Welcome", "歡迎"))
             return redirect(url_for("dashboard"))
         error = t("Credenciales inválidas", "Invalid credentials", "帳密錯誤")
-    return render_template("login.html", error=error, t=t)
+    return render_template("login.html", error=error)
 
 @app.route("/logout")
 def logout():
     session.clear()
     return redirect(url_for("home"))
 
-# ---------- Registro (Router + Form) ----------
+# ---------- Registro (Router + Form con filtro nacional/extranjero) ----------
 @app.route("/register_router")
 def register_router():
-    return render_template("register_router.html", t=t)
+    return render_template("register_router.html")
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
     error = None
-    nacionalidad = request.args.get("nac")   # nacional / extranjero
-    perfil_tipo  = request.args.get("tipo")  # compra_venta / servicios
 
+    nacionalidad = request.args.get("nac")      # 'nacional' | 'extranjero'
+    perfil_tipo  = request.args.get("tipo")     # 'compra_venta' | 'servicios'
+
+    NACIONALIDAD_OPCIONES = ["nacional", "extranjero"]
+    PERFIL_OPCIONES = ["compra_venta", "servicios"]
     ROLES_COMPRA_VENTA = ["Productor", "Planta", "Packing", "Frigorífico", "Exportador", "Cliente extranjero"]
     ROLES_SERVICIOS    = ["Packing", "Frigorífico", "Transporte", "Agencia de Aduanas", "Extraportuario"]
 
     if request.method == "POST":
+        nacionalidad = request.form.get("nacionalidad") or nacionalidad or "nacional"
+        perfil_tipo  = request.form.get("perfil_tipo")  or perfil_tipo  or "compra_venta"
+
         username = request.form.get("username", "").strip()
         password = request.form.get("password", "").strip()
         email    = request.form.get("email", "").strip()
         telefono = request.form.get("phone", "").strip()
         direccion= request.form.get("address", "").strip()
-        pais     = request.form.get("pais", "CL").strip()
+        pais     = request.form.get("pais", "").strip()
         rol      = request.form.get("rol", "").strip()
-        pft      = request.form.get("perfil_tipo", "").strip()
         rut      = request.form.get("rut", "").strip()
-        nac      = request.form.get("nacionalidad", "").strip()
 
-        if not username or not password or not rol or not pft or not nac:
+        if not pais:
+            pais = "CL" if nacionalidad == "nacional" else "US"
+
+        if not username or not password or not rol or not perfil_tipo or not nacionalidad:
             error = t("Completa los campos obligatorios.", "Please complete required fields.")
+        elif perfil_tipo not in PERFIL_OPCIONES:
+            error = t("Tipo de perfil inválido.", "Invalid profile type.")
+        elif nacionalidad not in NACIONALIDAD_OPCIONES:
+            error = t("Nacionalidad inválida.", "Invalid nationality.")
         elif username in USERS:
             error = t("El usuario ya existe.", "User already exists.")
         else:
             USERS[username] = {
                 "password": password,
                 "rol": rol,
-                "perfil_tipo": pft,
-                "pais": pais or ("CL" if nac == "nacional" else "EX"),
+                "perfil_tipo": perfil_tipo,
+                "pais": pais,
             }
             USER_PROFILES[username] = {
                 "empresa": username.split("@")[0].replace(".", " ").title(),
-                "rut": rut or ("76.000.000-0" if nac == "nacional" else None),
+                "rut": rut or ("76.000.000-0" if nacionalidad == "nacional" else None),
                 "rol": rol,
-                "perfil_tipo": pft,
-                "pais": USERS[username]["pais"],
+                "perfil_tipo": perfil_tipo,
+                "pais": pais,
                 "email": email or username,
                 "telefono": telefono or "",
                 "direccion": direccion or "",
@@ -407,9 +424,10 @@ def register():
         error=error,
         nacionalidad=nacionalidad,
         perfil_tipo=perfil_tipo,
+        nacionalidad_opciones=NACIONALIDAD_OPCIONES,
+        perfil_opciones=PERFIL_OPCIONES,
         roles_cv=ROLES_COMPRA_VENTA,
         roles_srv=ROLES_SERVICIOS,
-        t=t
     )
 
 # ---------- Dashboard ----------
@@ -428,7 +446,6 @@ def dashboard():
         perfil_tipo=perfil_tipo,
         my_company=profile or {},
         cart=get_cart(),
-        t=t
     )
 
 # ---------- Accesos (listado simple) ----------
@@ -445,15 +462,13 @@ def accesos(tipo):
                 if any(it.get("tipo") == "servicio" for it in c.get("items", [])):
                     data.append(c)
     else:
-        # ventas / compras: compra_venta + (packing/frigorífico con compra/venta)
         tag = "oferta" if tipo == "ventas" else "demanda"
         data = []
         for c in COMPANIES:
             if c["perfil_tipo"] == "compra_venta" or c["rol"] in ("Packing", "Frigorífico"):
                 if any(it.get("tipo") == tag for it in c.get("items", [])):
                     data.append(c)
-
-    return render_template("accesos.html", tipo=tipo, data=data, t=t)
+    return render_template("accesos.html", tipo=tipo, data=data)
 
 # ---------- Detalles (tablas con botón Agregar) ----------
 @app.route("/detalles/<tipo>")
@@ -470,27 +485,56 @@ def detalles(tipo):
                 if any(it.get("tipo") == tag for it in c.get("items", [])):
                     data.append(c)
         tpl = "detalle_ventas.html" if tipo == "ventas" else "detalle_compras.html"
-        return render_template(tpl, data=data, t=t)
+        return render_template(tpl, data=data)
 
-    # servicios
     data = []
     for c in COMPANIES:
         if c["perfil_tipo"] == "servicios" or c["rol"] in ("Packing", "Frigorífico"):
             if any(it.get("tipo") == "servicio" for it in c.get("items", [])):
                 data.append(c)
-    return render_template("detalle_servicios.html", data=data, t=t)
+    return render_template("detalle_servicios.html", data=data)
 
 # ---------- Perfil público por slug (empresa) ----------
 @app.route("/empresa/<slug>")
 def empresa(slug):
     comp = next((c for c in COMPANIES if c["slug"] == slug), None)
     if not comp:
-        # fallback: si el slug coincide con un username en USER_PROFILES, muestro ese perfil
         prof = USER_PROFILES.get(slug)
         if not prof:
             abort(404)
-        return render_template("empresa.html", comp=prof, es_user=True, t=t)
-    return render_template("empresa.html", comp=comp, es_user=False, t=t)
+        return render_template("empresa.html", comp=prof, es_user=True)
+    return render_template("empresa.html", comp=comp, es_user=False)
+
+# ---------- Clientes (listado + detalle) ----------
+@app.route("/clientes")
+def clientes():
+    lista = []
+    for uname, prof in USER_PROFILES.items():
+        if "cliente" in (prof.get("rol") or "").lower():
+            item = prof.copy()
+            item["username"] = uname
+            lista.append(item)
+    if not lista and "cliente@usa.com" in USER_PROFILES:
+        item = USER_PROFILES["cliente@usa.com"].copy()
+        item["username"] = "cliente@usa.com"
+        lista.append(item)
+    return render_template("clientes.html", clientes=lista)
+
+@app.route("/cliente/<username>")
+def cliente_detalle(username):
+    prof = USER_PROFILES.get(username)
+    if not prof:
+        abort(404)
+    comp = {
+        "nombre": prof.get("empresa"),
+        "rut": prof.get("rut"),
+        "email": prof.get("email"),
+        "telefono": prof.get("telefono"),
+        "direccion": prof.get("direccion"),
+        "descripcion": prof.get("descripcion"),
+        "items": prof.get("items", []),
+    }
+    return render_template("cliente_detalle.html", comp=comp, username=username)
 
 # ---------- Mi Perfil (edición + agregar ítems) ----------
 @app.route("/perfil", methods=["GET", "POST"])
@@ -544,12 +588,11 @@ def perfil():
                     })
                     mensaje = t("Ítem agregado.", "Item added.")
 
-    return render_template("perfil.html", perfil=prof, mensaje=mensaje, t=t)
+    return render_template("perfil.html", perfil=prof, mensaje=mensaje)
 
 # ---------- Carrito ----------
 @app.route("/cart/add", methods=["POST"])
 def cart_add():
-    # Recibe campos ocultos desde tablas de detalle/perfil público
     item = request.form.to_dict()
     if "empresa" not in item:
         item["empresa"] = "?"
@@ -570,7 +613,7 @@ def carrito():
             if remove_from_cart(idx):
                 flash(t("Ítem eliminado", "Item removed"))
             return redirect(url_for("carrito"))
-    return render_template("carrito.html", cart=get_cart(), t=t)
+    return render_template("carrito.html", cart=get_cart())
 
 # ---------- Ayuda ----------
 @app.route("/ayuda", methods=["GET", "POST"])
@@ -583,10 +626,10 @@ def ayuda():
             msg = t("Hemos recibido tu mensaje. Te contactaremos pronto.", "We received your message. We'll contact you soon.")
         else:
             msg = t("Completa correo y mensaje.", "Please complete email and message.")
-    return render_template("ayuda.html", mensaje=msg, t=t)
+    return render_template("ayuda.html", mensaje=msg)
 
 # =========================================================
-# Errores (plantilla independiente para evitar bucles con base.html)
+# Errores
 # =========================================================
 @app.errorhandler(404)
 def not_found(e):
