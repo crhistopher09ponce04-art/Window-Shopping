@@ -1,14 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Login</h2>
+<h2>{{ t("Ingresar","Login","登入") }}</h2>
+{% if error %}<div class="mensaje">{{ error }}</div>{% endif %}
 <form method="post">
-  <label>Email</label>
-  <input type="text" name="username" required>
-  <label>Password</label>
-  <input type="password" name="password" required>
-  <button type="submit">Entrar</button>
+    <input type="text" name="username" placeholder="Email">
+    <input type="password" name="password" placeholder="Password">
+    <button type="submit">{{ t("Ingresar","Login","登入") }}</button>
 </form>
-{% if error %}
-  <div class="alert alert-error">{{ error }}</div>
-{% endif %}
 {% endblock %}
