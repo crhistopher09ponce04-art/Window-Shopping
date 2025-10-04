@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
 <h2>{{ comp.nombre }}</h2>
-
 <div class="empresa-detalle">
     <p><strong>{{ t("Rol","Role","角色") }}:</strong> {{ comp.rol }}</p>
     {% if comp.rut %}
@@ -15,7 +14,6 @@
 </div>
 
 <hr>
-
 <h3>{{ t("Ítems disponibles","Available Items","可用項目") }}</h3>
 <table>
     <tr>
@@ -29,10 +27,7 @@
     {% for it in comp.items %}
     <tr>
         <td>{{ it.tipo|capitalize }}</td>
-        <td>
-            {% if it.producto %}{{ it.producto }}{% endif %}
-            {% if it.servicio %}{{ it.servicio }}{% endif %}
-        </td>
+        <td>{{ it.producto or it.servicio }}</td>
         <td>{{ it.cantidad or it.capacidad }}</td>
         <td>{{ it.origen or it.ubicacion }}</td>
         <td>{{ it.precio or "-" }}</td>
