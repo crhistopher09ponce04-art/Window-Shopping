@@ -1,12 +1,18 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>{{ t("Bienvenido a Window Shopping", "Welcome to Window Shopping", "歡迎來到Window Shopping") }}</h2>
-<p>{{ t("Plataforma de conexión entre productores, exportadores y clientes internacionales.", 
-         "Platform connecting producers, exporters and international buyers.",
-         "連接生產商、出口商和國際買家的平台") }}</p>
+<h2>{{ t("Bienvenido a WS","Welcome to WS","歡迎來到WS") }}</h2>
+<p>{{ t("Conecta productores, exportadores y clientes internacionales en una sola plataforma.",
+        "Connect producers, exporters and international clients in one platform.",
+        "連接生產者、出口商和國際客戶的一站式平台") }}</p>
 
-<div style="margin-top:20px;">
-  <a class="btn" href="{{ url_for('login') }}">Iniciar Sesión</a>
-  <a class="btn" href="{{ url_for('register_router') }}">Registrarse</a>
-</div>
+{% if not session.get("user") %}
+    <p>
+        <a href="{{ url_for('login') }}" class="btn">{{ t("Inicia sesión","Login","登入") }}</a>
+        <a href="{{ url_for('register_router') }}" class="btn">{{ t("Regístrate","Register","註冊") }}</a>
+    </p>
+{% else %}
+    <p>
+        <a href="{{ url_for('dashboard') }}" class="btn">{{ t("Ir a mi panel","Go to dashboard","前往控制台") }}</a>
+    </p>
+{% endif %}
 {% endblock %}
