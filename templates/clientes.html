@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
 <h2>{{ t("Clientes Extranjeros","Foreign Clients","外國客戶") }}</h2>
-
 {% if clientes %}
 <table>
     <tr>
@@ -13,7 +12,7 @@
     </tr>
     {% for c in clientes %}
     <tr>
-        <td>{{ c.empresa }}</td>
+        <td><a href="{{ url_for('cliente_detalle', username=c.username) }}">{{ c.empresa }}</a></td>
         <td>{{ c.pais or "Extranjero" }}</td>
         <td>{{ c.email }}</td>
         <td>{{ c.telefono }}</td>
