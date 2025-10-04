@@ -4,20 +4,12 @@
 {% if cart %}
 <form method="post">
 <table>
-<tr>
-  <th>{{ t("Empresa","Company","公司") }}</th>
-  <th>{{ t("Producto/Servicio","Product/Service","產品/服務") }}</th>
-  <th>{{ t("Acción","Action","操作") }}</th>
-</tr>
+<tr><th>Empresa</th><th>Producto</th><th>Acción</th></tr>
 {% for i in cart %}
 <tr>
   <td>{{ i.empresa }}</td>
   <td>{{ i.producto or i.servicio }}</td>
-  <td>
-    <button name="action" value="remove:{{ loop.index0 }}" class="table-btn remove-btn">
-      {{ t("Eliminar","Remove","刪除") }}
-    </button>
-  </td>
+  <td><button name="action" value="remove:{{ loop.index0 }}" class="table-btn remove-btn">{{ t("Eliminar","Remove","刪除") }}</button></td>
 </tr>
 {% endfor %}
 </table>
