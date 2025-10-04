@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
 <h2>{{ comp.nombre }}</h2>
-
 <div class="cliente-detalle">
     <p><strong>{{ t("Rol","Role","角色") }}:</strong> Cliente extranjero</p>
     {% if comp.rut %}
@@ -15,7 +14,6 @@
 </div>
 
 <hr>
-
 <h3>{{ t("Ítems requeridos/ofertados","Requested/Offered Items","需求/提供的項目") }}</h3>
 <table>
     <tr>
