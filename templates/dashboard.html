@@ -1,32 +1,13 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>{{ t("Panel de Control","Dashboard","控制面板") }}</h2>
-
-<p>{{ t("Bienvenido","Welcome","歡迎") }}: {{ usuario }}</p>
-<p><strong>{{ t("Rol","Role","角色") }}:</strong> {{ rol }}</p>
-<p><strong>{{ t("Tipo de Perfil","Profile Type","資料類型") }}:</strong> {{ perfil_tipo }}</p>
-
-<h3>{{ t("Mis Ítems","My Items","我的項目") }}</h3>
-{% if my_company.items %}
-<table>
-    <tr>
-        <th>{{ t("Tipo","Type","類型") }}</th>
-        <th>{{ t("Detalle","Detail","細節") }}</th>
-        <th>{{ t("Cantidad/Capacidad","Quantity/Capacity","數量/容量") }}</th>
-        <th>{{ t("Origen/Ubicación","Origin/Location","來源/地點") }}</th>
-        <th>{{ t("Precio","Price","價格") }}</th>
-    </tr>
-    {% for it in my_company.items %}
-    <tr>
-        <td>{{ it.tipo }}</td>
-        <td>{{ it.producto or it.servicio }}</td>
-        <td>{{ it.cantidad or it.capacidad }}</td>
-        <td>{{ it.origen or it.ubicacion }}</td>
-        <td>{{ it.precio or "-" }}</td>
-    </tr>
-    {% endfor %}
-</table>
-{% else %}
-<p><em>{{ t("No tienes ítems aún.","No items yet.","尚無項目") }}</em></p>
-{% endif %}
+<h2>{{ t("Panel de Usuario","User Dashboard","用戶面板") }}</h2>
+<p><strong>{{ usuario }}</strong> - {{ rol }}</p>
+<h3>{{ t("Mi empresa/perfil","My company/profile","我的公司/檔案") }}</h3>
+<p>{{ my_company.descripcion }}</p>
+<ul>
+{% for i in my_company.items %}
+    <li>{{ i }}</li>
+{% endfor %}
+</ul>
 {% endblock %}
+
