@@ -2,60 +2,28 @@
 import os
 import uuid
 from datetime import timedelta
+from typing import List, Dict, Any, Optional
 from werkzeug.utils import secure_filename
 from flask import (
     Flask, render_template, request, redirect, url_for,
     session, abort, flash, send_from_directory
 )
 
+# =========================================================
+# Config básica
+# =========================================================
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "dev-secret-key")
 app.permanent_session_lifetime = timedelta(days=14)
 
-# =========================================================
-# Config de uploads (RUT, documentos extranjeros)
-# =========================================================
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-UPLOAD_FOLDER = os.path.join(BASE_DIR, "static", "uploads")
+STATIC_DIR = os.path.join(BASE_DIR, "static")
+UPLOAD_FOLDER = os.path.join(STATIC_DIR, "uploads")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 ALLOWED_EXT = {"pdf", "png", "jpg", "jpeg"}
 
 def allowed_file(filename: str) -> bool:
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXT
-
-# =========================================================
-# Utilidades de formato
-# =========================================================
-def normaliza_moneda(valor: str) -> str:
-    """Devuelve siempre un precio con símbolo $ y separadores mínimos.
-    Acepta '1000', '$1000', '1.000,50', '1000.50', etc.
-    """
-    if not valor:
-        return "-"
-    v = str(valor).strip()
-    v = v.replace(" ", "").replace(",", ".")
-    # quitar símbolos que no sean dígitos o punto
-    v = ''.join(ch for ch in v if ch.isdigit() or ch == '.')
-    if v == "" or v == ".":
-        return "-"
-    # si hay más de un punto, nos quedamos con el primero y juntamos lo demás
-    parts = v.split(".")
-    if len(parts) > 2:
-        v = parts[0] + "." + "".join(parts[1:])
-    # Si termina en punto, quítalo
-    if v.endswith("."):
-        v = v[:-1]
-    try:
-        n = float(v)
-    except Exception:
-        return "-"
-    # Formato sin forzar decimales si es entero
-    if abs(n - int(n)) < 1e-9:
-        return f"${int(n):,}".replace(",", ".")
-    else:
-        # dos decimales
-        entero, dec = f"{n:.2f}".split(".")
-        return f"${int(entero):,}.{dec}".replace(",", ".")
 
 # =========================================================
 # i18n simple
@@ -71,7 +39,7 @@ def t(es, en, zh=None):
 
 @app.context_processor
 def inject_globals():
-    """Inyecta 't' y banderas de idioma en TODAS las plantillas (incluidas de error)."""
+    """Inyecta 't' y banderas de idioma en TODAS las plantillas (incluidas error)."""
     return dict(
         t=t,
         LANGS=[("es", "ES"), ("en", "EN"), ("zh", "中文")]
@@ -86,25 +54,26 @@ def set_lang(lang):
 # =========================================================
 # Datos DEMO (Usuarios / Perfiles / Empresas públicas)
 # =========================================================
-USERS = {
+
+USERS: Dict[str, Dict[str, Any]] = {
     # Compra/Venta
     "frutera@demo.cl":     {"password": "1234", "rol": "Productor",          "perfil_tipo": "compra_venta", "pais": "CL"},
-    "planta@demo.cl":      {"password": "1234", "rol": "Planta",              "perfil_tipo": "compra_venta", "pais": "CL"},
-    "exportador@demo.cl":  {"password": "1234", "rol": "Exportador",          "perfil_tipo": "compra_venta", "pais": "CL"},
-    "cliente@usa.com":     {"password": "1234", "rol": "Cliente extranjero",  "perfil_tipo": "compra_venta", "pais": "US"},
+    "planta@demo.cl":      {"password": "1234", "rol": "Planta",             "perfil_tipo": "compra_venta", "pais": "CL"},
+    "exportador@demo.cl":  {"password": "1234", "rol": "Exportador",         "perfil_tipo": "compra_venta", "pais": "CL"},
+    "cliente@usa.com":     {"password": "1234", "rol": "Cliente extranjero", "perfil_tipo": "compra_venta", "pais": "US"},
     # Servicios
-    "packing@demo.cl":     {"password": "1234", "rol": "Packing",             "perfil_tipo": "servicios",    "pais": "CL"},
-    "frigorifico@demo.cl": {"password": "1234", "rol": "Frigorífico",         "perfil_tipo": "servicios",    "pais": "CL"},
-    "transporte@demo.cl":  {"password": "1234", "rol": "Transporte",          "perfil_tipo": "servicios",    "pais": "CL"},
-    "aduana@demo.cl":      {"password": "1234", "rol": "Agencia de Aduanas",  "perfil_tipo": "servicios",    "pais": "CL"},
-    "extraport@demo.cl":   {"password": "1234", "rol": "Extraportuario",      "perfil_tipo": "servicios",    "pais": "CL"},
+    "packing@demo.cl":     {"password": "1234", "rol": "Packing",            "perfil_tipo": "servicios",    "pais": "CL"},
+    "frigorifico@demo.cl": {"password": "1234", "rol": "Frigorífico",        "perfil_tipo": "servicios",    "pais": "CL"},
+    "transporte@demo.cl":  {"password": "1234", "rol": "Transporte",         "perfil_tipo": "servicios",    "pais": "CL"},
+    "aduana@demo.cl":      {"password": "1234", "rol": "Agencia de Aduanas", "perfil_tipo": "servicios",    "pais": "CL"},
+    "extraport@demo.cl":   {"password": "1234", "rol": "Extraportuario",     "perfil_tipo": "servicios",    "pais": "CL"},
 }
 
-USER_PROFILES = {
+USER_PROFILES: Dict[str, Dict[str, Any]] = {
     "frutera@demo.cl": {
         "empresa": "Agro El Valle SPA",
         "rut": "76.123.456-7",
-        "rut_file": None,  # archivo adjunto RUT (opcional)
+        "rut_file": None,
         "rol": "Productor",
         "perfil_tipo": "compra_venta",
         "pais": "CL",
@@ -113,10 +82,9 @@ USER_PROFILES = {
         "direccion": "Parcela 21, Vicuña",
         "descripcion": "Productores de uva de mesa, ciruela y arándano.",
         "items": [
-            {"tipo": "oferta", "producto": "Uva Crimson",   "variedad": "-", "cantidad": "120 pallets", "tipo_bulto": "pallets", "origen": "IV Región", "precio_caja": "-", "precio_kg": "-", "precio": "A convenir"},
-            {"tipo": "oferta", "producto": "Ciruela D’Agen", "variedad": "-", "cantidad": "80 pallets",  "tipo_bulto": "pallets", "origen": "VI Región", "precio_caja": "$12", "precio_kg": "-", "precio": "USD 12/caja"},
+            {"tipo": "oferta", "producto": "Uva Crimson",   "variedad": "", "bulto": "pallets", "cantidad": "120", "origen": "IV Región", "precio_caja": "$0", "precio_kilo": "$0"},
+            {"tipo": "oferta", "producto": "Ciruela D’Agen","variedad": "", "bulto": "pallets", "cantidad": "80",  "origen": "VI Región", "precio_caja": "$12", "precio_kilo": "$0"},
         ],
-        # IDs extranjeros (no aplica)
         "usci": None, "eori": None, "tax_id": None, "otros_id": None
     },
     "planta@demo.cl": {
@@ -131,7 +99,7 @@ USER_PROFILES = {
         "direccion": "Km 5 Camino Interior, Rengo",
         "descripcion": "Recepción y proceso de fruta fresca.",
         "items": [
-            {"tipo": "demanda", "producto": "Cajas plásticas 10kg", "variedad": "-", "cantidad": "20.000", "tipo_bulto": "unidades", "origen": "CL", "precio": "Ofertar"},
+            {"tipo": "demanda", "producto": "Cajas plásticas 10kg", "variedad": "", "bulto": "unidades", "cantidad": "20000", "origen": "CL", "precio_caja": "$0", "precio_kilo": "$0"},
         ],
         "usci": None, "eori": None, "tax_id": None, "otros_id": None
     },
@@ -147,7 +115,7 @@ USER_PROFILES = {
         "direccion": "Av. Apoquindo 1234, Las Condes",
         "descripcion": "Exportador multiproducto a EEUU/EU/Asia.",
         "items": [
-            {"tipo": "demanda", "producto": "Cereza", "variedad": "Santina", "cantidad": "150", "tipo_bulto": "pallets", "origen": "VI-VII", "precio": "A convenir"},
+            {"tipo": "demanda", "producto": "Cereza Santina", "variedad": "Santina", "bulto": "pallets", "cantidad": "150", "origen": "VI-VII", "precio_caja": "$0", "precio_kilo": "$0"},
         ],
         "usci": None, "eori": None, "tax_id": None, "otros_id": None
     },
@@ -162,13 +130,9 @@ USER_PROFILES = {
         "direccion": "Miami, FL",
         "descripcion": "Mayorista importador en EEUU.",
         "items": [
-            {"tipo": "demanda", "producto": "Uva", "variedad": "Thompson", "cantidad": "400", "tipo_bulto": "pallets", "origen": "CL", "precio": "A convenir"},
+            {"tipo": "demanda", "producto": "Uva Thompson", "variedad": "Thompson", "bulto": "pallets", "cantidad": "400", "origen": "CL", "precio_caja": "$0", "precio_kilo": "$0"},
         ],
-        # IDs extranjeros
-        "usci": "US-9988-XY",
-        "eori": None,
-        "tax_id": "99-1234567",
-        "otros_id": None
+        "usci": "US-9988-XY", "eori": None, "tax_id": "99-1234567", "otros_id": None
     },
     "packing@demo.cl": {
         "empresa": "PackSmart S.A.",
@@ -182,7 +146,7 @@ USER_PROFILES = {
         "descripcion": "Servicios de packing, etiquetado y QA.",
         "items": [
             {"tipo": "servicio", "servicio": "Embalaje exportación", "capacidad": "30.000 cajas/día", "ubicacion": "Rancagua"},
-            {"tipo": "oferta",   "producto": "Ciruela", "variedad": "Angeleno", "cantidad": "60", "tipo_bulto": "pallets", "origen": "R.M.", "precio_caja": "$10", "precio_kg": "-", "precio": "USD 10/caja"},
+            {"tipo": "oferta",   "producto": "Ciruela Angeleno", "variedad": "Angeleno", "bulto": "pallets", "cantidad": "60", "origen": "R.M.", "precio_caja": "$10", "precio_kilo": "$0"},
         ],
         "usci": None, "eori": None, "tax_id": None, "otros_id": None
     },
@@ -198,8 +162,8 @@ USER_PROFILES = {
         "descripcion": "Almacenaje en frío y logística de puerto.",
         "items": [
             {"tipo": "servicio", "servicio": "Almacenaje en frío", "capacidad": "1.500 pallets", "ubicacion": "Valparaíso"},
-            {"tipo": "servicio", "servicio": "Preenfriado",         "capacidad": "6 túneles",     "ubicacion": "Valparaíso"},
-            {"tipo": "oferta",   "producto": "Uva", "variedad": "Red Globe", "cantidad": "40", "tipo_bulto": "pallets", "origen": "V Región",  "precio_caja": "$9", "precio_kg": "-", "precio": "USD 9/caja"},
+            {"tipo": "servicio", "servicio": "Preenfriado",        "capacidad": "6 túneles",     "ubicacion": "Valparaíso"},
+            {"tipo": "oferta",   "producto": "Uva Red Globe", "variedad": "Red Globe", "bulto": "pallets", "cantidad": "40", "origen": "V Región", "precio_caja": "$9", "precio_kilo": "$0"},
         ],
         "usci": None, "eori": None, "tax_id": None, "otros_id": None
     },
@@ -250,7 +214,7 @@ USER_PROFILES = {
     },
 }
 
-COMPANIES = [
+COMPANIES: List[Dict[str, Any]] = [
     {
         "slug": "agro-el-valle",
         "nombre": "Agro El Valle SPA",
@@ -263,8 +227,8 @@ COMPANIES = [
         "telefono": "+56 9 6000 0001",
         "direccion": "Parcela 21, Vicuña",
         "items": [
-            {"tipo": "oferta", "producto": "Uva", "variedad": "Crimson", "cantidad": "120", "tipo_bulto": "pallets", "origen": "IV Región", "precio_caja": "-", "precio_kg": "-", "precio": "A convenir"},
-            {"tipo": "oferta", "producto": "Ciruela", "variedad": "D’Agen", "cantidad": "80", "tipo_bulto": "pallets", "origen": "VI Región", "precio_caja": "$12", "precio_kg": "-", "precio": "USD 12/caja"},
+            {"tipo": "oferta", "producto": "Uva Crimson", "variedad": "", "bulto": "pallets", "cantidad": "120", "origen": "IV Región", "precio_caja": "$0", "precio_kilo": "$0"},
+            {"tipo": "oferta", "producto": "Ciruela D’Agen", "variedad": "", "bulto": "pallets", "cantidad": "80", "origen": "VI Región", "precio_caja": "$12", "precio_kilo": "$0"},
         ],
         "descripcion": "Productores de uva, ciruela y berries."
     },
@@ -281,7 +245,7 @@ COMPANIES = [
         "direccion": "Ruta 5 km 185, Rancagua",
         "items": [
             {"tipo": "servicio", "servicio": "Embalaje exportación", "capacidad": "30.000 cajas/día", "ubicacion": "Rancagua"},
-            {"tipo": "oferta",   "producto": "Ciruela", "variedad": "Angeleno", "cantidad": "60", "tipo_bulto": "pallets", "origen": "R.M.", "precio_caja": "$10", "precio_kg": "-", "precio": "USD 10/caja"},
+            {"tipo": "oferta",   "producto": "Ciruela Angeleno", "variedad": "Angeleno", "bulto": "pallets", "cantidad": "60", "origen": "R.M.", "precio_caja": "$10", "precio_kilo": "$0"},
         ],
         "descripcion": "Servicios de packing, QA y etiquetado."
     },
@@ -298,8 +262,8 @@ COMPANIES = [
         "direccion": "Puerto Central, Valparaíso",
         "items": [
             {"tipo": "servicio", "servicio": "Almacenaje en frío", "capacidad": "1.500 pallets", "ubicacion": "Valparaíso"},
-            {"tipo": "servicio", "servicio": "Preenfriado",         "capacidad": "6 túneles",     "ubicacion": "Valparaíso"},
-            {"tipo": "oferta",   "producto": "Uva", "variedad": "Red Globe", "cantidad": "40", "tipo_bulto": "pallets", "origen": "V Región",  "precio_caja": "$9", "precio_kg": "-", "precio": "USD 9/caja"},
+            {"tipo": "servicio", "servicio": "Preenfriado",        "capacidad": "6 túneles",     "ubicacion": "Valparaíso"},
+            {"tipo": "oferta",   "producto": "Uva Red Globe", "variedad": "Red Globe", "bulto": "pallets", "cantidad": "40", "origen": "V Región", "precio_caja": "$9", "precio_kilo": "$0"},
         ],
         "descripcion": "Frigorífico con logística en puerto."
     },
@@ -315,7 +279,7 @@ COMPANIES = [
         "telefono": "+56 2 2345 6789",
         "direccion": "Av. Apoquindo 1234, Las Condes",
         "items": [
-            {"tipo": "demanda", "producto": "Cereza", "variedad": "Santina", "cantidad": "150", "tipo_bulto": "pallets", "origen": "VI-VII", "precio": "A convenir"},
+            {"tipo": "demanda", "producto": "Cereza Santina", "variedad": "Santina", "bulto": "pallets", "cantidad": "150", "origen": "VI-VII", "precio_caja": "$0", "precio_kilo": "$0"},
         ],
         "descripcion": "Exportador multiproducto."
     },
@@ -375,40 +339,39 @@ COMPANIES = [
 class ViewObj:
     """Convierte un dict en objeto con atributos. Asegura que .items sea la LISTA de ítems."""
     def __init__(self, data: dict):
-        # Copia directa de claves
+        # Copia segura
         for k, v in data.items():
             setattr(self, k, v)
-        # Garantiza que 'items' sea una lista (si existe)
+        # Garantiza que 'items' sea lista (si existe)
         if hasattr(self, "items") and not isinstance(getattr(self, "items"), list):
             real_list = data.get("items", [])
             setattr(self, "items", real_list)
 
-def wrap_list(dict_list):
+def wrap_list(dict_list: List[Dict[str, Any]]) -> List[ViewObj]:
     return [ViewObj(d) for d in dict_list]
 
 # =========================================================
 # Helpers de sesión / carrito
 # =========================================================
-def is_logged():
+def is_logged() -> bool:
     return "user" in session
 
-def current_user_profile():
+def current_user_profile() -> Optional[Dict[str, Any]]:
     u = session.get("user")
-    prof = USER_PROFILES.get(u)
-    return prof
+    return USER_PROFILES.get(u)
 
-def get_cart():
+def get_cart() -> List[Dict[str, Any]]:
     return session.setdefault("cart", [])
 
-def add_to_cart(item_dict):
+def add_to_cart(item_dict: Dict[str, Any]) -> None:
     cart = get_cart()
     cart.append(item_dict)
     session["cart"] = cart
 
-def clear_cart():
+def clear_cart() -> None:
     session["cart"] = []
 
-def remove_from_cart(index):
+def remove_from_cart(index) -> bool:
     cart = get_cart()
     try:
         idx = int(index)
@@ -419,6 +382,70 @@ def remove_from_cart(index):
     except Exception:
         pass
     return False
+
+# =========================================================
+# Normalización de precios (agrega $ si falta)
+# =========================================================
+def norm_money(val: str) -> str:
+    val = (val or "").strip()
+    if not val:
+        return "$0"
+    # Si ya parte con $, dejar
+    if val.startswith("$"):
+        return val
+    # Si es solo número, anteponer $
+    return f"${val}"
+
+# =========================================================
+# Reglas de visibilidad por rol (flujo que pediste)
+# =========================================================
+def targets_for(tipo: str, my_rol: str) -> List[str]:
+    """
+    tipo: 'compras' | 'ventas' | 'servicios'
+    my_rol: rol del usuario autenticado
+    Retorna lista de roles visibles como contraparte.
+    """
+    tipo = tipo.lower()
+
+    # --- COMPRAS: quién puede COMPRAR y a quién ve (quién OFRECE) ---
+    # Packing compra a Planta y Frigorífico
+    # Frigorífico compra a Planta y Packing
+    # Exportador compra a Exportador, Packing, Frigorífico, Planta
+    compras_vis = {
+        "Packing": ["Planta", "Frigorífico"],
+        "Frigorífico": ["Planta", "Packing"],
+        "Exportador": ["Exportador", "Packing", "Frigorífico", "Planta"],
+        # Otros roles por defecto ven productores/planta/exportador (seguro)
+        "default": ["Productor", "Planta", "Packing", "Frigorífico", "Exportador"],
+    }
+
+    # --- VENTAS: quién puede VENDER y a quién ve (quién DEMANDA) ---
+    # Packing vende a Exportadores y Frigoríficos (y otros Packing en flujo original mencionaste packing->packing para compras, aquí mantendremos export/frio)
+    # Frigorífico vende a Packing y Exportadores
+    # Exportador vende a Exportadores y Clientes extranjeros
+    ventas_vis = {
+        "Packing": ["Exportador", "Frigorífico", "Packing"],
+        "Frigorífico": ["Packing", "Exportador"],
+        "Exportador": ["Exportador", "Cliente extranjero"],
+        "default": ["Exportador", "Packing", "Frigorífico", "Cliente extranjero"],
+    }
+
+    # --- SERVICIOS: quién compra servicios (planta/packing/frig/exportador)
+    # Proveedores de servicios (Packing, Frigorífico, Transporte, Extraportuario, Agencia de Aduanas)
+    # Ofrecen a TODOS los nacionales. Extraportuario y Aduana solo a Exportador (lo reflejamos vía datos).
+    servicios_vis = {
+        "Planta": ["Packing", "Frigorífico", "Transporte", "Extraportuario", "Agencia de Aduanas"],
+        "Packing": ["Packing", "Frigorífico", "Transporte", "Extraportuario", "Agencia de Aduanas"],
+        "Frigorífico": ["Packing", "Frigorífico", "Transporte", "Extraportuario", "Agencia de Aduanas"],
+        "Exportador": ["Packing", "Frigorífico", "Transporte", "Extraportuario", "Agencia de Aduanas"],
+        "default": ["Packing", "Frigorífico", "Transporte", "Extraportuario", "Agencia de Aduanas"],
+    }
+
+    mapping = {"compras": compras_vis, "ventas": ventas_vis, "servicios": servicios_vis}.get(tipo, {})
+    if not mapping:
+        return []
+
+    return mapping.get(my_rol, mapping.get("default", []))
 
 # =========================================================
 # Rutas
@@ -449,7 +476,7 @@ def login():
 
 @app.route("/forgot", methods=["GET", "POST"])
 def forgot():
-    """Recuperar contraseña (demo)."""
+    """Recuperar contraseña (dummy)."""
     msg = None
     if request.method == "POST":
         email = request.form.get("email", "").strip().lower()
@@ -523,7 +550,7 @@ def register():
             f = request.files["rut_file"]
             if f and f.filename and allowed_file(f.filename):
                 fname = secure_filename(f.filename)
-                fname = f"{uuid.uuid4().hex}_{fname}"  # Evita colisiones
+                fname = f"{uuid.uuid4().hex}_{fname}"  # evitar colisiones
                 f.save(os.path.join(UPLOAD_FOLDER, fname))
                 rut_file_path = f"uploads/{fname}"
 
@@ -543,7 +570,6 @@ def register():
             if nacionalidad == "extranjero":
                 rol = "Cliente extranjero"
             else:
-                # Si es nacional y compra_venta, NO permitir "Cliente extranjero"
                 if perfil_tipo == "compra_venta" and rol == "Cliente extranjero":
                     error = t("Rol inválido para perfil nacional.", "Invalid role for national profile.")
             if not error:
@@ -572,6 +598,7 @@ def register():
                 session["usuario"] = username
                 return redirect(url_for("dashboard"))
 
+    # Render seguro en GET o POST con error
     return render_template(
         "register.html",
         error=error,
@@ -579,9 +606,9 @@ def register():
         perfil_tipo=perfil_tipo,
         nacionalidad_opciones=NACIONALIDAD_OPCIONES,
         perfil_opciones=PERFIL_OPCIONES,
-        roles_cv=[r for r in ROLES_COMPRA_VENTA if r != "Cliente extranjero"],  # por defecto para nacionales
+        roles_cv=[r for r in ROLES_COMPRA_VENTA if r != "Cliente extranjero"],  # default para nacionales
         roles_srv=ROLES_SERVICIOS,
-        roles_all_cv=ROLES_COMPRA_VENTA  # por si lo necesitas
+        roles_all_cv=ROLES_COMPRA_VENTA
     )
 
 # ---------- Dashboard ----------
@@ -593,7 +620,7 @@ def dashboard():
     usuario = session.get("user")
     rol = USERS.get(usuario, {}).get("rol", "-")
     perfil_tipo = USERS.get(usuario, {}).get("perfil_tipo", "-")
-    my_company_view = ViewObj(profile) if profile else ViewObj({"items": []})
+    my_company_view = ViewObj(profile or {"items": []})
     return render_template(
         "dashboard.html",
         usuario=usuario,
@@ -603,36 +630,30 @@ def dashboard():
         cart=get_cart(),
     )
 
-# ---------- Accesos (listado simple con “filtro” por rol exportador) ----------
+# ---------- Accesos (listado simple) con filtro por rol del usuario ----------
 @app.route("/accesos/<tipo>")
 def accesos(tipo):
     tipo = tipo.lower()
     if tipo not in ("ventas", "compras", "servicios"):
         abort(404)
 
-    usuario = session.get("user")
-    rol_usuario = USERS.get(usuario, {}).get("rol") if usuario else None
+    # Determina roles visibles según usuario (si logeado)
+    roles_permitidos = None
+    if is_logged():
+        me = USERS.get(session["user"], {})
+        roles_permitidos = set(targets_for(tipo, me.get("rol", "")))
 
+    data = []
     if tipo == "servicios":
-        data = []
         for c in COMPANIES:
-            if c["perfil_tipo"] == "servicios" or c["rol"] in ("Packing", "Frigorífico"):
-                if any(it.get("tipo") == "servicio" for it in c.get("items", [])):
+            if any(it.get("tipo") == "servicio" for it in c.get("items", [])):
+                if roles_permitidos is None or c["rol"] in roles_permitidos:
                     data.append(c)
     else:
         tag = "oferta" if tipo == "ventas" else "demanda"
-        data = []
         for c in COMPANIES:
-            # Heurística: si usuario es Exportador y está en ventas → prioriza clientes extranjeros;
-            # si está en compras → prioriza productores/planta/packing/frigorífico/exportador.
-            if rol_usuario == "Exportador":
-                if tipo == "ventas":
-                    # clientes extranjeros vivirán más en USER_PROFILES/Clientes (pero mantenemos companies de compra_venta)
-                    pass  # mostramos lo normal de companies y el módulo de clientes está aparte
-                else:
-                    pass  # dejamos el set estándar y en 'detalles' se verán por tag
-            if c["perfil_tipo"] == "compra_venta" or c["rol"] in ("Packing", "Frigorífico"):
-                if any(it.get("tipo") == tag for it in c.get("items", [])):
+            if any(it.get("tipo") == tag for it in c.get("items", [])):
+                if roles_permitidos is None or c["rol"] in roles_permitidos:
                     data.append(c)
 
     return render_template("accesos.html", tipo=tipo, data=wrap_list(data))
@@ -644,12 +665,17 @@ def detalles(tipo):
     if tipo not in ("ventas", "compras", "servicios"):
         abort(404)
 
+    roles_permitidos = None
+    if is_logged():
+        me = USERS.get(session["user"], {})
+        roles_permitidos = set(targets_for(tipo, me.get("rol", "")))
+
     if tipo in ("ventas", "compras"):
         tag = "oferta" if tipo == "ventas" else "demanda"
         data = []
         for c in COMPANIES:
-            if c["perfil_tipo"] == "compra_venta" or c["rol"] in ("Packing", "Frigorífico"):
-                if any(it.get("tipo") == tag for it in c.get("items", [])):
+            if any(it.get("tipo") == tag for it in c.get("items", [])):
+                if roles_permitidos is None or c["rol"] in roles_permitidos:
                     data.append(c)
         tpl = "detalle_ventas.html" if tipo == "ventas" else "detalle_compras.html"
         return render_template(tpl, data=wrap_list(data))
@@ -657,8 +683,8 @@ def detalles(tipo):
     # servicios
     data = []
     for c in COMPANIES:
-        if c["perfil_tipo"] == "servicios" or c["rol"] in ("Packing", "Frigorífico"):
-            if any(it.get("tipo") == "servicio" for it in c.get("items", [])):
+        if any(it.get("tipo") == "servicio" for it in c.get("items", [])):
+            if roles_permitidos is None or c["rol"] in roles_permitidos:
                 data.append(c)
     return render_template("detalle_servicios.html", data=wrap_list(data))
 
@@ -676,23 +702,26 @@ def empresa(slug):
 # ---------- Clientes (listado + detalle) ----------
 @app.route("/clientes")
 def clientes():
+    """
+    Ahora admite filtro opcional ?tipo=(compras|ventas|servicios)
+    Para exportador, por ejemplo, puede elegir qué vista abrir.
+    """
+    filtro = request.args.get("tipo")  # None|'compras'|'ventas'|'servicios'
     lista = []
     for uname, prof in USER_PROFILES.items():
         if "cliente" in (prof.get("rol") or "").lower():
             item = prof.copy()
             item["username"] = uname
-            # agregamos un pequeño “resumen” del primer ítem para tabla
-            items = item.get("items", [])
-            if items:
-                it0 = items[0]
-                item["resumen_item"] = f"{it0.get('tipo','-')} {it0.get('producto','')} {it0.get('variedad','')}".strip()
-            else:
-                item["resumen_item"] = "-"
             lista.append(item)
+
+    # Si hay filtro y usuario autenticado, redirigimos a los detalles acordes
+    if filtro in ("compras", "ventas", "servicios"):
+        return redirect(url_for("detalles", tipo=filtro))
+
+    # Si no hay clientes, agregamos el demo
     if not lista and "cliente@usa.com" in USER_PROFILES:
         item = USER_PROFILES["cliente@usa.com"].copy()
         item["username"] = "cliente@usa.com"
-        item["resumen_item"] = "-"
         lista.append(item)
     return render_template("clientes.html", clientes=wrap_list(lista))
 
@@ -704,16 +733,16 @@ def cliente_detalle(username):
     comp = {
         "nombre": prof.get("empresa"),
         "rut": prof.get("rut"),
+        "pais": prof.get("pais"),
         "email": prof.get("email"),
         "telefono": prof.get("telefono"),
         "direccion": prof.get("direccion"),
         "descripcion": prof.get("descripcion"),
         "items": prof.get("items", []),
-        "pais": prof.get("pais", ""),
     }
     return render_template("cliente_detalle.html", comp=ViewObj(comp), username=username)
 
-# ---------- Mi Perfil (edición + agregar ítems con más campos) ----------
+# ---------- Mi Perfil (edición + agregar ítems) ----------
 @app.route("/perfil", methods=["GET", "POST"])
 def perfil():
     if not is_logged():
@@ -725,6 +754,7 @@ def perfil():
     mensaje = None
     if request.method == "POST":
         action = request.form.get("action")
+
         if action == "save_profile":
             prof["empresa"] = request.form.get("empresa", prof.get("empresa", "")).strip()
             prof["email"] = request.form.get("email", prof.get("email", "")).strip()
@@ -732,7 +762,7 @@ def perfil():
             prof["direccion"] = request.form.get("direccion", prof.get("direccion", "")).strip()
             prof["descripcion"] = request.form.get("descripcion", prof.get("descripcion", "")).strip()
 
-            # Manejo de RUT y archivo (solo nacionales)
+            # Manejo de RUT y archivo (solo si tiene campo)
             if request.form.get("rut") is not None:
                 rut_in = request.form.get("rut").strip()
                 prof["rut"] = rut_in if rut_in else prof.get("rut")
@@ -750,10 +780,10 @@ def perfil():
                     prof[key] = request.form.get(key).strip() or prof.get(key)
 
             mensaje = t("Perfil actualizado.", "Profile updated.")
+
         elif action == "add_item":
-            perfil_tipo = prof.get("perfil_tipo")
-            tipo_item = request.form.get("subtipo", "oferta").strip()  # oferta | demanda
-            if perfil_tipo == "servicios":
+            tipo_perfil_item = request.form.get("tipo_perfil_item", "").strip()  # 'compra_venta' | 'servicios'
+            if tipo_perfil_item == "servicios":
                 servicio = request.form.get("servicio", "").strip()
                 capacidad = request.form.get("capacidad", "").strip()
                 ubicacion = request.form.get("ubicacion", "").strip()
@@ -766,32 +796,25 @@ def perfil():
                     })
                     mensaje = t("Servicio agregado.", "Service added.")
             else:
-                # compra_venta → oferta/demanda con campos extendidos
-                producto   = request.form.get("producto", "").strip()
-                variedad   = request.form.get("variedad", "").strip()
-                cantidad   = request.form.get("cantidad", "").strip()
-                tipo_bulto = request.form.get("tipo_bulto", "").strip()
-                origen     = request.form.get("origen", "").strip()
-                precio_caja = request.form.get("precio_caja", "").strip()
-                precio_kg   = request.form.get("precio_kg", "").strip()
-
+                subtipo   = request.form.get("subtipo", "oferta")  # oferta | demanda
+                producto  = request.form.get("producto", "").strip()
+                variedad  = request.form.get("variedad", "").strip()
+                cantidad  = request.form.get("cantidad", "").strip()
+                bulto     = request.form.get("bulto", "").strip()  # cajas, kilos, toneladas, contenedor
+                origen    = request.form.get("origen", "").strip()
+                precio_caja = norm_money(request.form.get("precio_caja", ""))
+                precio_kilo = norm_money(request.form.get("precio_kilo", ""))
                 if producto:
-                    item = {
-                        "tipo": tipo_item,  # oferta/demanda
+                    prof.setdefault("items", []).append({
+                        "tipo": subtipo,
                         "producto": producto,
-                        "variedad": variedad or "-",
-                        "cantidad": cantidad or "-",
-                        "tipo_bulto": tipo_bulto or "-",
-                        "origen": origen or "-",
-                    }
-                    # Solo en oferta mostramos/preparamos precios
-                    if tipo_item == "oferta":
-                        item["precio_caja"] = normaliza_moneda(precio_caja) if precio_caja else "-"
-                        item["precio_kg"]   = normaliza_moneda(precio_kg) if precio_kg else "-"
-                        # Por compatibilidad con plantillas que usan 'precio'
-                        item["precio"] = item["precio_caja"] if item["precio_caja"] != "-" else (item["precio_kg"] or "-")
-
-                    prof.setdefault("items", []).append(item)
+                        "variedad": variedad,
+                        "cantidad": cantidad,
+                        "bulto": bulto,
+                        "origen": origen,
+                        "precio_caja": precio_caja,
+                        "precio_kilo": precio_kilo,
+                    })
                     mensaje = t("Ítem agregado.", "Item added.")
 
     return render_template("perfil.html", perfil=ViewObj(prof), mensaje=mensaje)
@@ -803,11 +826,6 @@ def cart_add():
     item = request.form.to_dict()
     if "empresa" not in item:
         item["empresa"] = "?"
-    # Normalizamos precios si vienen en formulario
-    if "precio_caja" in item:
-        item["precio_caja"] = normaliza_moneda(item.get("precio_caja"))
-    if "precio_kg" in item:
-        item["precio_kg"] = normaliza_moneda(item.get("precio_kg"))
     add_to_cart(item)
     flash(t("Agregado al carrito", "Added to cart"))
     return redirect(request.referrer or url_for("carrito"))
@@ -840,7 +858,7 @@ def ayuda():
             msg = t("Completa correo y mensaje.", "Please complete email and message.")
     return render_template("ayuda.html", mensaje=msg)
 
-# ---------- Descarga segura de uploads (opcional) ----------
+# ---------- Descarga segura de uploads ----------
 @app.route("/uploads/<path:filename>")
 def uploads(filename):
     return send_from_directory(UPLOAD_FOLDER, filename, as_attachment=False)
@@ -858,6 +876,7 @@ def not_found(e):
 
 @app.errorhandler(500)
 def server_error(e):
+    # Nota: para debugging en Render no mostramos detalles internos al usuario final
     return render_template(
         "error.html",
         code=500,
